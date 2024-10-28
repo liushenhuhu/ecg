@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.alert_log.mapper.AlertLogMapper">
+    
+    <resultMap type="AlertLog" id="AlertLogResult">
+        <result property="logId"    column="log_id"    />
+        <result property="logTime"    column="log_time"    />
+        <result property="logType"    column="log_type"    />
+        <result property="eventName"    column="event_name"    />
+        <result property="eventDescription"    column="event_description"    />
+        <result property="pId"    column="p_id"    />
+        <result property="anoStatus"    column="ano_status"    />
+        <result property="waveLabel"    column="wave_label"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectAlertLogVo">
+        select log_id, log_time, log_type, event_name, event_description, p_id, ano_status, wave_label, update_time from alert_log
+    </sql>
+
+    <select id="selectAlertLogList" parameterType="AlertLog" resultMap="AlertLogResult">
+        <include refid="selectAlertLogVo"/>
+        <where>  
+            <if test="logId != null  and logId != ''"> and log_id = #{logId}</if>
+            <if test="logTime != null "> and log_time = #{logTime}</if>
+            <if test="logType != null  and logType != ''"> and log_type = #{logType}</if>
+            <if test="eventName != null  and eventName != ''"> and event_name like concat('%', #{eventName}, '%')</if>
+            <if test="eventDescription != null  and eventDescription != ''"> and event_description = #{eventDescription}</if>
+            <if test="pId != null  and pId != ''"> and p_id = #{pId}</if>
+            <if test="anoStatus != null "> and ano_status = #{anoStatus}</if>
+            <if test="waveLabel != null  and waveLabel != ''"> and wave_label = #{waveLabel}</if>
+        </where>
+    </select>
+    
+    <select id="selectAlertLogByLogId" parameterType="String" resultMap="AlertLogResult">
+        <include refid="selectAlertLogVo"/>
+        where log_id = #{logId}
+    </select>
+
+    <insert id="insertAlertLog" parameterType="AlertLog">
+        insert into alert_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="logId != null and logId != ''">log_id,</if>
+            <if test="logTime != null">log_time,</if>
+            <if test="logType != null">log_type,</if>
+            <if test="eventName != null">event_name,</if>
+            <if test="eventDescription != null">event_description,</if>
+            <if test="pId != null">p_id,</if>
+            <if test="anoStatus != null">ano_status,</if>
+            <if test="waveLabel != null">wave_label,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="logId != null and logId != ''">#{logId},</if>
+            <if test="logTime != null">#{logTime},</if>
+            <if test="logType != null">#{logType},</if>
+            <if test="eventName != null">#{eventName},</if>
+            <if test="eventDescription != null">#{eventDescription},</if>
+            <if test="pId != null">#{pId},</if>
+            <if test="anoStatus != null">#{anoStatus},</if>
+            <if test="waveLabel != null">#{waveLabel},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAlertLog" parameterType="AlertLog">
+        update alert_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="logTime != null">log_time = #{logTime},</if>
+            <if test="logType != null">log_type = #{logType},</if>
+            <if test="eventName != null">event_name = #{eventName},</if>
+            <if test="eventDescription != null">event_description = #{eventDescription},</if>
+            <if test="pId != null">p_id = #{pId},</if>
+            <if test="anoStatus != null">ano_status = #{anoStatus},</if>
+            <if test="waveLabel != null">wave_label = #{waveLabel},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where log_id = #{logId}
+    </update>
+
+    <delete id="deleteAlertLogByLogId" parameterType="String">
+        delete from alert_log where log_id = #{logId}
+    </delete>
+
+    <delete id="deleteAlertLogByLogIds" parameterType="String">
+        delete from alert_log where log_id in 
+        <foreach item="logId" collection="array" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </delete>
+</mapper>
