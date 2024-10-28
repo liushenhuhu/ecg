@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
+  "name": "ecg_label",
   "version": "3.8.8",
-  "description": "若依管理系统",
-  "author": "若依",
+  "description": "心电标注系统",
+  "author": "杨鎏",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
