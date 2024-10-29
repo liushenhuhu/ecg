@@ -113,9 +113,16 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
+            @click="handleLabel(scope.row)"
             v-hasPermi="['alert_log:alert_log:edit']"
-          >修改</el-button>
+          >标注</el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['alert_log:alert_log:edit']"-->
+<!--          >修改</el-button>-->
           <el-button
             size="mini"
             type="text"
@@ -126,7 +133,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -318,7 +325,31 @@ export default {
       this.download('alert_log/alert_log/export', {
         ...this.queryParams
       }, `alert_log_${new Date().getTime()}.xlsx`)
-    }
+    },
+    /** 查看标注*/
+    handleLabel(row) {
+      // console.log(row.logId);
+      // this.$router.push({
+      //   name: "lookLog",
+      //   params: {logId: row.logId, logType: row.logType, userId: 0}
+      // });
+      this.$router.push({
+        path: "/LabelEcg12",// name: "lookLog"
+
+        query: {
+          logId: row.logId,
+          // userId: row.userId,
+          userId: 100,
+          ecgType: '12',
+          pageNum: this.queryParams.pageNum,
+          pageSize: this.queryParams.pageSize,
+          isSuspected: null,
+          anoStatus: this.queryParams.anoStatus,
+          queryParams: this.queryParams,
+          state: 12,
+        },
+      });
+    },
   }
 };
 </script>
