@@ -251,7 +251,6 @@ export default {
         logType: null,
         eventName: null,
         eventDescription: null,
-        pId: null,
         anoStatus: null,
         waveLabel: null,
         updateTime: null
@@ -338,15 +337,13 @@ export default {
 
         query: {
           logId: row.logId,
-          // userId: row.userId,
-          userId: 100,
-          ecgType: '12',
+
+          //当前查询参数
           pageNum: this.queryParams.pageNum,
           pageSize: this.queryParams.pageSize,
-          isSuspected: null,
           anoStatus: this.queryParams.anoStatus,
-          queryParams: this.queryParams,
-          state: 12,
+          logTime: this.queryParams.logTime,
+
         },
       });
     },

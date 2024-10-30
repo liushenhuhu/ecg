@@ -3,8 +3,8 @@
     <div class="patientInformation">
       <div class="patientInformation-biaoti">用户信息</div>
       <div class="patientInformation-xiangxi">
-        <span id="">用户ID：{{ message.pid }}</span>
-        <span id="">日志ID：{{ message.logid }}</span>
+        <!--        <span id="">用户ID：{{ message.pid }}</span>-->
+        <span id="">日志ID：{{ log_id }}</span>
         <span id="">性别：{{ message.sex }}</span>
         <span id="">年龄：{{ message.age }}</span>
         <span id="">时间：{{ message.time }}</span>
@@ -669,6 +669,8 @@ export default {
   },
   data() {
     return {
+      log_id: null,
+      user_id: null,
       //其他原因
       others: '',
       myocarditis: [
@@ -792,7 +794,7 @@ export default {
       chartjump: null,
       xIndex: null,
       delX: {key: null, value: null}, //想要删除的点
-      area: [], //想要删除的区间
+      // area: [], //想要删除的区间
       markArea: [],
       title: "",
       subData: {
@@ -808,17 +810,32 @@ export default {
       }, //提交标注信息
 
       pointdata: [], //画点的option
-      point: [[], {P: [], Q: [], R: [], S: [], T: []}],
-      arr: [], //要删除的点所在的区间
       isSuspected: false,
-      pageNum: 1,
-      logUserList: [],
-      index: 0,
+
+      // 初始化查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        logId: null,
+        logTime: null,
+        logType: null,
+        eventName: null,
+        eventDescription: null,
+        pId: null,
+        anoStatus: null,
+        waveLabel: null,
+      },
+
+
+      index: 0,//当前数据在page中的索引，初始化为0
+      anoStatus: null,//当前数据标注状态
+
+      logList: [],
+
       loading: false,
-      logUserListTotal: 0,
-      anoStatus: null,
+      logListTotal: 0,
+
       typeObj: {},
-      pageSize: 10,
       obj: {},
       pId: '',
     };
@@ -834,19 +851,30 @@ export default {
     },
   },
   created() {
+    //获取页面路由参数
     if (this.$route.query.logId) {
+      console.log(this.$store.u)
+      // 获取原页面请求
+      this.log_id = this.$route.query.logId
+
+      this.queryParams.pageNum = this.$route.query.pageNum;
+      this.queryParams.pageSize = this.$route.query.pageSize;
+      this.queryParams.anoStatus = this.$route.query.anoStatus;
+      this.queryParams.logTime = this.$route.query.logTime;
+
+
       // console.log(this.$route.query.anoStatus);//null
-      this.anoStatus = this.$route.query.anoStatus; //null
-      this.message.logid = this.$route.query.logId; //8eba952e-1a24-5598-ac8d-7f6ad47a0275
+      // this.anoStatus = this.$route.query.anoStatus; //null
+      // this.message.logid = this.$route.query.logId; //8eba952e-1a24-5598-ac8d-7f6ad47a0275
       // this.message.logType = this.$route.query.logType;
-      this.message.user_id = this.$route.query.userId; //0
+      // this.message.user_id = this.$route.query.userId; //0
       // this.value=this.$route.query.logType;
-      this.query.logId = this.$route.query.logId; //8eba952e-1a24-5598-ac8d-7f6ad47a0275
-      this.query.userId = this.$route.query.userId; //0
-      this.pageNum = this.$route.query.pageNum; //1
-      this.pageSize = this.$route.query.pageSize; //10
-      this.typeObj = this.$route.query.queryParams; //{}
-      this.pId = this.$route.query.pId
+      // this.query.logId = this.$route.query.logId; //8eba952e-1a24-5598-ac8d-7f6ad47a0275
+      // this.query.userId = this.$route.query.userId; //0
+      // this.pageNum = this.$route.query.pageNum; //1
+      // this.pageSize = this.$route.query.pageSize; //10
+      // this.typeObj =
+      // this.pId = this.$route.query.pId
 
       // 获取预警类选项型表
       // this.getSelectList();
@@ -860,26 +888,17 @@ export default {
   },
   mounted() {
     this.getMessage();
+    this.getIndex();
     this.chartjump = echarts.init(document.getElementById("chartjump"));
     // console.log(this.options);
   },
   methods: {
-    // 心肌炎中其他的值
     qitazhi(data) {
-      // console.log(data);
-      console.log(this.others);
-
     },
-    // 心肌炎选中的值
     zhong(data) {
-      // console.log(data);
-      // let qitazhi = data.toString()
-      // console.log(qitazhi);
-      console.log(this.myocarditiszhi);
     },
-    // 切换预警类型触发事件
+
     handleClick(tab, event) {
-      console.log(tab, event);
     },
     clicktest(value) {
       if (this.testArray.includes(value)) {
@@ -889,198 +908,126 @@ export default {
       }
     },
     // 1获取预警类型表
-    getSelectList() {
-      selectList().then((res) => {
-        this.options = res.data;
-        // console.log(res.data);
-      });
+    // getSelectList() {
+    //   selectList().then((res) => {
+    //     this.options = res.data;
+    //     // console.log(res.data);
+    //   });
+    // },
+
+    // 获取当前数据在page中的index
+    async getIndex() {
+      await listAlert_log(this.queryParams).then((response) => {
+        this.logList = response.rows;
+        this.logListTotal = response.total;
+        this.logList.forEach((item, index) => {
+          if (this.log_id == item.logId) {
+            this.index = index;
+          }
+        });
+      })
+      console.log("当前索引:", this.index)
+    },
+    //根据index获取logid
+    async getLogId() {
+      await listAlert_log(this.queryParams).then((response) => {
+        this.logList = response.rows;
+        this.logListTotal = response.total;
+        this.logList.forEach((item, index) => {
+          if (this.index == index) {
+            this.log_id = item.logId;
+          }
+        });
+      })
     },
     // 2获取数据标注页面数据
     async getLogUserList() {
-      console.log(this.typeObj);
-      // console.log("执行了getLogUserList函数，获取用户数据");
-      // console.log("这是this.$route.query.state的值"+this.$route.query.state);
-      // // this.getSelectList();
-      // console.log(this.$route.query);
-      if (this.$route.query.state == 1) {
-        let queryParams = {}
-        if (this.typeObj) {
-          queryParams = this.typeObj;
-        } else {
-          queryParams = this.$route.query
-        }
-        // this.typeObj = this.$route.query.queryParams;
-
-
-        // // console.log(this.typeObj);//undefined
-        this.obj = {
-          logId: queryParams.logId ? queryParams.logId : "",
-          userId: queryParams.userId ? queryParams.userId : "",
-          ecgType: this.$route.query.ecgType,
-          pageNum: this.pageNum,
-          pageSize: this.pageSize,
-          anoStatus: this.anoStatus,
-          logTime: queryParams.logTime ? queryParams.logTime : "",
-          eventName: queryParams.eventName ? queryParams.eventName : "",
-          eventDescription: queryParams.eventDescription ? queryParams.eventDescription : "",
-          pId: queryParams.pId ? queryParams.pId : "",
-          isSuspected: queryParams.isSuspected ? queryParams.isSuspected : "",
-        };
-
-        // console.log("查看标注页获取用户信息所需要的值");
-        // console.log(this.obj);
-        await listAlert_log(this.obj).then((response) => {
-          console.log(response);
-          this.logUserList = response.rows;
-          // console.log("这是从单导预警页面跳转到查看标注页面获取到的数据");
-          // console.log(this.logUserList);
-          // console.log(this.options);
-          this.logUserListTotal = response.total;
-          this.logUserList.forEach((item, index) => {
-            if (this.message.logid == item.logId) {
-              this.index = index;
-            }
-          });
-        })
-
-        if (this.index == this.logUserList.length) {
-          this.index = 0
-        }
-
-        // console.log("这是this.index的值："+this.index);
-        // console.log(this.logUserList[this.index].eventDescription);
-        // 假设 this.index 是你要访问的 logUserList 数组中的索引
-        if (this.logUserList[this.index].eventDescription) {
-          // 拆分 logType 字符串为一个数组
-          let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-
-          // 将拆分后的数组中的每个值添加到 trueValues 数组中
-          this.trueValues = logTypesArray
-        }
-        // }
-
-
-      } else if (this.$route.query.state == 12) {
-        // console.log(this.typeObj);//undefined
-        // this.typeObj = this.$route.query.queryParams;
-        let queryParams = {}
-        if (this.typeObj) {
-          queryParams = this.typeObj;
-        } else {
-          queryParams = this.$route.query
-        }
-        // console.log(this.typeObj);//undefined
-
-        this.obj = {
-          logId: queryParams.logId ? queryParams.logId : "",
-          userId: this.$route.query.userId ? this.$route.query.userId : "",
-          ecgType: this.$route.query.ecgType,
-          pageNum: this.pageNum,
-          pageSize: this.pageSize,
-          anoStatus: this.anoStatus,
-          logTime: queryParams.logTime ? queryParams.logTime : "",
-          eventDescription: queryParams.eventDescription ? queryParams.eventDescription : "",
-          eventName: queryParams.eventName ? queryParams.eventName : "",
-          pId: queryParams.pId ? queryParams.pId : "",
-          isSuspected: queryParams.isSuspected ? queryParams.isSuspected : "",
-        };
-        // console.log("查看标注页获取用户信息所需要的值");
-        // console.log(this.obj);
-        await listAlert_log(this.obj).then((response) => {
-          // console.log("12导预警");
-          // console.log(response)
-          this.logUserList = response.rows;
-
-          // console.log("这是从12导预警页面跳转到查看标注页面获取到的数据");
-          // console.log(this.logUserList);
-
-          this.logUserListTotal = response.total;
-          this.logUserList.forEach((item, index) => {
-            if (this.message.logid == item.logId) {
-              this.index = index;
-            }
-          });
-          // console.log(this.logUserList);
-        })
-        if (this.index == this.logUserList.length) {
-          this.index = 0
-        }
-        // console.log("这是this.index的值："+this.index);
-
-        // console.log(this.logUserList[this.index].eventDescription);
-        // 假设 this.index 是你要访问的 logUserList 数组中的索引
-        if (this.logUserList[this.index].eventDescription) {
-          // 拆分 logType 字符串为一个数组
-          let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-
-          // 将拆分后的数组中的每个值添加到 trueValues 数组中
-          this.trueValues = logTypesArray
-        }
-        if (this.logUserList[this.index].myocardiumType) {
-          let xinjiyan = JSON.parse(this.logUserList[this.index].myocardiumType)
-          this.myocarditiszhi = xinjiyan.myocarditiszhi.split(',')
-          this.others = xinjiyan.others
-        }
+      let queryParams = {}
+      if (this.typeObj) {
+        queryParams = this.typeObj;
       } else {
-        // console.log(this.typeObj);//undefined
-        // this.typeObj = this.$route.query.queryParams;
-        let queryParams = {}
-        if (this.typeObj) {
-          queryParams = this.typeObj;
-        } else {
-          queryParams = this.$route.query
-        }
-        // console.log(this.typeObj);//undefined
-
-        this.obj = {
-          logId: queryParams.logId ? queryParams.logId : "",
-          userId: this.$route.query.userId ? this.$route.query.userId : "",
-          ecgType: this.$route.query.ecgType,
-          pageNum: this.pageNum,
-          pageSize: this.pageSize,
-          anoStatus: this.anoStatus,
-          logTime: queryParams.logTime ? queryParams.logTime : "",
-          eventDescription: queryParams.eventDescription ? queryParams.eventDescription : "",
-          eventName: queryParams.eventName ? queryParams.eventName : "",
-          pId: queryParams.pId ? queryParams.pId : "",
-          isSuspected: queryParams.isSuspected ? queryParams.isSuspected : "",
-        };
-        await listLog_user(this.obj).then((response) => {
-          this.logUserList = response.rows;
-          // 用户的数组
-          // console.log("这是从数据标注页面跳转到查看标注页面获取到的数据");
-          // console.log(this.logUserList);
-          this.logUserListTotal = response.total;
-          this.logUserList.forEach((item, index) => {
-            if (this.message.logid == item.logId) {
-              this.index = index;
-            }
-          });
-          // console.log(this.logUserList);
-        })
-        if (this.index == this.logUserList.length) {
-          this.index = 0
-        }
-        // console.log("这是this.index的值："+this.index);
-
-        // console.log(this.logUserList[this.index].eventDescription);
-        // 假设 this.index 是你要访问的 logUserList 数组中的索引
-        if (this.logUserList[this.index].eventDescription) {
-          // 拆分 logType 字符串为一个数组
-          let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-
-          // 将拆分后的数组中的每个值添加到 trueValues 数组中
-          this.trueValues = logTypesArray
-        }
+        queryParams = this.$route.query
       }
+
+      this.obj = {
+        logId: queryParams.logId ? queryParams.logId : "",
+        userId: this.$route.query.userId ? this.$route.query.userId : "",
+        ecgType: this.$route.query.ecgType,
+        pageNum: this.pageNum,
+        pageSize: this.pageSize,
+        anoStatus: this.anoStatus,
+        logTime: queryParams.logTime ? queryParams.logTime : "",
+        eventDescription: queryParams.eventDescription ? queryParams.eventDescription : "",
+        eventName: queryParams.eventName ? queryParams.eventName : "",
+        pId: queryParams.pId ? queryParams.pId : "",
+        isSuspected: queryParams.isSuspected ? queryParams.isSuspected : "",
+      };
+      // console.log("查看标注页获取用户信息所需要的值");
+      // console.log(this.obj);
+      await listAlert_log(this.obj).then((response) => {
+        // console.log("12导预警");
+        // console.log(response)
+        this.logUserList = response.rows;
+
+        this.logUserListTotal = response.total;
+        this.logUserList.forEach((item, index) => {
+          console.log(item.logId, index)
+          if (this.message.logid == item.logId) {
+            this.index = index;
+          }
+        });
+        // console.log(this.logUserList);
+      })
+      if (this.index == this.logUserList.length) {
+        this.index = 0
+      }
+      // console.log("这是this.index的值："+this.index);
+
+      // console.log(this.logUserList[this.index].eventDescription);
+      // 假设 this.index 是你要访问的 logUserList 数组中的索引
+      if (this.logUserList[this.index].eventDescription) {
+        // 拆分 logType 字符串为一个数组
+        let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
+
+        // 将拆分后的数组中的每个值添加到 trueValues 数组中
+        this.trueValues = logTypesArray
+      }
+      if (this.logUserList[this.index].myocardiumType) {
+        let xinjiyan = JSON.parse(this.logUserList[this.index].myocardiumType)
+        this.myocarditiszhi = xinjiyan.myocarditiszhi.split(',')
+        this.others = xinjiyan.others
+      }
+
     },
 
     //获取心电数据
     getMessage() {
       console.log("开始获取数据")
-      var Iy = [];var IIy = [];var IIIy = [];var aVLy = [];var aVFy = [];var aVRy = [];var V1y = [];var V2y = [];var V3y = [];var V4y = [];var V5y = [];var V6y = [];
+      var Iy = [];
+      var IIy = [];
+      var IIIy = [];
+      var aVLy = [];
+      var aVFy = [];
+      var aVRy = [];
+      var V1y = [];
+      var V2y = [];
+      var V3y = [];
+      var V4y = [];
+      var V5y = [];
+      var V6y = [];
       var timex = [];
-      var chartI = echarts.init(document.getElementById("I"));var chartII = echarts.init(document.getElementById("II"));var chartIII = echarts.init(document.getElementById("III"));var chartV1 = echarts.init(document.getElementById("V1"));var chartV2 = echarts.init(document.getElementById("V2"));var chartV3 = echarts.init(document.getElementById("V3"));var chartV4 = echarts.init(document.getElementById("V4"));var chartV5 = echarts.init(document.getElementById("V5"));var chartV6 = echarts.init(document.getElementById("V6"));var chartaVR = echarts.init(document.getElementById("aVR"));var chartaVL = echarts.init(document.getElementById("aVL"));var chartaVF = echarts.init(document.getElementById("aVF"));
+      var chartI = echarts.init(document.getElementById("I"));
+      var chartII = echarts.init(document.getElementById("II"));
+      var chartIII = echarts.init(document.getElementById("III"));
+      var chartV1 = echarts.init(document.getElementById("V1"));
+      var chartV2 = echarts.init(document.getElementById("V2"));
+      var chartV3 = echarts.init(document.getElementById("V3"));
+      var chartV4 = echarts.init(document.getElementById("V4"));
+      var chartV5 = echarts.init(document.getElementById("V5"));
+      var chartV6 = echarts.init(document.getElementById("V6"));
+      var chartaVR = echarts.init(document.getElementById("aVR"));
+      var chartaVL = echarts.init(document.getElementById("aVL"));
+      var chartaVF = echarts.init(document.getElementById("aVF"));
       var _th = this;
       $.ajax({
         type: "POST",
@@ -1088,8 +1035,8 @@ export default {
         dataType: "json",
         contentType: "application/json",
         data: JSON.stringify({
-          log_id: this.message.logid,
-          user_id: this.message.user_id,
+          log_id: this.log_id,
+          user_id: 0,  // userid得是0才有权限
         }),
         success: jsonResult => {
           console.log("获取到数据")
@@ -1119,7 +1066,18 @@ export default {
               //console.log(timex)
               //console.log(jsonResult.result.I.length)
               for (i = 0; i < 1000; i++) {
-                Iy.push(jsonResult.result.I[i]);IIy.push(jsonResult.result.II[i]);IIIy.push(jsonResult.result.III[i]);aVLy.push(jsonResult.result.aVL[i]);aVRy.push(jsonResult.result.aVR[i]);aVFy.push(jsonResult.result.aVF[i]);V1y.push(jsonResult.result.V1[i]);V2y.push(jsonResult.result.V2[i]);V3y.push(jsonResult.result.V3[i]);V4y.push(jsonResult.result.V4[i]);V5y.push(jsonResult.result.V5[i]);V6y.push(jsonResult.result.V6[i]);
+                Iy.push(jsonResult.result.I[i]);
+                IIy.push(jsonResult.result.II[i]);
+                IIIy.push(jsonResult.result.III[i]);
+                aVLy.push(jsonResult.result.aVL[i]);
+                aVRy.push(jsonResult.result.aVR[i]);
+                aVFy.push(jsonResult.result.aVF[i]);
+                V1y.push(jsonResult.result.V1[i]);
+                V2y.push(jsonResult.result.V2[i]);
+                V3y.push(jsonResult.result.V3[i]);
+                V4y.push(jsonResult.result.V4[i]);
+                V5y.push(jsonResult.result.V5[i]);
+                V6y.push(jsonResult.result.V6[i]);
               }
               for (var i = 0; i < 2500; i += 20) {
                 _th.seriesdata.push({xAxis: i});
@@ -2515,16 +2473,16 @@ export default {
       });
     },
     //获取标注数据
-    getLabel() {
-      getLabel(this.query)
-        .then((res) => {
-          if (res.data.waveLabel != null) {
-            this.subData = JSON.parse(res.data.waveLabel);
-          }
-        })
-        .catch((err) => {
-        });
-    },
+    // getLabel() {
+    //   getLabel(this.query)
+    //     .then((res) => {
+    //       if (res.data.waveLabel != null) {
+    //         this.subData = JSON.parse(res.data.waveLabel);
+    //       }
+    //     })
+    //     .catch((err) => {
+    //     });
+    // },
     //判断红绿颜色
     light(data) {
       this.noise_list = data.result.noise;
@@ -2615,60 +2573,6 @@ export default {
       console.log("修改之后的等级：", this.noise_level);
       console.log("修改之后的等级：", this.noise_list);
     },
-    //重置按钮
-    cleartap() {
-      for (let tapKey in this.tap) {
-        this.tap[tapKey] = false;
-      }
-    },
-    //合并重复框选区域
-    drawMarkArea(newitem, a) {
-      if (this.markArea.length !== 0) {
-        var result = this.markArea.findIndex((v) => {
-          return (
-            (v[0].xAxis <= newitem[0] && v[1].xAxis >= newitem[0]) ||
-            (v[0].xAxis <= newitem[1] && v[1].xAxis >= newitem[1]) ||
-            (v[0].xAxis >= newitem[0] && v[1].xAxis <= newitem[1])
-          );
-        });
-        console.log("是否有交叉", result);
-        if (result == -1) {
-          this.markArea.push(a);
-        } else {
-          var max = Math.max(
-            this.markArea[result][0].xAxis,
-            this.markArea[result][1].xAxis,
-            newitem[0],
-            newitem[1]
-          );
-          var min = Math.min(
-            this.markArea[result][0].xAxis,
-            this.markArea[result][1].xAxis,
-            newitem[0],
-            newitem[1]
-          );
-          a[0].xAxis = min;
-          a[1].xAxis = max;
-          this.markArea.splice(result, 1, a);
-        }
-      } else {
-        this.markArea.push(a);
-      }
-      this.chartjump.setOption({
-        series: [
-          {
-            id: "series1",
-            markArea: {
-              label: {
-                show: true,
-                position: "inside",
-              },
-              data: this.markArea,
-            },
-          },
-        ],
-      });
-    },
 
     clearData() {
       this.pointdata = [];
@@ -2698,79 +2602,133 @@ export default {
       this.isSuspected = !this.isSuspected;
     },
     async prev() {
-      this.loading = true;
+      this.loading = true; //转圈动画效果
 
-      if (this.pageNum == 1 && this.index == 0) {
+      //判断pagenum值和index是否为第一页第一个
+      if (this.queryParams.pageNum == 1 && this.index == 0) {
         this.$message.warning("已经是第一页！！！");
         this.loading = false;
         return;
       }
-      this.index--;
-      this.myocarditiszhi = []
-      this.others = ''
-      if (this.index < 0) {
-        if (this.pageNum > 1) {
-          this.pageNum--;
-          this.index = 9
-        }
-        await this.getLogUserList();
-        this.index = this.pageSize - 1;
+
+      //如果index为0，则请求上一个页面
+      if (this.index <= 0) {
+        this.queryParams.pageNum = this.queryParams.pageNum - 1;
+        this.index = this.queryParams.pageSize - 1;
+      } else {
+        this.index = this.index - 1;
       }
-      // console.log(this.logUserList[this.index]);
-      this.message.logid = this.logUserList[this.index].logId;
-      //this.logUserList[this.index].userId中的值为null
-      this.message.user_id = this.$route.query.userId;
-      let anoStatus = "";
-      if (this.anoStatus != null) {
-        anoStatus = `&anoStatus=${this.anoStatus}`;
-      }
-      this.trueValues = []
-      // 假设 this.index 是你要访问的 logUserList 数组中的索引
-      if (this.logUserList[this.index].eventDescription) {
-        // 拆分 logType 字符串为一个数组
-        let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-        // 将拆分后的数组中的每个值添加到 trueValues 数组中
-        this.trueValues.push(...logTypesArray);
-      }
+      //根据index获取log_id
+      await this.getLogId();
+
+      this.getMessage();
+
+      this.loading = false;
+      var newUrl =
+        this.$route.path +
+        `?logId=${this.log_id}` +
+        `&pageNum=${this.queryParams.pageNum}` +
+        `&pageSize=${this.queryParams.pageSize}` +
+        `&anoStatus=${this.queryParams.anoStatus}` +
+        `&logTime=${this.queryParams.logTime}`;
+      window.history.replaceState("", "", newUrl);
+      console.log("pageNum:", this.queryParams.pageNum, "index:", this.index)
+
+      // this.index--;
+      // this.myocarditiszhi = []
+      // this.others = ''
+      // if (this.index < 0) {
+      //   if (this.pageNum > 1) {
+      //     this.pageNum--;
+      //     this.index = 9
+      //   }
+      //   await this.getLogUserList();
+      //   this.index = this.pageSize - 1;
+      // }
+      // // console.log(this.logUserList[this.index]);
+      // this.message.logid = this.logUserList[this.index].logId;
+      // //this.logUserList[this.index].userId中的值为null
+      // this.message.user_id = this.$route.query.userId;
+      // let anoStatus = "";
+      // if (this.anoStatus != null) {
+      //   anoStatus = `&anoStatus=${this.anoStatus}`;
+      // }
+      // this.trueValues = []
+      // // 假设 this.index 是你要访问的 logUserList 数组中的索引
+      // if (this.logUserList[this.index].eventDescription) {
+      //   // 拆分 logType 字符串为一个数组
+      //   let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
+      //   // 将拆分后的数组中的每个值添加到 trueValues 数组中
+      //   this.trueValues.push(...logTypesArray);
+      // }
       // this.trueValues=["心房颤动","干扰信号"]
       // console.log("logType中的值，经过处理后放到this.trueValues值为：");
       // console.log(this.trueValues);
-      var newUrl =
-        this.$route.path +
-        `?logId=${this.message.logid}&userId=${this.message.user_id}&pageNum=${this.pageNum}&pageSize=${this.pageSize}` +
-        anoStatus +
-        `&queryParams=${this.typeObj}`;
-      window.history.replaceState("", "", newUrl);
-      this.getMessage();
-      await this.getLogUserList()
+      // var newUrl =
+      //   this.$route.path +
+      //   `?logId=${this.message.logid}&userId=${this.message.user_id}&pageNum=${this.pageNum}&pageSize=${this.pageSize}` +
+      //   anoStatus +
+      //   `&queryParams=${this.typeObj}`;
+      // window.history.replaceState("", "", newUrl);
+      // this.getMessage();
+      // await this.getLogUserList()
     },
     // 点击下一页触发事件
     async next() {
+      this.loading = true; //转圈动画效果
 
-      this.loading = true;
-      this.myocarditiszhi = []
-      this.others = ''
-      this.index++;
-      // console.log("点击了下一页1");
-      // console.log(this.index);
-      // console.log(this.logUserList.length); //0
-
-      if (this.index >= this.logUserList.length) {
-        // console.log("获取新的用户数据10");
-        if (
-          (this.pageNum - 1) * this.pageSize + this.logUserList.length >=
-          this.logUserListTotal
-        ) {
-          this.$message.warning("已经是最后一页！！！");
-          this.index--;
-          this.loading = false;
-          return;
-        }
-        // console.log("点击了下一页");
-        this.pageNum++;
-        await this.getLogUserList();
-        this.index = 0;
+      //是否为最后一页最后一个
+      if ((this.queryParams.pageNum - 1) * this.queryParams.pageSize + this.index + 1 >= this.logListTotal) {
+        this.$message.warning("已经是最后一个！！！");
+        this.loading = false;
+        return;
       }
+
+      if (this.index >= this.queryParams.pageSize - 1) {
+        this.queryParams.pageNum =  1 + parseInt(this.queryParams.pageNum, 10)
+        this.index = 0;
+      } else {
+        this.index = this.index + 1;
+      }
+      //根据index获取log_id
+      await this.getLogId();
+      this.getMessage();
+      this.loading = false;
+      var newUrl =
+        this.$route.path +
+        `?logId=${this.log_id}` +
+        `&pageNum=${this.queryParams.pageNum}` +
+        `&pageSize=${this.queryParams.pageSize}` +
+        `&anoStatus=${this.queryParams.anoStatus}` +
+        `&logTime=${this.queryParams.logTime}`;
+      window.history.replaceState("", "", newUrl);
+      console.log("pageNum:", this.queryParams.pageNum, "index:", this.index)
+
+      //
+      // this.loading = true;
+      // this.myocarditiszhi = []
+      // this.others = ''
+      // this.index++;
+      // // console.log("点击了下一页1");
+      //
+      // console.log(this.pageNum)
+      //
+      // if (this.index >= this.logUserList.length) {
+      //   // console.log("获取新的用户数据10");
+      //   if (
+      //     (this.pageNum - 1) * this.pageSize + this.logUserList.length >=
+      //     this.logUserListTotal
+      //   ) {
+      //     this.$message.warning("已经是最后一页！！！");
+      //     this.index--;
+      //     this.loading = false;
+      //     return;
+      //   }
+      //   // console.log("点击了下一页");
+      //   this.pageNum++;
+      //   await this.getLogUserList();
+      //   this.index = 0;
+      // }
 
       // console.log(
       //   "点击下一页，触发获取getLogUserList函数，获得10条用户数据，下面是用户数据"
@@ -2782,60 +2740,39 @@ export default {
       // console.log(this.logUserList[this.index].logId);
       // console.log(this.logUserList[this.index].userId);
       // console.log("查看logUserList");
-
-      this.message.logid = this.logUserList[this.index].logId;
-      //this.logUserList[this.index].userId中的值为null
-      this.message.user_id = this.$route.query.userId;
-      let anoStatus = "";
-
-      if (this.anoStatus != null) {
-        anoStatus = `&anoStatus=${this.anoStatus}`;
-      }
-
-      this.trueValues = []
-      // 假设 this.index 是你要访问的 logUserList 数组中的索引
-      if (this.logUserList[this.index].eventDescription) {
-        // 拆分 logType 字符串为一个数组
-        let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-
-        // 将拆分后的数组中的每个值添加到 trueValues 数组中
-        this.trueValues = logTypesArray
-      }
-      // this.trueValues=["心房颤动","干扰信号"]
-      // console.log("logType中的值，经过处理后放到this.trueValues值为：");
-      // console.log(this.trueValues);
-      var newUrl =
-        this.$route.path +
-        `?logId=${this.message.logid}&userId=${this.message.user_id}&pageNum=${this.pageNum}&pageSize=${this.pageSize}` +
-        anoStatus +
-        `&queryParams=${this.typeObj}&state=${this.$route.query.state}`;
-      // console.log(newUrl);
-      // console.log(this.typeObj);
-
-
-// let currentState = {
-//       pageNum: this.pageNum,
-//       pageSize: this.pageSize,
-//       typeObj: this.typeObj,
-//       state:this.$route.query.state,
-//       anoStatus:anoStatus,
-//       queryParams:this.typeObj,
-//       userId: this.message.user_id,
-//       logId:this.message.logid
-//     };
-//     console.log("离开查看标注页面时存的值：");
-//     console.log(currentState);
-
-
-//     // 获取之前的文档标题
-//     let previousTitle = document.title;
-
-
-      this.luyou = newUrl
-
-      window.history.replaceState("", "", newUrl);
-      this.getMessage();
-      await this.getLogUserList()
+      //
+      // this.message.logid = this.logUserList[this.index].logId;
+      // //this.logUserList[this.index].userId中的值为null
+      // this.message.user_id = this.$route.query.userId;
+      // let anoStatus = "";
+      //
+      // if (this.anoStatus != null) {
+      //   anoStatus = `&anoStatus=${this.anoStatus}`;
+      // }
+      //
+      // this.trueValues = []
+      // // 假设 this.index 是你要访问的 logUserList 数组中的索引
+      // if (this.logUserList[this.index].eventDescription) {
+      //   // 拆分 logType 字符串为一个数组
+      //   let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
+      //
+      //   // 将拆分后的数组中的每个值添加到 trueValues 数组中
+      //   this.trueValues = logTypesArray
+      // }
+      // // this.trueValues=["心房颤动","干扰信号"]
+      // // console.log("logType中的值，经过处理后放到this.trueValues值为：");
+      // // console.log(this.trueValues);
+      // var newUrl =
+      //   this.$route.path +
+      //   `?logId=${this.message.logid}&userId=${this.message.user_id}&pageNum=${this.pageNum}&pageSize=${this.pageSize}` +
+      //   anoStatus +
+      //   `&queryParams=${this.typeObj}&state=${this.$route.query.state}`;
+      //
+      // this.luyou = newUrl
+      //
+      // window.history.replaceState("", "", newUrl);
+      // this.getMessage();
+      // await this.getLogUserList()
     },
 
     // 点击提交
