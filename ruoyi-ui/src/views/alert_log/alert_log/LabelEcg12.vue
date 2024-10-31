@@ -76,13 +76,7 @@
           </el-radio-button
           >
         </el-radio-group>
-        <!--        <el-button :class="{btn3:true,istap:tap,nottap:!tap.P}" @click="labelSelectionP()">P</el-button>-->
-        <!--        <el-button :class="{btn3:true,istap:tap,nottap:!tap.Q}" @click="labelSelectionQ()">Q</el-button>-->
-        <!--        <el-button :class="{btn3:true,istap:tap,nottap:!tap.R}" @click="labelSelectionR()">R</el-button>-->
-        <!--        <el-button :class="{btn3:true,istap:tap,nottap:!tap.S}" @click="labelSelectionS()">S</el-button>-->
-        <!--        <el-button :class="{btn3:true,istap:tap,nottap:!tap.T}" @click="labelSelectionT()">T</el-button>-->
-        <!--        <el-button :class="{btn3:true,istap:tap,nottap:!tap.noise}" @click="labelSelectionnoise()">选框</el-button>-->
-        <!--        <el-button class="btn3" @click="labelSelectionAllNoise()">AllNoise</el-button>-->
+
         <el-button class="btn3" @click="clearData()">清空</el-button>
         <el-button class="btn3" @click="submitData()">提交</el-button>
         <el-popover
@@ -645,15 +639,6 @@
 </template>
 
 <script>
-// import {
-//   PatientInformation,
-//   selectList,
-//   getLabel,
-//   addLabel,
-//   islabel,
-//   listLog_user,
-// } from "@/api/log_user/log_user";
-// import {addCount} from "@/api/alert_log_count/count"
 //单导预警页面数据
 import {listAlert_log} from "@/api/alert_log/alert_log";
 import $ from "jquery";
@@ -861,29 +846,7 @@ export default {
       this.queryParams.pageSize = this.$route.query.pageSize;
       this.queryParams.anoStatus = this.$route.query.anoStatus;
       this.queryParams.logTime = this.$route.query.logTime;
-
-
-      // console.log(this.$route.query.anoStatus);//null
-      // this.anoStatus = this.$route.query.anoStatus; //null
-      // this.message.logid = this.$route.query.logId; //8eba952e-1a24-5598-ac8d-7f6ad47a0275
-      // this.message.logType = this.$route.query.logType;
-      // this.message.user_id = this.$route.query.userId; //0
-      // this.value=this.$route.query.logType;
-      // this.query.logId = this.$route.query.logId; //8eba952e-1a24-5598-ac8d-7f6ad47a0275
-      // this.query.userId = this.$route.query.userId; //0
-      // this.pageNum = this.$route.query.pageNum; //1
-      // this.pageSize = this.$route.query.pageSize; //10
-      // this.typeObj =
-      // this.pId = this.$route.query.pId
-
-      // 获取预警类选项型表
-      // this.getSelectList();
-      // 获取数据用户列表 数据标注
-      // this.getLogUserList();
-      // this.getSelectList();
-      // this.getLabel();
-      // console.log("ttt"+this.options);
-      // this.xunhuan()
+      this.queryParams.pId = this.$route.query.pId;
     }
   },
   mounted() {
@@ -899,13 +862,6 @@ export default {
     },
 
     handleClick(tab, event) {
-    },
-    clicktest(value) {
-      if (this.testArray.includes(value)) {
-        this.testArray.splice(this.testArray.indexOf(value), 1)
-      } else {
-        this.testArray.push(value)
-      }
     },
     // 1获取预警类型表
     // getSelectList() {
@@ -2634,44 +2590,6 @@ export default {
       window.history.replaceState("", "", newUrl);
       console.log("pageNum:", this.queryParams.pageNum, "index:", this.index)
 
-      // this.index--;
-      // this.myocarditiszhi = []
-      // this.others = ''
-      // if (this.index < 0) {
-      //   if (this.pageNum > 1) {
-      //     this.pageNum--;
-      //     this.index = 9
-      //   }
-      //   await this.getLogUserList();
-      //   this.index = this.pageSize - 1;
-      // }
-      // // console.log(this.logUserList[this.index]);
-      // this.message.logid = this.logUserList[this.index].logId;
-      // //this.logUserList[this.index].userId中的值为null
-      // this.message.user_id = this.$route.query.userId;
-      // let anoStatus = "";
-      // if (this.anoStatus != null) {
-      //   anoStatus = `&anoStatus=${this.anoStatus}`;
-      // }
-      // this.trueValues = []
-      // // 假设 this.index 是你要访问的 logUserList 数组中的索引
-      // if (this.logUserList[this.index].eventDescription) {
-      //   // 拆分 logType 字符串为一个数组
-      //   let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-      //   // 将拆分后的数组中的每个值添加到 trueValues 数组中
-      //   this.trueValues.push(...logTypesArray);
-      // }
-      // this.trueValues=["心房颤动","干扰信号"]
-      // console.log("logType中的值，经过处理后放到this.trueValues值为：");
-      // console.log(this.trueValues);
-      // var newUrl =
-      //   this.$route.path +
-      //   `?logId=${this.message.logid}&userId=${this.message.user_id}&pageNum=${this.pageNum}&pageSize=${this.pageSize}` +
-      //   anoStatus +
-      //   `&queryParams=${this.typeObj}`;
-      // window.history.replaceState("", "", newUrl);
-      // this.getMessage();
-      // await this.getLogUserList()
     },
     // 点击下一页触发事件
     async next() {
@@ -2703,103 +2621,12 @@ export default {
         `&logTime=${this.queryParams.logTime}`;
       window.history.replaceState("", "", newUrl);
       console.log("pageNum:", this.queryParams.pageNum, "index:", this.index)
-
-      //
-      // this.loading = true;
-      // this.myocarditiszhi = []
-      // this.others = ''
-      // this.index++;
-      // // console.log("点击了下一页1");
-      //
-      // console.log(this.pageNum)
-      //
-      // if (this.index >= this.logUserList.length) {
-      //   // console.log("获取新的用户数据10");
-      //   if (
-      //     (this.pageNum - 1) * this.pageSize + this.logUserList.length >=
-      //     this.logUserListTotal
-      //   ) {
-      //     this.$message.warning("已经是最后一页！！！");
-      //     this.index--;
-      //     this.loading = false;
-      //     return;
-      //   }
-      //   // console.log("点击了下一页");
-      //   this.pageNum++;
-      //   await this.getLogUserList();
-      //   this.index = 0;
-      // }
-
-      // console.log(
-      //   "点击下一页，触发获取getLogUserList函数，获得10条用户数据，下面是用户数据"
-      // );
-      // console.log(this.logUserList[this.index]);
-      // console.log(this.logUserList);
-
-      // console.log("查看logUserList");
-      // console.log(this.logUserList[this.index].logId);
-      // console.log(this.logUserList[this.index].userId);
-      // console.log("查看logUserList");
-      //
-      // this.message.logid = this.logUserList[this.index].logId;
-      // //this.logUserList[this.index].userId中的值为null
-      // this.message.user_id = this.$route.query.userId;
-      // let anoStatus = "";
-      //
-      // if (this.anoStatus != null) {
-      //   anoStatus = `&anoStatus=${this.anoStatus}`;
-      // }
-      //
-      // this.trueValues = []
-      // // 假设 this.index 是你要访问的 logUserList 数组中的索引
-      // if (this.logUserList[this.index].eventDescription) {
-      //   // 拆分 logType 字符串为一个数组
-      //   let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-      //
-      //   // 将拆分后的数组中的每个值添加到 trueValues 数组中
-      //   this.trueValues = logTypesArray
-      // }
-      // // this.trueValues=["心房颤动","干扰信号"]
-      // // console.log("logType中的值，经过处理后放到this.trueValues值为：");
-      // // console.log(this.trueValues);
-      // var newUrl =
-      //   this.$route.path +
-      //   `?logId=${this.message.logid}&userId=${this.message.user_id}&pageNum=${this.pageNum}&pageSize=${this.pageSize}` +
-      //   anoStatus +
-      //   `&queryParams=${this.typeObj}&state=${this.$route.query.state}`;
-      //
-      // this.luyou = newUrl
-      //
-      // window.history.replaceState("", "", newUrl);
-      // this.getMessage();
-      // await this.getLogUserList()
     },
 
     // 点击提交
     async submit() {
-      // // let a = this.myocarditiszhi.toString()
-
-      // let myocardiumTypezhi = {
-      //     myocarditiszhi:this.myocarditiszhi.toString(),
-      //     others:this.others
-      // }
-      // console.log(JSON.stringify(myocardiumTypezhi));
-      // return
-
 
       this.value = this.trueValues.join();
-      // console.log("这是选中的值：" + this.trueValues);
-      // console.log("this.message.logid："+this.message.logid);
-      // console.log("this.message.pid："+this.message.pid);
-      // console.log("this.$route.query.state："+this.$route.query.state);
-      // console.log("这是选中的值：this.value："+this.value);
-      // console.log("this.noise_list："+this.noise_list);
-      // console.log("this.noise_level："+this.noise_level);
-      // // 数据标注中有
-      // // 单导预警中没有
-      // console.log("这是this.message.user_id："+this.message.user_id?this.message.user_id:0);
-      // console.log(this.options);
-
 
       var that = this;
       // return;
@@ -2828,17 +2655,6 @@ export default {
       });
 
 
-      // console.log(this.value);
-      // console.log(this.message.logid);
-      // console.log(this.message.user_id?this.message.user_id:0);
-      // console.log(this.isSuspected ? 1 : 0);
-      // let a = this.myocarditiszhi.toString()
-
-      // let myocardiumTypezhi = {
-      //     a,
-      //     b:this.others
-      // }
-      // console.log(JSON.stringify(myocardiumTypezhi));
       //标注成功
       let myocarditiszhiString = this.myocarditiszhi.length > 0 ? this.myocarditiszhi.toString() : '';
       let myocardiumTypezhi = {

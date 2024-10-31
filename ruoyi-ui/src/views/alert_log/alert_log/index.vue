@@ -17,26 +17,26 @@
           placeholder="请选择发生时间">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="事件名称" prop="eventName">
-        <el-input
-          v-model="queryParams.eventName"
-          placeholder="请输入事件名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="事件说明" prop="eventDescription">
-        <el-input
-          v-model="queryParams.eventDescription"
-          placeholder="请输入事件说明"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="患者管理id" prop="pId">
+<!--      <el-form-item label="事件名称" prop="eventName">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.eventName"-->
+<!--          placeholder="请输入事件名称"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="事件说明" prop="eventDescription">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.eventDescription"-->
+<!--          placeholder="请输入事件说明"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <el-form-item label="患者id" prop="pId">
         <el-input
           v-model="queryParams.pId"
-          placeholder="请输入患者管理id"
+          placeholder="请输入患者id"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -343,7 +343,7 @@ export default {
           pageSize: this.queryParams.pageSize,
           anoStatus: this.queryParams.anoStatus,
           logTime: this.queryParams.logTime,
-
+          pId: this.queryParams.pId,
         },
       });
     },
