@@ -838,7 +838,6 @@ export default {
   created() {
     //获取页面路由参数
     if (this.$route.query.logId) {
-      console.log(this.$store.u)
       // 获取原页面请求
       this.log_id = this.$route.query.logId
 
@@ -853,7 +852,6 @@ export default {
     this.getMessage();
     this.getIndex();
     this.chartjump = echarts.init(document.getElementById("chartjump"));
-    // console.log(this.options);
   },
   methods: {
     qitazhi(data) {
@@ -2419,6 +2417,7 @@ export default {
           } else {
             _th.$modal.msgError("设备未连接");
           }
+          this.AILabel();
           // console.log(jsonResult.result);
         },
         error: function (data) {
@@ -3080,6 +3079,33 @@ export default {
     },
     clickitem(e) {
       e === this.radio ? (this.radio = "") : (this.radio = e);
+    },
+    AILabel() {
+      console.log("开始智能标注");
+      $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:5000/",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({
+          log_id: this.log_id,
+          data: this.data
+        }),
+        success: jsonResult => {
+          console.log(jsonResult)
+
+          //测试
+          this.noise_level.aVFlevel = jsonResult.label==1? "B":"A";
+          this.noise_level.V1level = jsonResult.label==1? "B":"A";
+          this.noise_level.V2level = jsonResult.label==1? "B":"A";
+        },
+        error: function (data) {
+          console.log("获取数据失败")
+          console.log(data);
+          _th.$modal.msgError("数据获取失败");
+        },
+
+      })
     },
   },
 };

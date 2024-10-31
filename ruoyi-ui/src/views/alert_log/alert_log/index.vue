@@ -116,13 +116,13 @@
             @click="handleLabel(scope.row)"
             v-hasPermi="['alert_log:alert_log:edit']"
           >标注</el-button>
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-edit"-->
-<!--            @click="handleUpdate(scope.row)"-->
-<!--            v-hasPermi="['alert_log:alert_log:edit']"-->
-<!--          >修改</el-button>-->
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="test(scope.row)"
+            v-hasPermi="['alert_log:alert_log:edit']"
+          >测试</el-button>
           <el-button
             size="mini"
             type="text"
@@ -179,6 +179,7 @@
 
 <script>
 import { listAlert_log, getAlert_log, delAlert_log, addAlert_log, updateAlert_log } from "@/api/alert_log/alert_log";
+import $ from "jquery";
 
 export default {
   name: "Alert_log",
@@ -347,6 +348,27 @@ export default {
         },
       });
     },
+    test(row){
+      $.ajax({
+        type: "POST",
+        url: "http://127.0.0.1:5000/",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({
+          log_id: row.logId,
+        }),
+        success: jsonResult =>{
+          console.log(jsonResult)
+        },
+        error: function (data) {
+          console.log("获取数据失败")
+          console.log(data);
+          _th.$modal.msgError("数据获取失败");
+        },
+
+      })
+    },
+
   }
 };
 </script>
