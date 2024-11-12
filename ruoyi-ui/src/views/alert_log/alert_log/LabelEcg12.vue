@@ -99,12 +99,14 @@
       </div>
       <button class="btn" style="right: 0; top: 0" @click="Off">关闭</button>
     </div>
+
+
     <div class="bottom">
       <div class="bottomLeft">
         <div class="xinDian">心电图</div>
         <div class="echarts">
           <div class="container">
-            <div class="chart" id="I" @dblclick="showchart('I', data.I)"></div>
+            <div class="chart" id="I" @dblclick="showchart2('I', data.I)"></div>
             <!--            <button class="btn" id="I导联" @click="showchart('I',data.I)">展开</button>-->
             <span class="light" id="Ilight" @click="changeColor($event)"></span>
           </div>
@@ -112,7 +114,7 @@
             <div
               class="chart"
               id="II"
-              @dblclick="showchart('II', data.II)"
+              @dblclick="showchart2('II', data.II)"
             ></div>
             <!--            <button class="btn" id="II导联" @click="showchart('II',data.II)">展开</button>-->
             <span
@@ -253,6 +255,9 @@
           </div>
         </div>
       </div>
+
+
+
       <div class="bottomRight">
         <div class="xinDian">质量评估</div>
         <div class="quality">
@@ -634,7 +639,9 @@
           </div>
         </div>
       </div>
+      <child ref="drawShow"></child>
     </div>
+
   </div>
 </template>
 
@@ -644,9 +651,10 @@ import {listAlert_log} from "@/api/alert_log/alert_log";
 import $ from "jquery";
 import * as echarts from "@/api/tool/echarts.min";
 import de from "element-ui/src/locale/lang/de";
-
+import child from "@/views/alert_log/alert_log/child.vue";
 export default {
   name: "LabelEcg12",
+  components: {child},
   computed: {
     de() {
       return de;
@@ -2706,11 +2714,16 @@ export default {
       //   this.$modal.msgSuccess("标注提交成功");
       // }).catch(err=>{})
     },
+    showchart2(title, data){
+      console.log("show chart");
+      this.$refs.drawShow.getchart(data, this.pId, 1, title, 12);
+      // this.$refs.drawShow.getchart2();
+    },
+
     showchart(title, data) {
       this.title = title;
-      if (title == "II") {
-        this.lead = true;
-      }
+      this.lead = true;
+
       let y = [];
       for (let i = -2; i < 2.1; i += 0.1) {
         y.push(i);
