@@ -340,8 +340,8 @@ export default {
         T2: [],
         T3: [],
       }, //提交标注信息
-      lead1: false, //是否可以标注
-      lead2: false, //是否可以标注
+      lead1: true, //是否可以标注
+      lead2: true, //是否可以标注
       flag: null, //1：静态单导  12.静态12导
       closeStyle: { position: "absolute", right: "1px", top: "20px" },
       query: {
@@ -389,13 +389,11 @@ export default {
   methods: {
     //心博标注 初始化
     async getchart(data, pIds, level, title, flag, datalabel, is) {
-      // console.log(this.flag)
-      console.log("child is loaded")
       this.title = title;
       // console.log(title)
-      if (title == "II") {
-        this.lead1 = true;
-      }
+
+      this.lead1 = true;
+
       if (flag != null) {
         this.flag = flag;
       }
@@ -593,16 +591,23 @@ export default {
       };
       this.chart.clear();
       this.chart.setOption(detailoption, true);
+
       setTimeout(() => {
         this.chart.resize();
       });
+
       if (this.lead1) {
         // if(!obj){
-        this.arrList.beatLabel = JSON.parse(this.datalabel.beatLabel);
+        console.log("level1:")
+        //出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置
+        // this.arrList.beatLabel = JSON.parse(this.datalabel.beatLabel);
+
         // }
         // console.log("重新赋值",this.arrList)
         //回显
         //分段
+
+        console.log("level2:")
         this[`${"arrList" + level}`] = {
           Normal: [],
           FangZao: [],
@@ -666,6 +671,7 @@ export default {
           FangYi: "brown",
           GanRao: "#000",
         };
+
         for (const key in this[`${"arrList" + level}`]) {
           this[`${"arrList" + level}`][key].forEach((i) => {
             var formatter = key;
@@ -1002,6 +1008,7 @@ export default {
     },
     //重绘
     redraw() {
+
       var chartOption = this.chart.getOption();
       chartOption.graphic = this.graphic;
       this.chart.setOption(chartOption, true);
@@ -1218,9 +1225,8 @@ export default {
     },
     //波段标注 初始化
     showchart(title, data) {
-      if (title == "II") {
-        this.lead2 = true;
-      }
+      this.lead2 = true;
+
       for (let i = 0; i < 1000; i += 20) {
         this.seriesdata.push({ xAxis: i });
       }

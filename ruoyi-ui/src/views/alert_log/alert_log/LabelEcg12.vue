@@ -106,7 +106,7 @@
         <div class="xinDian">心电图</div>
         <div class="echarts">
           <div class="container">
-            <div class="chart" id="I" @dblclick="showchart2('I', data.I)"></div>
+            <div class="chart" id="I" @dblclick="showchart('I', data.I)"></div>
             <!--            <button class="btn" id="I导联" @click="showchart('I',data.I)">展开</button>-->
             <span class="light" id="Ilight" @click="changeColor($event)"></span>
           </div>
@@ -114,7 +114,7 @@
             <div
               class="chart"
               id="II"
-              @dblclick="showchart2('II', data.II)"
+              @dblclick="showchart('II', data.II)"
             ></div>
             <!--            <button class="btn" id="II导联" @click="showchart('II',data.II)">展开</button>-->
             <span
@@ -2714,304 +2714,303 @@ export default {
       //   this.$modal.msgSuccess("标注提交成功");
       // }).catch(err=>{})
     },
-    showchart2(title, data){
-      console.log("show chart");
-      this.$refs.drawShow.getchart(data, this.pId, 1, title, 12);
+    showchart(title, data){
+      this.$refs.drawShow.getchart(data, this.pId, 1, title, 12,null);
       // this.$refs.drawShow.getchart2();
     },
 
-    showchart(title, data) {
-      this.title = title;
-      this.lead = true;
-
-      let y = [];
-      for (let i = -2; i < 2.1; i += 0.1) {
-        y.push(i);
-      }
-      //console.log(y)
-      let detailoption = {
-        animation: false,
-        backgroundColor: "#ffffff",
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "cross",
-          },
-        },
-        toolbox: {
-          show: false,
-        },
-        dataZoom: [
-          {
-            show: true, // 滑动条组件
-            type: "slider",
-            brushSelect: false,
-            // y: '90%',
-            startValue: 0,
-            endValue: 252,
-            // minSpan: 52.5,
-            // maxSpan: 52.6,
-            minValueSpan: 252,
-            maxValueSpan: 724,
-          },
-          {
-            show: true, // 滑动条组件
-            type: "slider",
-            orient: "vertical",
-            brushSelect: false,
-            startValue: -1,
-            endValue: 1,
-            minValueSpan: 2.13,
-            maxValueSpan: 6,
-          },
-          {
-            type: "inside",
-            orient: "vertical", // 鼠标滚轮缩放
-            start: 0,
-            end: 100,
-          },
-          {
-            type: "inside", // 鼠标滚轮缩放
-            start: 0,
-            end: 100,
-          },
-        ],
-        grid: {
-          left: "3%",
-          right: "3%",
-          top: "5%",
-          bottom: "10%",
-        },
-        legend: {
-          show: false,
-          data: ["当前电位"],
-          textStyle: {color: "#000000"} /*图例(legend)说明文字的颜色*/,
-          left: "right",
-        },
-        xAxis: {
-          type: "category",
-          boundaryGap: false,
-          data: this.timex,
-          axisTick: {
-            show: false,
-          },
-          axisLabel: {
-            //修改坐标系字体颜色
-            interval: 3,
-            show: false,
-            textStyle: {
-              color: "#000000",
-            },
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: "pink",
-              width: 1, //网格的宽度
-              type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-            },
-          } /*网格线*/,
-        },
-        yAxis: {
-          min: -3,
-          max: 3,
-          //type:'value',
-          boundaryGap: false,
-          //interval: 0.1,
-          splitNumber: 41,
-          minInterval: 0.1,
-          //data:y,
-          axisLabel: {
-            //修改坐标系字体颜色
-            show: false,
-            textStyle: {
-              color: "#000000",
-            },
-          },
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: "pink",
-              width: 1, //网格的宽度
-              type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-            },
-          } /*网格线*/,
-        },
-        series: {
-          id: "series1",
-          markLine: {
-            animation: false,
-            symbol: "none",
-            silent: true,
-            lineStyle: {
-              type: "solid",
-              color: "#b33939",
-              width: 0.5,
-            },
-            label: {
-              show: true,
-              position: "start", // 表现内容展示的位置
-              color: "#b33939", // 展示内容颜色
-            },
-            data: this.seriesdata,
-          },
-          itemStyle: {
-            normal: {
-              lineStyle: {
-                width: 1.5,
-                color: "#000000" /*折线的颜色*/,
-              },
-              color: "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-            },
-          },
-          symbol: "none",
-          name: "当前电位",
-          type: "line",
-          data: data,
-          smooth: true, //显示为平滑的曲线*/
-        },
-      };
-      this.chartjump.clear();
-      this.chartjump.setOption(detailoption);
-      setTimeout(() => {
-        this.chartjump.resize();
-      });
-      //console.log(this.subData)
-      this.markArea.length = 0;
-      this.pointdata.length = 0;
-      var colorList = {
-        P1: "#fe0101",
-        P2: "#fe0101",
-        P3: "#fe0101",
-        R1: "#ff00cf",
-        R2: "#ff00cf",
-        R3: "#ff00cf",
-        T1: "#0021da",
-        T2: "#0021da",
-        T3: "#0021da",
-      };
-      //回显
-      if (this.lead) {
-        console.log("有数据");
-        console.log(this.subData);
-        for (const key in this.subData) {
-          for (let j = 0; j < this.subData[key].length; j++) {
-            let pointdata = {
-              name: key,
-              xAxis: this.subData[key][j],
-              yAxis: data[this.subData[key][j]],
-              itemStyle: {
-                color: colorList[key],
-              },
-              label: {
-                color: "#ffffff",
-                show: true,
-                formatter: key,
-                fontSize: 9,
-              },
-            };
-            this.pointdata.push(pointdata);
-          }
-        }
-        //console.log(this.pointdata)
-        this.chartjump.setOption({
-          series: {
-            markPoint: {
-              symbol: "pin",
-              symbolSize: 24,
-              animation: false,
-              data: this.pointdata,
-            },
-          },
-        });
-      } else {
-        this.pointdata = [];
-        this.chartjump.setOption({
-          series: {
-            markPoint: {
-              symbol: "pin",
-              symbolSize: 24,
-              animation: false,
-              data: this.pointdata,
-            },
-          },
-        });
-      }
-      var width = window.screen.width;
-      var height = window.screen.height;
-      this.chartjump.off("contextmenu");
-      this.chartjump.on("contextmenu", (params) => {
-        console.log(params);
-        $("#rightMenu").css({
-          display: "block",
-          left: (params.event.offsetX / width) * 100 + "vw",
-          top: (params.event.offsetY / height) * 100 + 11 + "vh",
-        });
-        if (params.componentType === "markPoint") {
-          this.delX.value = params.data.xAxis;
-          this.delX.key = params.data.name;
-        }
-        console.log(this.delX);
-      });
-      this.chartjump.getZr().off("click");
-      this.chartjump.getZr().on("click", (params) => {
-        $("#rightMenu").css({
-          display: "none",
-        });
-        const pointInPixel = [params.offsetX, params.offsetY];
-        // console.log(pointInPixel)
-        if (this.chartjump.containPixel("grid", pointInPixel)) {
-          this.xIndex = this.chartjump.convertFromPixel({seriesIndex: 0}, [
-            params.offsetX,
-            params.offsetY,
-          ])[0];
-          //this.yIndex=this.chartjump.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[1];
-          console.log(this.xIndex);
-          let temp = false;
-          this.pointdata.forEach((i) => {
-            if (this.xIndex == i.xAxis) {
-              console.log("已存在");
-              temp = true;
-              return;
-            }
-          });
-          if (temp) {
-            return;
-          }
-          if (this.radio == "") {
-            return;
-          }
-          this.subData[this.radio].push(this.xIndex);
-          //console.log(this.subData)
-          let pointdata = {
-            name: this.radio,
-            xAxis: this.xIndex,
-            yAxis: data[this.xIndex],
-            itemStyle: {
-              color: colorList[this.radio],
-            },
-            label: {
-              color: "#ffffff",
-              show: true,
-              formatter: this.radio,
-              fontSize: 9,
-            },
-          };
-          this.pointdata.push(pointdata);
-          this.chartjump.setOption({
-            series: {
-              markPoint: {
-                symbol: "pin",
-                symbolSize: 24,
-                animation: false,
-                data: this.pointdata,
-              },
-            },
-          });
-        }
-      });
-      this.show = true;
-    },
+    // showchart(title, data) {
+    //   this.title = title;
+    //   this.lead = true;
+    //
+    //   let y = [];
+    //   for (let i = -2; i < 2.1; i += 0.1) {
+    //     y.push(i);
+    //   }
+    //   //console.log(y)
+    //   let detailoption = {
+    //     animation: false,
+    //     backgroundColor: "#ffffff",
+    //     tooltip: {
+    //       trigger: "axis",
+    //       axisPointer: {
+    //         type: "cross",
+    //       },
+    //     },
+    //     toolbox: {
+    //       show: false,
+    //     },
+    //     dataZoom: [
+    //       {
+    //         show: true, // 滑动条组件
+    //         type: "slider",
+    //         brushSelect: false,
+    //         // y: '90%',
+    //         startValue: 0,
+    //         endValue: 252,
+    //         // minSpan: 52.5,
+    //         // maxSpan: 52.6,
+    //         minValueSpan: 252,
+    //         maxValueSpan: 724,
+    //       },
+    //       {
+    //         show: true, // 滑动条组件
+    //         type: "slider",
+    //         orient: "vertical",
+    //         brushSelect: false,
+    //         startValue: -1,
+    //         endValue: 1,
+    //         minValueSpan: 2.13,
+    //         maxValueSpan: 6,
+    //       },
+    //       {
+    //         type: "inside",
+    //         orient: "vertical", // 鼠标滚轮缩放
+    //         start: 0,
+    //         end: 100,
+    //       },
+    //       {
+    //         type: "inside", // 鼠标滚轮缩放
+    //         start: 0,
+    //         end: 100,
+    //       },
+    //     ],
+    //     grid: {
+    //       left: "3%",
+    //       right: "3%",
+    //       top: "5%",
+    //       bottom: "10%",
+    //     },
+    //     legend: {
+    //       show: false,
+    //       data: ["当前电位"],
+    //       textStyle: {color: "#000000"} /*图例(legend)说明文字的颜色*/,
+    //       left: "right",
+    //     },
+    //     xAxis: {
+    //       type: "category",
+    //       boundaryGap: false,
+    //       data: this.timex,
+    //       axisTick: {
+    //         show: false,
+    //       },
+    //       axisLabel: {
+    //         //修改坐标系字体颜色
+    //         interval: 3,
+    //         show: false,
+    //         textStyle: {
+    //           color: "#000000",
+    //         },
+    //       },
+    //       splitLine: {
+    //         show: true,
+    //         lineStyle: {
+    //           color: "pink",
+    //           width: 1, //网格的宽度
+    //           type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
+    //         },
+    //       } /*网格线*/,
+    //     },
+    //     yAxis: {
+    //       min: -3,
+    //       max: 3,
+    //       //type:'value',
+    //       boundaryGap: false,
+    //       //interval: 0.1,
+    //       splitNumber: 41,
+    //       minInterval: 0.1,
+    //       //data:y,
+    //       axisLabel: {
+    //         //修改坐标系字体颜色
+    //         show: false,
+    //         textStyle: {
+    //           color: "#000000",
+    //         },
+    //       },
+    //       splitLine: {
+    //         show: true,
+    //         lineStyle: {
+    //           color: "pink",
+    //           width: 1, //网格的宽度
+    //           type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
+    //         },
+    //       } /*网格线*/,
+    //     },
+    //     series: {
+    //       id: "series1",
+    //       markLine: {
+    //         animation: false,
+    //         symbol: "none",
+    //         silent: true,
+    //         lineStyle: {
+    //           type: "solid",
+    //           color: "#b33939",
+    //           width: 0.5,
+    //         },
+    //         label: {
+    //           show: true,
+    //           position: "start", // 表现内容展示的位置
+    //           color: "#b33939", // 展示内容颜色
+    //         },
+    //         data: this.seriesdata,
+    //       },
+    //       itemStyle: {
+    //         normal: {
+    //           lineStyle: {
+    //             width: 1.5,
+    //             color: "#000000" /*折线的颜色*/,
+    //           },
+    //           color: "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
+    //         },
+    //       },
+    //       symbol: "none",
+    //       name: "当前电位",
+    //       type: "line",
+    //       data: data,
+    //       smooth: true, //显示为平滑的曲线*/
+    //     },
+    //   };
+    //   this.chartjump.clear();
+    //   this.chartjump.setOption(detailoption);
+    //   setTimeout(() => {
+    //     this.chartjump.resize();
+    //   });
+    //   //console.log(this.subData)
+    //   this.markArea.length = 0;
+    //   this.pointdata.length = 0;
+    //   var colorList = {
+    //     P1: "#fe0101",
+    //     P2: "#fe0101",
+    //     P3: "#fe0101",
+    //     R1: "#ff00cf",
+    //     R2: "#ff00cf",
+    //     R3: "#ff00cf",
+    //     T1: "#0021da",
+    //     T2: "#0021da",
+    //     T3: "#0021da",
+    //   };
+    //   //回显
+    //   if (this.lead) {
+    //     console.log("有数据");
+    //     console.log(this.subData);
+    //     for (const key in this.subData) {
+    //       for (let j = 0; j < this.subData[key].length; j++) {
+    //         let pointdata = {
+    //           name: key,
+    //           xAxis: this.subData[key][j],
+    //           yAxis: data[this.subData[key][j]],
+    //           itemStyle: {
+    //             color: colorList[key],
+    //           },
+    //           label: {
+    //             color: "#ffffff",
+    //             show: true,
+    //             formatter: key,
+    //             fontSize: 9,
+    //           },
+    //         };
+    //         this.pointdata.push(pointdata);
+    //       }
+    //     }
+    //     //console.log(this.pointdata)
+    //     this.chartjump.setOption({
+    //       series: {
+    //         markPoint: {
+    //           symbol: "pin",
+    //           symbolSize: 24,
+    //           animation: false,
+    //           data: this.pointdata,
+    //         },
+    //       },
+    //     });
+    //   } else {
+    //     this.pointdata = [];
+    //     this.chartjump.setOption({
+    //       series: {
+    //         markPoint: {
+    //           symbol: "pin",
+    //           symbolSize: 24,
+    //           animation: false,
+    //           data: this.pointdata,
+    //         },
+    //       },
+    //     });
+    //   }
+    //   var width = window.screen.width;
+    //   var height = window.screen.height;
+    //   this.chartjump.off("contextmenu");
+    //   this.chartjump.on("contextmenu", (params) => {
+    //     console.log(params);
+    //     $("#rightMenu").css({
+    //       display: "block",
+    //       left: (params.event.offsetX / width) * 100 + "vw",
+    //       top: (params.event.offsetY / height) * 100 + 11 + "vh",
+    //     });
+    //     if (params.componentType === "markPoint") {
+    //       this.delX.value = params.data.xAxis;
+    //       this.delX.key = params.data.name;
+    //     }
+    //     console.log(this.delX);
+    //   });
+    //   this.chartjump.getZr().off("click");
+    //   this.chartjump.getZr().on("click", (params) => {
+    //     $("#rightMenu").css({
+    //       display: "none",
+    //     });
+    //     const pointInPixel = [params.offsetX, params.offsetY];
+    //     // console.log(pointInPixel)
+    //     if (this.chartjump.containPixel("grid", pointInPixel)) {
+    //       this.xIndex = this.chartjump.convertFromPixel({seriesIndex: 0}, [
+    //         params.offsetX,
+    //         params.offsetY,
+    //       ])[0];
+    //       //this.yIndex=this.chartjump.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[1];
+    //       console.log(this.xIndex);
+    //       let temp = false;
+    //       this.pointdata.forEach((i) => {
+    //         if (this.xIndex == i.xAxis) {
+    //           console.log("已存在");
+    //           temp = true;
+    //           return;
+    //         }
+    //       });
+    //       if (temp) {
+    //         return;
+    //       }
+    //       if (this.radio == "") {
+    //         return;
+    //       }
+    //       this.subData[this.radio].push(this.xIndex);
+    //       //console.log(this.subData)
+    //       let pointdata = {
+    //         name: this.radio,
+    //         xAxis: this.xIndex,
+    //         yAxis: data[this.xIndex],
+    //         itemStyle: {
+    //           color: colorList[this.radio],
+    //         },
+    //         label: {
+    //           color: "#ffffff",
+    //           show: true,
+    //           formatter: this.radio,
+    //           fontSize: 9,
+    //         },
+    //       };
+    //       this.pointdata.push(pointdata);
+    //       this.chartjump.setOption({
+    //         series: {
+    //           markPoint: {
+    //             symbol: "pin",
+    //             symbolSize: 24,
+    //             animation: false,
+    //             data: this.pointdata,
+    //           },
+    //         },
+    //       });
+    //     }
+    //   });
+    //   this.show = true;
+    // },
     //区间合并
     getMerge(arr) {
       arr.sort((a, b) => {
