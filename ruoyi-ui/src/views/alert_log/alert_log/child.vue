@@ -119,7 +119,7 @@
           <div class="middle-div">
             <!-- 图1 -->
             <div class="canvas-div" id="chart"></div>
-            <div id="rightMenu" class="menu" style="display: none">
+            <div id="rightMenu1" class="menu" style="display: none;">
               <el-button class="button" @click="del">删除</el-button>
             </div>
           </div>
@@ -262,6 +262,7 @@
               <el-button class="button" @click="del2">删除</el-button>
             </div>
           </div>
+
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -709,9 +710,6 @@ export default {
             this.pointdata.push(pointdata);
           });
         }
-        // console.log(this.pointdata)
-        console.log("this.pointdata: ", this.pointdata);
-
         setTimeout(() => {
           //添加文本
           this.addtext();
@@ -728,22 +726,25 @@ export default {
       this.chart.off("contextmenu");
       //右击显示删除
       this.chart.on("contextmenu", (params) => {
-        console.log(params);
-        $("#rightMenu").css({
+        console.log("begin");
+        $("#rightMenu1").css({
           display: "block",
+          // left: 500,
+          // top: 500,
           left: (params.event.offsetX / width) * 100 + "vw",
           top: (params.event.offsetY / height) * 100 + 11 + "vh",
         });
+
         if (params.componentType === "markPoint") {
           this.delX.value = params.data.xAxis;
           this.delX.key = params.data.name;
         }
-        console.log(this.delX);
+        console.log("end");
       });
       this.chart.getZr().off("click");
       //点击左键标点
       this.chart.getZr().on("click", (params) => {
-        $("#rightMenu").css({
+        $("#rightMenu1").css({
           display: "none",
         });
         const pointInPixel = [params.offsetX, params.offsetY];
@@ -1053,7 +1054,7 @@ export default {
         this.addtext();
         this.redraw();
       });
-      $("#rightMenu").css({
+      $("#rightMenu1").css({
         display: "none",
       });
     },
@@ -1110,7 +1111,7 @@ export default {
       this.isLoading = true;
       if (this.arrList.beatLabel != null) {
         if (this.flag == 1) {
-          ecgBeatLabelAdd(this.arrList).then((response) => {
+          ecgBeatLabelAdd( this.arrList).then((response) => {
             this.$modal.msgSuccess("坐标提交成功!");
             this.isLoading = false;
             this.$emit("closeMain", this.arrList.beatLabel);
@@ -1526,7 +1527,7 @@ export default {
           this.delX.value = params.data.xAxis;
           this.delX.key = params.data.name;
         }
-        console.log(this.delX);
+        // console.log(this.delX);
       });
       this.chart2.getZr().off("click");
       //左击标点
