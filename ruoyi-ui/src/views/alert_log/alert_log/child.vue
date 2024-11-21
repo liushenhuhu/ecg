@@ -383,9 +383,14 @@ export default {
   },
   created() {},
   mounted() {
-
     this.chart = echarts.init(document.getElementById("chart"));
     this.chart2 = echarts.init(document.getElementById("chart2"));
+
+    //添加快捷键
+    window.addEventListener('keydown', this.handleGlobalkeydown);
+  },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.handleGlobalkeydown);
   },
   methods: {
     //心博标注 初始化
@@ -1638,6 +1643,10 @@ export default {
     clickitem1(e) {
       e === this.radio1 ? (this.radio1 = "") : (this.radio1 = e);
     },
+    //处理全局键盘点击
+    handleGlobalkeydown(event){
+      console.log(event.key)
+    }
   },
 };
 </script>
