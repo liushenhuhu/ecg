@@ -2,11 +2,13 @@
 <template>
   <div>
     <el-tabs
+      ref="tab"
       v-model="activeName"
       class="container"
       type="border-card"
       @tab-click="handleClick"
       v-show="drawShow"
+      style="z-index: 2"
     >
       <el-tab-pane label="心搏标注" name="first">
         <span slot="label" class="tab_label">心搏标注</span>
@@ -25,27 +27,32 @@
                 <el-radio-button
                   @click.native.prevent="clickitem1('Normal')"
                   label="Normal"
-                  >正常</el-radio-button
+                >正常
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem1('FangZao')"
                   label="FangZao"
-                  >房早</el-radio-button
+                >房早
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem1('ShiZao')"
                   label="ShiZao"
-                  >室早</el-radio-button
+                >室早
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem1('FangYi')"
                   label="FangYi"
-                  >房逸</el-radio-button
+                >房逸
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem1('GanRao')"
                   label="GanRao"
-                  >干扰</el-radio-button
+                >干扰
+                </el-radio-button
                 >
               </el-radio-group>
               <el-popover
@@ -62,7 +69,7 @@
                 <p class="tipck">4. 也可点击右上角清空所有点</p>
                 <p class="tipck">5. 标点完成后，点击右上角提交</p>
                 <el-button slot="reference"
-                  ><i class="el-icon-info icon"></i
+                ><i class="el-icon-info icon"></i
                 ></el-button>
               </el-popover>
             </div>
@@ -142,47 +149,62 @@
                 <el-radio-button
                   @click.native.prevent="clickitem('P1')"
                   label="P1"
-                  >P1</el-radio-button
+                >P1
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem('P2')"
                   label="P2"
-                  >P2</el-radio-button
+                >P2
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem('P3')"
                   label="P3"
-                  >P3</el-radio-button
+                >P3
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem('R1')"
                   label="R1"
-                  >R1</el-radio-button
+                >R1
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem('R2')"
                   label="R2"
-                  >R2</el-radio-button
+                >R2
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem('R3')"
                   label="R3"
-                  >R3</el-radio-button
+                >R3
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem('T1')"
                   label="T1"
-                  >T1</el-radio-button
+                >T1
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem('T2')"
                   label="T2"
-                  >T2</el-radio-button
+                >T2
+                </el-radio-button
                 >
                 <el-radio-button
                   @click.native.prevent="clickitem('T3')"
                   label="T3"
-                  >T3</el-radio-button
+                >T3
+                </el-radio-button
+                >
+                <el-radio-button
+                  @click.native.prevent="clickitem2('rec')"
+                  label="rec"
+                >画框
+                </el-radio-button
                 >
               </el-radio-group>
               <el-popover
@@ -198,7 +220,7 @@
                 <p class="tipck">4. 也可点击右上角清空所有点</p>
                 <p class="tipck">5. 标点完成后，点击右上角提交</p>
                 <el-button slot="reference"
-                  ><i class="el-icon-info icon"></i
+                ><i class="el-icon-info icon"></i
                 ></el-button>
               </el-popover>
             </div>
@@ -283,6 +305,7 @@
 // } from "@/api/staticECG/staticECG";
 import * as echarts from "@/api/tool/echarts.min.js";
 import $ from "jquery";
+
 let ctx = ""; //画布上下文
 export default {
   props: {},
@@ -293,6 +316,7 @@ export default {
       isLoading: false, //加载状态
       radio1: "", //选中类型 Normal FangZao
       radio2: "", //选中类型 P1 P2
+      isDrawRec: false, //是否画框
       arrList1: {}, //心博标注 每一段
       arrList2: {},
       arrList3: {},
@@ -309,21 +333,21 @@ export default {
       level: null, //第几段
       chart: null, //心博标注 echarts
       chart2: null, //波段标注 echarts
-      delX: { key: null, value: null }, //想要删除的点
+      delX: {key: null, value: null}, //想要删除的点
       seriesdata: [
-        { yAxis: -2 },
-        { yAxis: -1.5 },
-        { yAxis: -1 },
-        { yAxis: -0.5 },
-        { yAxis: 0 },
-        { yAxis: 0.5 },
-        { yAxis: 1 },
-        { yAxis: 1.5 },
-        { yAxis: 2 },
-        { yAxis: -3 },
-        { yAxis: -2.5 },
-        { yAxis: 3 },
-        { yAxis: 2.5 },
+        {yAxis: -2},
+        {yAxis: -1.5},
+        {yAxis: -1},
+        {yAxis: -0.5},
+        {yAxis: 0},
+        {yAxis: 0.5},
+        {yAxis: 1},
+        {yAxis: 1.5},
+        {yAxis: 2},
+        {yAxis: -3},
+        {yAxis: -2.5},
+        {yAxis: 3},
+        {yAxis: 2.5},
       ], //标线
       x: [], //x轴值
       pointdata: [], //显示的 点
@@ -341,10 +365,14 @@ export default {
         T2: [],
         T3: [],
       }, //提交标注信息
+      rectangles: [], // 矩形框
+      isselected: false,  //是否选中矩形框
+      selectrectangleIndex: -1,  //选中的矩形框的下标
+
       lead1: true, //是否可以标注
       lead2: true, //是否可以标注
       flag: null, //1：静态单导  12.静态12导
-      closeStyle: { position: "absolute", right: "1px", top: "20px" },
+      closeStyle: {position: "absolute", right: "1px", top: "20px"},
       query: {
         //波段标注 提交数据
         pId: "",
@@ -364,9 +392,9 @@ export default {
       handler(item1, item2) {
         // item1为新值，item2为旧值
         if (!item1) {
-          this.closeStyle = { position: "absolute", right: "1px", top: "20px" };
+          this.closeStyle = {position: "absolute", right: "1px", top: "20px"};
         } else {
-          this.closeStyle = { position: "static", right: "1px", top: "20px" };
+          this.closeStyle = {position: "static", right: "1px", top: "20px"};
         }
       },
     },
@@ -374,14 +402,15 @@ export default {
       handler(item1, item2) {
         // item1为新值，item2为旧值
         if (!item1) {
-          this.closeStyle = { position: "absolute", right: "1px", top: "20px" };
+          this.closeStyle = {position: "absolute", right: "1px", top: "20px"};
         } else {
-          this.closeStyle = { position: "static", right: "1px", top: "20px" };
+          this.closeStyle = {position: "static", right: "1px", top: "20px"};
         }
       },
     },
   },
-  created() {},
+  created() {
+  },
   mounted() {
     this.chart = echarts.init(document.getElementById("chart"));
     this.chart2 = echarts.init(document.getElementById("chart2"));
@@ -422,28 +451,28 @@ export default {
       //   }
       // }
       for (let i = 0; i < 1000; i += 20) {
-        this.seriesdata.push({ xAxis: i });
+        this.seriesdata.push({xAxis: i});
       }
       //标线
       var seriesdata = this.seriesdata;
       if (data.length > 1500) {
         seriesdata = [
-          { yAxis: -2 },
-          { yAxis: -1.5 },
-          { yAxis: -1 },
-          { yAxis: -0.5 },
-          { yAxis: 0 },
-          { yAxis: 0.5 },
-          { yAxis: 1 },
-          { yAxis: 1.5 },
-          { yAxis: 2 },
-          { yAxis: -3 },
-          { yAxis: -2.5 },
-          { yAxis: 3 },
-          { yAxis: 2.5 },
+          {yAxis: -2},
+          {yAxis: -1.5},
+          {yAxis: -1},
+          {yAxis: -0.5},
+          {yAxis: 0},
+          {yAxis: 0.5},
+          {yAxis: 1},
+          {yAxis: 1.5},
+          {yAxis: 2},
+          {yAxis: -3},
+          {yAxis: -2.5},
+          {yAxis: 3},
+          {yAxis: 2.5},
         ];
         for (let i = 0; i < data.length; i += 20) {
-          seriesdata.push({ xAxis: i });
+          seriesdata.push({xAxis: i});
         }
       }
       let titleStr = title;
@@ -505,13 +534,13 @@ export default {
         grid: {
           left: "3%",
           right: "3%",
-          top: "2%",
+          top: "5%",
           bottom: "13%",
         },
         legend: {
           show: false,
           data: ["当前电位"],
-          textStyle: { color: "#000000" } /*图例(legend)说明文字的颜色*/,
+          textStyle: {color: "#000000"} /*图例(legend)说明文字的颜色*/,
           left: "right",
         },
         xAxis: {
@@ -594,6 +623,7 @@ export default {
           zlevel: 99,
           smooth: true, //显示为平滑的曲线*/
         },
+
       };
       this.chart.clear();
       this.chart.setOption(detailoption, true);
@@ -603,17 +633,6 @@ export default {
       });
 
       if (this.lead1) {
-        // if(!obj){
-        console.log("level1:")
-        //出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置出问题位置
-        // this.arrList.beatLabel = JSON.parse(this.datalabel.beatLabel);
-
-        // }
-        // console.log("重新赋值",this.arrList)
-        //回显
-        //分段
-
-        console.log("level2:")
         this[`${"arrList" + level}`] = {
           Normal: [],
           FangZao: [],
@@ -660,7 +679,7 @@ export default {
             GanRao: [],
           };
         }
-        // console.log(this[`${'arrList' + this.level}`])
+
         //添加所有点
         this.pointdata.length = 0;
         var colorList = {
@@ -729,6 +748,7 @@ export default {
       var width = window.screen.width;
       var height = window.screen.height;
       this.chart.off("contextmenu");
+
       //右击显示删除
       this.chart.on("contextmenu", (params) => {
         console.log("begin");
@@ -744,7 +764,6 @@ export default {
           this.delX.value = params.data.xAxis;
           this.delX.key = params.data.name;
         }
-        console.log("end");
       });
       this.chart.getZr().off("click");
       //点击左键标点
@@ -755,11 +774,11 @@ export default {
         const pointInPixel = [params.offsetX, params.offsetY];
         //console.log(pointInPixel)
         if (this.chart.containPixel("grid", pointInPixel)) {
-          this.xIndex = this.chart.convertFromPixel({ seriesIndex: 0 }, [
+          this.xIndex = this.chart.convertFromPixel({seriesIndex: 0}, [
             params.offsetX,
             params.offsetY,
           ])[0];
-          this.yIndex = this.chart.convertFromPixel({ seriesIndex: 0 }, [
+          this.yIndex = this.chart.convertFromPixel({seriesIndex: 0}, [
             params.offsetX,
             params.offsetY,
           ])[1];
@@ -770,7 +789,7 @@ export default {
           if (this.radio1 == "") {
             return;
           }
-          let i = this.addValue({ x: this.xIndex, type: this.radio1 });
+          let i = this.addValue({x: this.xIndex, type: this.radio1});
           if (i == 1) {
             return;
           }
@@ -798,6 +817,7 @@ export default {
           }, wait);
         };
       }
+
       // 创建防抖版本的datazoom事件处理函数
       var debouncedDataZoomHandler = debounce((params) => {
         // 处理datazoom事件的逻辑
@@ -886,7 +906,7 @@ export default {
         var heart = (60 / time).toFixed(1); //心率
         time = (time * 1000).toFixed(0);
         //文本值
-        var x = this.chart.convertToPixel({ seriesIndex: 0 }, [
+        var x = this.chart.convertToPixel({seriesIndex: 0}, [
           (x2 - x1) / 2 + x1,
           3,
         ]);
@@ -908,7 +928,7 @@ export default {
       }
       //刻度线
       for (let i = 0; i < length; i++) {
-        var x1 = this.chart.convertToPixel({ seriesIndex: 0 }, [graphic[i], 3]);
+        var x1 = this.chart.convertToPixel({seriesIndex: 0}, [graphic[i], 3]);
         let text = {
           type: "line",
           top: "1.8%",
@@ -929,6 +949,7 @@ export default {
       }
       //console.log("绘制文本============",this.graphic)
     },
+
     //按x从小到大插入值
     addValue(params) {
       console.log(this[`${"arrList" + this.level}`]);
@@ -983,6 +1004,7 @@ export default {
       };
       this.graphic.length = 0;
       this.graphic = [];
+      this.graphic2 = [];
       console.log(this.graphic);
       setTimeout(() => {
         this.redraw();
@@ -1019,10 +1041,6 @@ export default {
       chartOption.graphic = this.graphic;
       this.chart.setOption(chartOption, true);
       this.chart.setOption({});
-      // console.log(this.graphic)
-      // this.chart.setOption({
-      //   graphic:this.graphic
-      // })
       this.chart.setOption({
         series: {
           markPoint: {
@@ -1033,7 +1051,7 @@ export default {
           },
         },
       });
-      //console.log(this.graphic)
+
     },
     //删除点
     del() {
@@ -1069,10 +1087,10 @@ export default {
       if (this.flag == 1) {
         //单导 分段提交
         var obj = {
-          0: { ...this.arrList1 },
-          1: { ...this.arrList2 },
-          2: { ...this.arrList3 },
-          3: { ...this.arrList4 },
+          0: {...this.arrList1},
+          1: {...this.arrList2},
+          2: {...this.arrList3},
+          3: {...this.arrList4},
         };
         for (let key in obj) {
           console.log(obj[key]);
@@ -1086,7 +1104,7 @@ export default {
         };
       } else {
         //12导全部提交
-        var obj = { ...this.arrList1 };
+        var obj = {...this.arrList1};
         var newObj1 = {};
         var newObj2 = {};
         for (var key in obj) {
@@ -1101,7 +1119,7 @@ export default {
         console.log(obj, newObj1, newObj2);
         this.arrList = {
           pId: this.pId,
-          beatLabel: JSON.stringify({ 0: newObj1, 1: newObj2 }),
+          beatLabel: JSON.stringify({0: newObj1, 1: newObj2}),
         };
       }
       var beatLabel = JSON.parse(this.datalabel.beatLabel);
@@ -1116,7 +1134,7 @@ export default {
       this.isLoading = true;
       if (this.arrList.beatLabel != null) {
         if (this.flag == 1) {
-          ecgBeatLabelAdd( this.arrList).then((response) => {
+          ecgBeatLabelAdd(this.arrList).then((response) => {
             this.$modal.msgSuccess("坐标提交成功!");
             this.isLoading = false;
             this.$emit("closeMain", this.arrList.beatLabel);
@@ -1139,16 +1157,18 @@ export default {
     },
     //切换tab
     handleClick(tab, event) {
+
       //console.log(tab, event);
       // console.log(this.lead1,this.lead2)
       // console.log(this.data)
       if (tab.index == "0") {
+        console.log(tab)
         this.getchart(this.data, this.pId, this.level, this.title, null, null);
       }
       // console.log(tab.index,this.chart2)
       if (tab.index == "1") {
+        console.log(tab)
         this.showchart(this.title, this.data, this.level);
-        console.log("绘制图2");
       }
     },
     //波段标注 清空按钮 清空数据
@@ -1188,7 +1208,7 @@ export default {
           this.query.waveLabel = JSON.stringify(waveLabel);
         } else {
           //12导 分段 全部提交
-          var obj = { ...this.subData };
+          var obj = {...this.subData};
           var newObj1 = {};
           var newObj2 = {};
           for (var key in obj) {
@@ -1203,9 +1223,9 @@ export default {
 
           this.query = {
             pId: this.pId,
-            waveLabel: JSON.stringify({ 0: newObj1, 1: newObj2 }),
+            waveLabel: JSON.stringify({0: newObj1, 1: newObj2}),
           };
-          waveLabel = { 0: newObj1, 1: newObj2 };
+          waveLabel = {0: newObj1, 1: newObj2};
           console.log(obj, newObj1, newObj2, waveLabel);
         }
         this.datalabel.waveLabel = JSON.stringify(waveLabel);
@@ -1220,44 +1240,46 @@ export default {
           .then((res) => {
             this.$modal.msgSuccess("标注提交成功");
           })
-          .catch((err) => {});
+          .catch((err) => {
+          });
       } else {
         put12WaveLabel(this.query)
           .then((res) => {
             this.$modal.msgSuccess("标注提交成功");
           })
-          .catch((err) => {});
+          .catch((err) => {
+          });
       }
     },
     //波段标注 初始化
     showchart(title, data) {
       this.lead2 = true;
-
       for (let i = 0; i < 1000; i += 20) {
-        this.seriesdata.push({ xAxis: i });
+        this.seriesdata.push({xAxis: i});
       }
       //标线
       var seriesdata = this.seriesdata;
       if (data.length > 1500) {
         seriesdata = [
-          { yAxis: -2 },
-          { yAxis: -1.5 },
-          { yAxis: -1 },
-          { yAxis: -0.5 },
-          { yAxis: 0 },
-          { yAxis: 0.5 },
-          { yAxis: 1 },
-          { yAxis: 1.5 },
-          { yAxis: 2 },
-          { yAxis: -3 },
-          { yAxis: -2.5 },
-          { yAxis: 3 },
-          { yAxis: 2.5 },
+          {yAxis: -2},
+          {yAxis: -1.5},
+          {yAxis: -1},
+          {yAxis: -0.5},
+          {yAxis: 0},
+          {yAxis: 0.5},
+          {yAxis: 1},
+          {yAxis: 1.5},
+          {yAxis: 2},
+          {yAxis: -3},
+          {yAxis: -2.5},
+          {yAxis: 3},
+          {yAxis: 2.5},
         ];
         for (let i = 0; i < data.length; i += 20) {
-          seriesdata.push({ xAxis: i });
+          seriesdata.push({xAxis: i});
         }
       }
+
       //绘图
       let detailoption = {
         animation: false,
@@ -1283,6 +1305,7 @@ export default {
             // maxSpan: 52.6,
             minValueSpan: 266,
             maxValueSpan: 727,
+            disabled: false, // 默认支持拖动
           },
           {
             show: true, // 滑动条组件
@@ -1293,29 +1316,35 @@ export default {
             endValue: 1,
             minValueSpan: 2.13,
             maxValueSpan: 6,
+            disabled: false, // 默认支持拖动
+
           },
           {
             type: "inside",
             orient: "vertical", // 鼠标滚轮缩放
             start: 0,
             end: 100,
+            disabled: false, // 默认支持拖动
+
           },
           {
             type: "inside", // 鼠标滚轮缩放
             start: 0,
             end: 100,
+            disabled: false, // 默认支持拖动
+
           },
         ],
         grid: {
           left: "3%",
           right: "3%",
-          top: "2%",
+          top: "5%",
           bottom: "13%",
         },
         legend: {
           show: false,
           data: ["当前电位"],
-          textStyle: { color: "#000000" } /*图例(legend)说明文字的颜色*/,
+          textStyle: {color: "#000000"} /*图例(legend)说明文字的颜色*/,
           left: "right",
         },
         xAxis: {
@@ -1364,47 +1393,56 @@ export default {
             },
           } /*网格线*/,
         },
-        series: {
-          id: "series1",
-          markLine: {
-            animation: false,
-            symbol: "none",
-            silent: true,
-            lineStyle: {
-              type: "solid",
-              color: "#b33939",
-              width: 0.5,
-            },
-            label: {
-              show: true,
-              position: "start", // 表现内容展示的位置
-              color: "#b33939", // 展示内容颜色
-            },
-            data: seriesdata,
-          },
-          itemStyle: {
-            normal: {
+        series: [
+          {
+            id: "series1",
+            markLine: {
+              animation: false,
+              symbol: "none",
+              silent: true,
               lineStyle: {
-                width: 1.5,
-                color: "#000000" /*折线的颜色*/,
+                type: "solid",
+                color: "#b33939",
+                width: 0.5,
               },
-              color: "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
+              label: {
+                show: true,
+                position: "start", // 表现内容展示的位置
+                color: "#b33939", // 展示内容颜色
+              },
+              data: seriesdata,
             },
-          },
-          symbol: "none",
-          name: "当前电位",
-          type: "line",
-          data: data,
-          zlevel: 99,
-          smooth: true, //显示为平滑的曲线*/
-        },
+            itemStyle: {
+              normal: {
+                lineStyle: {
+                  width: 1.5,
+                  color: "#000000" /*折线的颜色*/,
+                },
+                color: "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
+              },
+            },
+            symbol: "none",
+            name: "当前电位",
+            type: "line",
+            data: data,
+            zlevel: 99,
+            smooth: true, //显示为平滑的曲线*/
+            markArea: {
+              silent: true,
+              itemStyle: {
+                color: 'transparent',  // 无填充
+                borderColor: 'black',  // 黑色边框
+                borderWidth: 1,        // 边框宽度
+              },
+              data: [],
+            },
+          }],
       };
       this.chart2.clear();
       this.chart2.setOption(detailoption);
       setTimeout(() => {
         this.chart2.resize();
       });
-      //console.log(this.subData)
       this.pointdata.length = 0;
       var colorList = {
         P1: "#fe0101",
@@ -1471,8 +1509,7 @@ export default {
             T3: [],
           };
         }
-        console.log("有数据");
-        console.log(this.subData);
+
         //添加点
         for (const key in this.subData) {
           for (let j = 0; j < this.subData[key].length; j++) {
@@ -1517,23 +1554,158 @@ export default {
           },
         });
       }
-      var width = window.screen.width;
-      var height = window.screen.height;
+
+
+      // 获取 ZRender 实例
+      const zr = this.chart2.getZr();
+      let startPoint = []; // 鼠标按下的起始位置
+      let endPoint = [] // 鼠标抬起的位置
+      let isDrawing = false; // 是否正在绘制
+      // 鼠标按下事件
+      zr.on("mousedown", (event) => {
+        if (event.event.button !== 0) {
+          return;
+        }// 如果不是左键点击，则不执行后续逻辑
+        if (!this.isDrawRec) return; //未开启画框按钮，则不执行
+
+        startPoint = [event.offsetX, event.offsetY];
+        isDrawing = true;
+
+        // 初始化矩形框
+        this.chart2.setOption({
+          graphic: [{
+            type: "rect",
+            shape: {
+              x: startPoint[0],
+              y: startPoint[1],
+              width: 0,
+              height: 0,
+            },
+            style: {
+              fill: "transparent", // 半透明绿色
+              stroke: "black", // 边框颜色
+              lineWidth: 1, // 边框宽度
+            },
+          }],
+        });
+
+      });
+
+      // 鼠标移动事件
+      zr.on("mousemove", (event) => {
+
+        if (!isDrawing) return; // 如果没有在绘制，直接返回
+        endPoint = [event.offsetX, event.offsetY];
+
+        // 动态更新矩形框的尺寸
+        this.chart2.setOption({
+          graphic: [{
+            shape: {
+              x: Math.min(startPoint[0], endPoint[0]), // 确定矩形框的左上角坐标
+              y: Math.min(startPoint[1], endPoint[1]),
+              width: Math.abs(endPoint[0] - startPoint[0]), // 计算矩形的宽度
+              height: Math.abs(endPoint[1] - startPoint[1]), // 计算矩形的高度
+            },
+          }],
+        });
+      });
+
+      // 鼠标抬起事件
+      zr.on("mouseup", () => {
+        if (!isDrawing) return;
+
+
+        startPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [startPoint[0], startPoint[1]]);
+        endPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [endPoint[0], endPoint[1]]);
+
+
+        // 根据数据自动调整矩形框的上下边界
+        var silce = startPoint[0] < endPoint[0] ?
+          this.data.slice(Math.floor(startPoint[0]), Math.floor(endPoint[0])) :
+          this.data.slice(Math.floor(endPoint[0]), Math.floor(startPoint[0]));
+        startPoint[1] = Math.max(...silce);
+        endPoint[1] = Math.min(...silce);
+
+        // 创建矩形框的配置
+        const rect = [
+          {xAxis: startPoint[0], yAxis: startPoint[1]},
+          {xAxis: endPoint[0], yAxis: endPoint[1]}
+        ]
+        //重新画图
+        var chartOption = this.chart2.getOption();
+        chartOption.series[0].markArea.data.push(rect);
+        chartOption.graphic = [{shape: {x: 0, y: 0, width: 0, height: 0,},}];//清空临时框
+        this.chart2.setOption(chartOption);
+
+        console.log("矩形框绘制完成");
+        // 可以在这里处理绘制完成后的其他操作
+        this.rectangles.push([startPoint, endPoint])
+        isDrawing = false;
+        startPoint = [];
+        endPoint = []
+
+      });
+
+      const tolerance = 0.02;
+      this.chart2.getZr().on("mousemove", (event) => {
+
+        const [x, y] = this.chart2.convertFromPixel({seriesIndex: 0}, [event.offsetX, event.offsetY]);
+        this.isselected = false;
+        this.rectangles.forEach((item, index) => {
+          if ( // 判断鼠标是否在框上
+            x === item[0][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
+            x === item[1][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
+            Math.abs(y - item[0][1]) <= tolerance && Math.min(item[0][0], item[1][0]) <= x && x <= Math.max(item[0][0], item[1][0]) ||
+            Math.abs(y - item[1][1]) <= tolerance && Math.min(item[0][0], item[1][0]) <= x && x <= Math.max(item[0][0], item[1][0]))
+          {
+            console.log("选中")
+
+            this.isselected = true
+            this.selectrectangleIndex = index
+          }
+        })
+
+
+
+
+        if(this.isselected){
+          //设置变色效果
+          let option = this.chart2.getOption();
+          option.series[0].markArea.data[this.selectrectangleIndex][0].itemStyle = {
+            borderColor: 'red',
+            borderWidth: 1,
+          }
+          this.chart2.setOption(option);
+        }else{
+          //清除效果
+          let option = this.chart2.getOption();
+          option.series[0].markArea.data[this.selectrectangleIndex][0].itemStyle = {
+            borderColor: 'black',
+            borderWidth: 1,
+          }
+          this.chart2.setOption(option);
+        }
+
+      });
+
       this.chart2.off("contextmenu");
       //右击显示删除
+      // TODO 添加删除方框操作
       this.chart2.on("contextmenu", (params) => {
-        //console.log(params)
         $("#rightMenu2").css({
           display: "block",
-          left: (params.event.offsetX / width) * 100 + "vw",
-          top: (params.event.offsetY / height) * 100 + 11 + "vh",
+          left: (params.event.offsetX / window.screen.width) * 100 + "vw",
+          top: (params.event.offsetY / window.screen.height) * 100 + 11 + "vh",
         });
         if (params.componentType === "markPoint") {
+          console.log("markPoint")
           this.delX.value = params.data.xAxis;
           this.delX.key = params.data.name;
         }
-        // console.log(this.delX);
+
       });
+
+
       this.chart2.getZr().off("click");
       //左击标点
       this.chart2.getZr().on("click", (params) => {
@@ -1543,12 +1715,10 @@ export default {
         const pointInPixel = [params.offsetX, params.offsetY];
         // console.log(pointInPixel)
         if (this.chart2.containPixel("grid", pointInPixel)) {
-          this.xIndex = this.chart2.convertFromPixel({ seriesIndex: 0 }, [
+          this.xIndex = this.chart2.convertFromPixel({seriesIndex: 0}, [
             params.offsetX,
             params.offsetY,
           ])[0];
-          //this.yIndex=this.chart2.convertFromPixel({seriesIndex:0},[params.offsetX, params.offsetY])[1];
-          console.log(this.xIndex);
           //存在不添加
           let temp = false;
           this.pointdata.forEach((i) => {
@@ -1564,7 +1734,6 @@ export default {
           console.log(this.subData);
           //添加点数据
           this.subData[this.radio2].push(this.xIndex);
-          //console.log(this.subData)
           let pointdata = {
             name: this.radio2,
             xAxis: this.xIndex,
@@ -1596,14 +1765,14 @@ export default {
       this.show = true;
     },
     //关闭
-    Off() {
-      this.lead1 = false;
-      this.lead2 = false;
-      this.radio1 = "";
-      this.radio2 = "";
-      this.activeName = "first";
-      this.show = false;
-    },
+    // Off() {
+    //   this.lead1 = false;
+    //   this.lead2 = false;
+    //   this.radio1 = "";
+    //   this.radio2 = "";
+    //   this.activeName = "first";
+    //   this.show = false;
+    // },
     //波段 删除点
     del2() {
       console.log(this.delX.key, this.delX.value);
@@ -1621,7 +1790,7 @@ export default {
           return true;
         }
       });
-      this.delX = { key: null, value: null };
+      this.delX = {key: null, value: null};
       this.chart2.setOption({
         series: {
           markPoint: {
@@ -1639,13 +1808,120 @@ export default {
     //切换标注类型
     clickitem(e) {
       e === this.radio2 ? (this.radio2 = "") : (this.radio2 = e);
+      this.Chart2ZoomControl(false)
     },
     clickitem1(e) {
       e === this.radio1 ? (this.radio1 = "") : (this.radio1 = e);
+      this.Chart2ZoomControl(false)
+    },
+    clickitem2(e) { //控制画框功能选择
+      if (e === this.radio2) {
+        this.radio2 = ""
+        this.Chart2ZoomControl(false)
+      } else {
+        this.radio2 = e
+        this.Chart2ZoomControl(true)
+      }
+    },
+    Chart2ZoomControl(e) {
+      this.isDrawRec = e
+      const option = this.chart2.getOption();
+      option.dataZoom.forEach(dz => {
+        dz.disabled = e;
+      });
+      this.chart2.setOption(option);
+    },
+    quickDelete() {  //delete键快捷删除
+      if(!this.isselected)return // 查看是否选中矩形框
+      //删除矩形框
+      this.rectangles.splice(this.selectrectangleIndex, 1)
+      var option = this.chart2.getOption()
+      option.series[0].markArea.data.splice(this.selectrectangleIndex, 1)
+      this.chart2.setOption(option)
     },
     //处理全局键盘点击
-    handleGlobalkeydown(event){
-      console.log(event.key)
+    handleGlobalkeydown(event) {
+      const tab = this.$refs.tab.$el;
+      const tabButtons = tab.querySelectorAll(".el-tabs__item");
+      console.log(tab.id)
+      if (this.activeName == "first") {
+        switch (event.key) {
+          case '1':
+            this.activeName = "first"; // 切换到目标 Tab
+            tabButton[0].click();
+            break;
+          case '2':
+            this.activeName = "second"; // 切换到目标 Tab
+            tabButton[1].click();
+            break;
+          case 'q':
+            this.clickitem1('Normal');
+            break;
+          case 'w':
+            this.clickitem1('FangZao');
+            break;
+          case 'e':
+            this.clickitem1('ShiZao');
+            break;
+            q
+          case 'r':
+            this.clickitem1('FangYi');
+            break;
+          case 't':
+            this.clickitem1('GanRao');
+            break;
+          default:
+            console.log(event.key)
+        }
+      } else if (this.activeName == "second") {
+        switch (event.key) {
+          case '1':
+            this.activeName = "first"; // 切换到目标 Tab
+            this.handleClick({index: "0"});
+            break;
+          case '2':
+            this.activeName = "second"; // 切换到目标 Tab
+            this.handleClick({index: "1"});
+            break;
+          case 'q':
+            this.clickitem('P1');
+            break;
+          case 'w':
+            this.clickitem('P2');
+            break;
+          case 'e':
+            this.clickitem('P3');
+            break;
+          case 'a':
+            this.clickitem('R1');
+            break;
+          case 's':
+            this.clickitem('R2');
+            break;
+          case 'd':
+            this.clickitem('R3');
+            break;
+          case 'z':
+            this.clickitem('T1');
+            break;
+          case 'x':
+            this.clickitem('T2');
+            break;
+          case 'c':
+            this.clickitem('T3');
+            break;
+          case 'r':
+            this.clickitem2('rec');
+            break;
+          case 'Delete':
+            this.quickDelete();
+            break;
+          default:
+            console.log(event.key)
+        }
+      } else {
+        console.log("activeNameError")
+      }
     }
   },
 };
@@ -1654,9 +1930,11 @@ export default {
 ::v-deep .el-tabs__header {
   margin: 0;
 }
+
 ::v-deep .el-tabs__content {
   overflow: visible;
 }
+
 .container {
   user-select: none;
   width: 88vw;
@@ -1667,42 +1945,52 @@ export default {
   //transform: translate(-50%,-80%);
   background: #ffffff;
   z-index: 1;
+
   .tab_label {
     color: black;
   }
+
   .top-tool {
     height: 50px;
     display: flex;
     justify-content: space-between;
     background-color: rgba(39, 55, 70, 1);
+
     .top-left-div {
       display: flex;
+
       .icon {
         font-size: 30px;
         color: white;
       }
+
       .el-button {
         padding: 0;
         border: 0;
         background-color: rgba(207, 218, 238, 0);
       }
+
       .color-div-a,
       .color-div {
         border-radius: 50%;
         height: 40px;
         width: 40px;
         margin: 5px 10px;
+
         &:hover {
           cursor: pointer;
           box-shadow: 0px 0px 10px lightgray;
         }
       }
+
       .color-div-a {
         box-shadow: 0px 0px 10px #fff;
       }
+
       .getcolor-div {
         position: relative;
         margin: 5px 10px;
+
         img {
           position: absolute;
           top: 0;
@@ -1710,6 +1998,7 @@ export default {
           width: 40px;
           border-radius: 50%;
         }
+
         input {
           z-index: 10;
           border-radius: 50%;
@@ -1724,34 +2013,41 @@ export default {
         }
       }
     }
+
     .top-right-div {
       margin: 0px;
       display: flex;
+
       .model-btn,
       .model-btn-a {
         background-color: #455769;
         border: 0px;
         padding: 9px 15px;
         margin: auto 10px;
+
         img {
           height: 20px;
           width: 20px;
         }
       }
+
       .model-btn-a {
         border: 0px;
         background-color: rgba(255, 255, 255, 0.5);
       }
+
       .download-btn,
       .clear-btn {
         margin: auto 10px;
       }
+
       .upload-btn {
         margin: auto 10px;
         height: 40px;
         width: 50px;
         padding: 0px;
         position: relative;
+
         input {
           position: absolute;
           left: 0;
@@ -1765,12 +2061,14 @@ export default {
       }
     }
   }
+
   .middle-div {
     width: 100%;
     height: calc(100% - 50px);
     display: flex;
     justify-content: center;
     align-items: center;
+
     .canvas-div {
       width: 100%;
       height: 100%;
@@ -1778,6 +2076,7 @@ export default {
       overflow: hidden;
     }
   }
+
   .msg-div {
     position: absolute;
     z-index: 10;
@@ -1785,6 +2084,7 @@ export default {
     color: #ffffff;
     padding: 5px 20px;
   }
+
   .menu {
     /*这个样式不写，右键弹框会一直显示在画布的左下角*/
     position: absolute;
@@ -1793,6 +2093,7 @@ export default {
     top: -999999px;
     padding: 0.1vw;
     border-radius: 0.5vw;
+
     .button {
       height: 3vh;
       width: 2.5vw;
@@ -1805,12 +2106,14 @@ export default {
       justify-content: center;
       align-items: center;
     }
+
     .button:hover {
       color: #ffffff;
       background-color: #df0202;
     }
   }
 }
+
 .el-radio-button:focus:not(.is-focus):not(:active):not(.is-disabled) {
   -webkit-box-shadow: 0 0px 0px #ccc;
   box-shadow: 0 0px 0px #ccc;

@@ -556,8 +556,8 @@
             <!-- <div>预警类型</div>
             <div>心肌炎</div> -->
             <template>
-              <el-tabs v-model="activeName" @tab-click="handleClick">
-                <el-tab-pane label="预警类型" name="first">
+              <el-tabs v-model="activeName" @tab-click="handleClick" style="z-index: 1">
+                <el-tab-pane label="预警类型" name="yujingleixing">
                   <div class="warningDetail">
                     <form id="loginForm" name="loginForm" class="biaodan">
                       <div class="duoxuan">
@@ -593,7 +593,7 @@
                 </el-tab-pane>
 
 
-                <el-tab-pane label="心肌炎" name="second">
+                <el-tab-pane label="心肌炎" name="xinjiyan">
                   <div class="warningDetail">
                     <form id="loginForm" name="loginForm" class="biaodan">
                       <div class="duoxuan">
@@ -683,7 +683,7 @@ export default {
           options: [{value: '异常Q波', label: 'ycQb'}, {value: '窦性心律不齐', label: 'dxxlbq'}]
         }
       ],
-      activeName: 'first',
+      activeName: 'yujingleixing',
       luyou: '',
       testArray: [],
       trueValues: [],
