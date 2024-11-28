@@ -321,9 +321,9 @@ export default {
       arrList2: {},
       arrList3: {},
       arrList4: {},
-      arrList5: {},
-      arrList6: {},
-      arrList7: {},
+      // arrList5: {},
+      // arrList6: {},
+      // arrList7: {},
       arrList: {
         //心博标注 提交数据
         pId: null,
@@ -383,6 +383,7 @@ export default {
         //进来页面时读取的标注数据
         waveLabel: "",
         beatLabel: "",
+        rectangles: "",
       },
       title: "", //几导联
     };
@@ -421,11 +422,32 @@ export default {
   beforeDestroy() {
     window.removeEventListener('keydown', this.handleGlobalkeydown);
   },
+  // 数据格式
+  // this.datalabel=
+  //   {
+  //     beatLabel: {
+  //       "0":
+  //         {
+  //         "FangZao": [],
+  //         "Normal": []
+  //       }
+  //       "1":
+  //         {
+  //           "FangZao": [],
+  //           "Normal": []
+  //         }
+  //     },
+  //     waveLabel: {
+  //       "0": {
+  //         "P1": []
+  //       }
+  //     }
+  //     },
+
   methods: {
     //心博标注 初始化
     async getchart(data, pIds, level, title, flag, datalabel, is) {
       this.title = title;
-      // console.log(title)
 
       this.lead1 = true;
 
@@ -433,9 +455,9 @@ export default {
         this.flag = flag;
       }
       if (datalabel != null) {
-        //console.log(datalabel)
         this.datalabel = datalabel;
       }
+      console.log("传入的标签数据:", this.datalabel.beatLabel["0"]["Normal"])
       this.drawShow = true;
       this.data = data;
       this.pId = pIds;
@@ -633,52 +655,52 @@ export default {
       });
 
       if (this.lead1) {
-        this[`${"arrList" + level}`] = {
-          Normal: [],
-          FangZao: [],
-          ShiZao: [],
-          FangYi: [],
-          GanRao: [],
-        };
-        if (this.arrList.beatLabel) {
-          if (this.flag == 1) {
-            //单导
-            this[`${"arrList" + level}`] = this.arrList.beatLabel[level - 1];
-            // console.log("单导")
-          } else {
-            //12导
-            // console.log("12导")
-            var each = {
-              Normal: [],
-              FangZao: [],
-              ShiZao: [],
-              FangYi: [],
-              GanRao: [],
-            };
-            for (let key1 in this.arrList.beatLabel) {
-              for (let key2 in this.arrList.beatLabel[key1]) {
-                var arr = this.arrList.beatLabel[key1][key2].map(
-                  (item) => item + key1 * 1000
-                );
-                each[key2] = each[key2].concat(arr);
-              }
-            }
-            this[`${"arrList" + level}`] = each;
-          }
-        }
-        //为空
-        if (
-          this[`${"arrList" + level}`] == null ||
-          this[`${"arrList" + level}`] == {}
-        ) {
-          this[`${"arrList" + level}`] = {
-            Normal: [],
-            FangZao: [],
-            ShiZao: [],
-            FangYi: [],
-            GanRao: [],
-          };
-        }
+        // this[`${"arrList" + level}`] = {
+        //   Normal: [],
+        //   FangZao: [],
+        //   ShiZao: [],
+        //   FangYi: [],
+        //   GanRao: [],
+        // };
+        // if (this.arrList.beatLabel) {
+        //   if (this.flag == 1) {
+        //     //单导
+        //     this[`${"arrList" + level}`] = this.arrList.beatLabel[level - 1];
+        //     // console.log("单导")
+        //   } else {
+        //     //12导
+        //     // console.log("12导")
+        //     var each = {
+        //       Normal: [],
+        //       FangZao: [],
+        //       ShiZao: [],
+        //       FangYi: [],
+        //       GanRao: [],
+        //     };
+        //     for (let key1 in this.arrList.beatLabel) {
+        //       for (let key2 in this.arrList.beatLabel[key1]) {
+        //         var arr = this.arrList.beatLabel[key1][key2].map(
+        //           (item) => item + key1 * 1000
+        //         );
+        //         each[key2] = each[key2].concat(arr);
+        //       }
+        //     }
+        //     this[`${"arrList" + level}`] = each;
+        //   }
+        // }
+        // //为空
+        // if (
+        //   this[`${"arrList" + level}`] == null ||
+        //   this[`${"arrList" + level}`] == {}
+        // ) {
+        //   this[`${"arrList" + level}`] = {
+        //     Normal: [],
+        //     FangZao: [],
+        //     ShiZao: [],
+        //     FangYi: [],
+        //     GanRao: [],
+        //   };
+        // }
 
         //添加所有点
         this.pointdata.length = 0;
@@ -696,9 +718,8 @@ export default {
           FangYi: "brown",
           GanRao: "#000",
         };
-
-        for (const key in this[`${"arrList" + level}`]) {
-          this[`${"arrList" + level}`][key].forEach((i) => {
+        for (const key in this.datalabel.beatLabel[String(level - 1)]) {
+          this.datalabel.beatLabel[String(level - 1)][key].forEach((i) => {
             var formatter = key;
             switch (formatter) {
               case "Normal":
@@ -734,6 +755,43 @@ export default {
             this.pointdata.push(pointdata);
           });
         }
+        // for (const key in this[`${"arrList" + level}`]) {
+        //   this[`${"arrList" + level}`][key].forEach((i) => {
+        //     var formatter = key;
+        //     switch (formatter) {
+        //       case "Normal":
+        //         formatter = "N";
+        //         break;
+        //       case "FangZao":
+        //         formatter = "S";
+        //         break;
+        //       case "ShiZao":
+        //         formatter = "V";
+        //         break;
+        //       case "FangYi":
+        //         formatter = "A";
+        //         break;
+        //       case "GanRao":
+        //         formatter = "X";
+        //         break;
+        //     }
+        //     var pointdata = {
+        //       name: key,
+        //       xAxis: i,
+        //       yAxis: data[i] + 0.3,
+        //       itemStyle: {
+        //         color: colorList[key],
+        //       },
+        //       label: {
+        //         color: "#ffffff",
+        //         show: true,
+        //         formatter: formatter,
+        //         fontSize: 13,
+        //       },
+        //     };
+        //     this.pointdata.push(pointdata);
+        //   });
+        // }
         setTimeout(() => {
           //添加文本
           this.addtext();
@@ -972,28 +1030,8 @@ export default {
       );
       console.log(this[`${"arrList" + this.level}`]);
     },
-    //点击清空
-    clickClear() {
-      this.$confirm("确定清空当前标记数据", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.clearCanvas(); //清空画布
-          this.$message({
-            type: "success",
-            message: "清空成功!",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "取消清空",
-          });
-        });
-    },
-    clearCanvas() {
+
+    clearCanvas() {  //清空心搏标注数据
       this.pointdata.length = 0;
       this[`${"arrList" + this.level}`] = {
         Normal: [],
@@ -1010,32 +1048,12 @@ export default {
         this.redraw();
       });
     },
-    //关闭窗口
-    clickClose() {
-      this.lead1 = false;
-      this.lead2 = false;
-      this.radio1 = "";
-      this.radio2 = "";
-      this.activeName = "first";
-      this.drawShow = false;
-      this.arrList1 = [];
-      this.arrList2 = [];
-      this.arrList3 = [];
-      this.arrList4 = [];
-      this.subData = this.subData = {
-        P1: [],
-        P2: [],
-        P3: [],
-        R1: [],
-        R2: [],
-        R3: [],
-        T1: [],
-        T2: [],
-        T3: [],
-      };
-    },
+
     //重绘
     redraw() {
+
+
+
 
       var chartOption = this.chart.getOption();
       chartOption.graphic = this.graphic;
@@ -1081,7 +1099,52 @@ export default {
         display: "none",
       });
     },
-    //提交坐标数据
+    //点击清空
+    clickClear() {
+      this.$confirm("确定清空当前标记数据", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.clearCanvas(); //清空画布
+          this.$message({
+            type: "success",
+            message: "清空成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "取消清空",
+          });
+        });
+    },
+    //关闭窗口
+    clickClose() {
+      this.lead1 = false;
+      this.lead2 = false;
+      this.radio1 = "";
+      this.radio2 = "";
+      this.activeName = "first";
+      this.drawShow = false;
+      this.arrList1 = [];
+      this.arrList2 = [];
+      this.arrList3 = [];
+      this.arrList4 = [];
+      this.subData = this.subData = {
+        P1: [],
+        P2: [],
+        P3: [],
+        R1: [],
+        R2: [],
+        R3: [],
+        T1: [],
+        T2: [],
+        T3: [],
+      };
+    },
+    //提交心搏标注数据
     clickSubmit() {
       console.log(this.arrList1);
       if (this.flag == 1) {
@@ -1116,7 +1179,6 @@ export default {
               .map((num) => num - 1000);
           }
         }
-        console.log(obj, newObj1, newObj2);
         this.arrList = {
           pId: this.pId,
           beatLabel: JSON.stringify({0: newObj1, 1: newObj2}),
@@ -1158,22 +1220,18 @@ export default {
     //切换tab
     handleClick(tab, event) {
 
-      //console.log(tab, event);
-      // console.log(this.lead1,this.lead2)
-      // console.log(this.data)
       if (tab.index == "0") {
-        console.log(tab)
         this.getchart(this.data, this.pId, this.level, this.title, null, null);
       }
       // console.log(tab.index,this.chart2)
       if (tab.index == "1") {
-        console.log(tab)
         this.showchart(this.title, this.data, this.level);
       }
     },
     //波段标注 清空按钮 清空数据
     clearData() {
       this.pointdata = [];
+      this.rectangles = [];
       this.subData = {
         P1: [],
         P2: [],
@@ -1193,6 +1251,15 @@ export default {
             animation: false,
             data: [],
           },
+          markArea: {
+            silent: true,
+            itemStyle: {
+              color: 'transparent',  // 无填充
+              borderColor: 'black',  // 黑色边框
+              borderWidth: 1,        // 边框宽度
+            },
+            data: [],
+          },
         },
       });
     },
@@ -1204,7 +1271,7 @@ export default {
         console.log(waveLabel);
         if (this.flag == 1) {
           //单导  每一段 全部提交
-          waveLabel[this.level - 1] = this.subData;
+          waveLabel[this.level - 1] = this.suecbData;
           this.query.waveLabel = JSON.stringify(waveLabel);
         } else {
           //12导 分段 全部提交
@@ -1298,11 +1365,8 @@ export default {
             show: true, // 滑动条组件
             type: "slider",
             brushSelect: false,
-            // y: '90%',
             startValue: 0,
             endValue: 266,
-            // minSpan: 52.5,
-            // maxSpan: 52.6,
             minValueSpan: 266,
             maxValueSpan: 727,
             disabled: false, // 默认支持拖动
@@ -1470,6 +1534,7 @@ export default {
           },
         });
       }
+
       //回显
       if (this.lead2) {
         this.subData = {
@@ -1483,19 +1548,21 @@ export default {
           T2: [],
           T3: [],
         };
-        if (this.flag == 1) {
-          //单导
-          this.subData = JSON.parse(this.datalabel.waveLabel)[this.level - 1];
-        } else {
-          //12导
-          let wave = JSON.parse(this.datalabel.waveLabel);
-          for (let key1 in wave) {
-            for (let key2 in wave[key1]) {
-              var arr = wave[key1][key2].map((item) => item + key1 * 1000);
-              this.subData[key2] = this.subData[key2].concat(arr);
-            }
-          }
-        }
+
+        // if (this.flag == 1) {
+        //   //单导
+        //   this.subData = JSON.parse(this.datalabel.waveLabel)[this.level - 1];
+        // } else {
+        //   //12导
+        //   let wave = JSON.parse(this.datalabel.waveLabel);
+        //   for (let key1 in wave) {
+        //     for (let key2 in wave[key1]) {
+        //       var arr = wave[key1][key2].map((item) => item + key1 * 1000);
+        //       this.subData[key2] = this.subData[key2].concat(arr);
+        //     }
+        //   }
+        // }
+
         if (this.subData == null || this.subData.length == 0) {
           this.subData = {
             P1: [],
@@ -1509,260 +1576,260 @@ export default {
             T3: [],
           };
         }
-
+        this.chart2_redraw()
         //添加点
-        for (const key in this.subData) {
-          for (let j = 0; j < this.subData[key].length; j++) {
-            let pointdata = {
-              name: key,
-              xAxis: this.subData[key][j],
-              yAxis: data[this.subData[key][j]],
-              itemStyle: {
-                color: colorList[key],
-              },
-              label: {
-                color: "#ffffff",
-                show: true,
-                formatter: key,
-                fontSize: 9,
-              },
-            };
-            this.pointdata.push(pointdata);
-          }
-        }
+        // var pointdata = []
+        // for (const key in this.datalabel.waveLabel[String(this.level - 1)]) {
+        //   this.datalabel.waveLabel[String(this.level - 1)][key].forEach((i) => {
+        //     var text = {
+        //       name: key,
+        //       xAxis: i,
+        //       yAxis: data[i],
+        //       itemStyle: {
+        //         color: colorList[key],
+        //       },
+        //       label: {
+        //         color: "#ffffff",
+        //         show: true,
+        //         formatter: key,
+        //         fontSize: 9,
+        //       },
+        //     }
+        //     pointdata.push(text)
+        //   })
+        // }
+
+        //   for (let j = 0; j < this.subData[key].length; j++) {
+        //   let pointdata = {
+        //     name: key,
+        //     xAxis: this.subData[key][j],
+        //     yAxis: data[this.subData[key][j]],
+        //     itemStyle: {
+        //       color: colorList[key],
+        //     },
+        //     label: {
+        //       color: "#ffffff",
+        //       show: true,
+        //       formatter: key,
+        //       fontSize: 9,
+        //     },
+        //   };
+        //   this.pointdata.push(pointdata);
+
+
         //console.log(this.pointdata)
-        this.chart2.setOption({
-          series: {
-            markPoint: {
-              symbol: "pin",
-              symbolSize: 24,
-              animation: false,
-              data: this.pointdata,
-            },
-          },
-        });
-      } else {
-        this.pointdata = [];
-        this.chart2.setOption({
-          series: {
-            markPoint: {
-              symbol: "pin",
-              symbolSize: 24,
-              animation: false,
-              data: this.pointdata,
-            },
-          },
-        });
-      }
+        //   this.chart2.setOption({
+        //     series: {
+        //       markPoint: {
+        //         symbol: "pin",
+        //         symbolSize: 24,
+        //         animation: false,
+        //         data: pointdata,
+        //       },
+        //     },
+        //   });
+        //
+        // } else {
+        //   this.pointdata = [];
+        //   this.chart2.setOption({
+        //     series: {
+        //       markPoint: {
+        //         symbol: "pin",
+        //         symbolSize: 24,
+        //         animation: false,
+        //         data: this.pointdata,
+        //       },
+        //     },
+        //   });
+        // }
 
-
-      // 获取 ZRender 实例
-      const zr = this.chart2.getZr();
-      let startPoint = []; // 鼠标按下的起始位置
-      let endPoint = [] // 鼠标抬起的位置
-      let isDrawing = false; // 是否正在绘制
-      // 鼠标按下事件
-      zr.on("mousedown", (event) => {
-        if (event.event.button !== 0) {
-          return;
-        }// 如果不是左键点击，则不执行后续逻辑
-        if (!this.isDrawRec) return; //未开启画框按钮，则不执行
-
-        startPoint = [event.offsetX, event.offsetY];
-        isDrawing = true;
-
-        // 初始化矩形框
-        this.chart2.setOption({
-          graphic: [{
-            type: "rect",
-            shape: {
-              x: startPoint[0],
-              y: startPoint[1],
-              width: 0,
-              height: 0,
-            },
-            style: {
-              fill: "transparent", // 半透明绿色
-              stroke: "black", // 边框颜色
-              lineWidth: 1, // 边框宽度
-            },
-          }],
-        });
-
-      });
-
-      // 鼠标移动事件
-      zr.on("mousemove", (event) => {
-
-        if (!isDrawing) return; // 如果没有在绘制，直接返回
-        endPoint = [event.offsetX, event.offsetY];
-
-        // 动态更新矩形框的尺寸
-        this.chart2.setOption({
-          graphic: [{
-            shape: {
-              x: Math.min(startPoint[0], endPoint[0]), // 确定矩形框的左上角坐标
-              y: Math.min(startPoint[1], endPoint[1]),
-              width: Math.abs(endPoint[0] - startPoint[0]), // 计算矩形的宽度
-              height: Math.abs(endPoint[1] - startPoint[1]), // 计算矩形的高度
-            },
-          }],
-        });
-      });
-
-      // 鼠标抬起事件
-      zr.on("mouseup", () => {
-        if (!isDrawing) return;
-
-
-        startPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [startPoint[0], startPoint[1]]);
-        endPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [endPoint[0], endPoint[1]]);
-
-
-        // 根据数据自动调整矩形框的上下边界
-        var silce = startPoint[0] < endPoint[0] ?
-          this.data.slice(Math.floor(startPoint[0]), Math.floor(endPoint[0])) :
-          this.data.slice(Math.floor(endPoint[0]), Math.floor(startPoint[0]));
-        startPoint[1] = Math.max(...silce);
-        endPoint[1] = Math.min(...silce);
-
-        // 创建矩形框的配置
-        const rect = [
-          {xAxis: startPoint[0], yAxis: startPoint[1]},
-          {xAxis: endPoint[0], yAxis: endPoint[1]}
-        ]
-        //重新画图
-        var chartOption = this.chart2.getOption();
-        chartOption.series[0].markArea.data.push(rect);
-        chartOption.graphic = [{shape: {x: 0, y: 0, width: 0, height: 0,},}];//清空临时框
-        this.chart2.setOption(chartOption);
-
-        console.log("矩形框绘制完成");
-        // 可以在这里处理绘制完成后的其他操作
-        this.rectangles.push([startPoint, endPoint])
-        isDrawing = false;
-        startPoint = [];
-        endPoint = []
-
-      });
-
-      const tolerance = 0.02;
-      this.chart2.getZr().on("mousemove", (event) => {
-
-        const [x, y] = this.chart2.convertFromPixel({seriesIndex: 0}, [event.offsetX, event.offsetY]);
-        this.isselected = false;
-        this.rectangles.forEach((item, index) => {
-          if ( // 判断鼠标是否在框上
-            x === item[0][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
-            x === item[1][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
-            Math.abs(y - item[0][1]) <= tolerance && Math.min(item[0][0], item[1][0]) <= x && x <= Math.max(item[0][0], item[1][0]) ||
-            Math.abs(y - item[1][1]) <= tolerance && Math.min(item[0][0], item[1][0]) <= x && x <= Math.max(item[0][0], item[1][0]))
-          {
-            console.log("选中")
-
-            this.isselected = true
-            this.selectrectangleIndex = index
-          }
-        })
-
-
-
-
-        if(this.isselected){
-          //设置变色效果
-          let option = this.chart2.getOption();
-          option.series[0].markArea.data[this.selectrectangleIndex][0].itemStyle = {
-            borderColor: 'red',
-            borderWidth: 1,
-          }
-          this.chart2.setOption(option);
-        }else{
-          //清除效果
-          let option = this.chart2.getOption();
-          option.series[0].markArea.data[this.selectrectangleIndex][0].itemStyle = {
-            borderColor: 'black',
-            borderWidth: 1,
-          }
-          this.chart2.setOption(option);
-        }
-
-      });
-
-      this.chart2.off("contextmenu");
-      //右击显示删除
-      // TODO 添加删除方框操作
-      this.chart2.on("contextmenu", (params) => {
-        $("#rightMenu2").css({
-          display: "block",
-          left: (params.event.offsetX / window.screen.width) * 100 + "vw",
-          top: (params.event.offsetY / window.screen.height) * 100 + 11 + "vh",
-        });
-        if (params.componentType === "markPoint") {
-          console.log("markPoint")
-          this.delX.value = params.data.xAxis;
-          this.delX.key = params.data.name;
-        }
-
-      });
-
-
-      this.chart2.getZr().off("click");
-      //左击标点
-      this.chart2.getZr().on("click", (params) => {
-        $("#rightMenu2").css({
-          display: "none",
-        });
-        const pointInPixel = [params.offsetX, params.offsetY];
-        // console.log(pointInPixel)
-        if (this.chart2.containPixel("grid", pointInPixel)) {
-          this.xIndex = this.chart2.convertFromPixel({seriesIndex: 0}, [
-            params.offsetX,
-            params.offsetY,
-          ])[0];
-          //存在不添加
-          let temp = false;
-          this.pointdata.forEach((i) => {
-            if (this.xIndex == i.xAxis) {
-              console.log("已存在");
-              temp = true;
-              return;
-            }
-          });
-          if (this.radio2 == "" || temp) {
+        // 绘制矩形框
+        const zr = this.chart2.getZr();
+        let startPoint = []; // 鼠标按下的起始位置
+        let endPoint = [] // 鼠标抬起的位置
+        let isDrawing = false; // 是否正在绘制
+        // 鼠标按下事件
+        zr.on("mousedown", (event) => {
+          if (event.event.button !== 0) {
             return;
-          }
-          console.log(this.subData);
-          //添加点数据
-          this.subData[this.radio2].push(this.xIndex);
-          let pointdata = {
-            name: this.radio2,
-            xAxis: this.xIndex,
-            yAxis: data[this.xIndex],
-            itemStyle: {
-              color: colorList[this.radio2],
-            },
-            label: {
-              color: "#ffffff",
-              show: true,
-              formatter: this.radio2,
-              fontSize: 9,
-            },
-          };
-          this.pointdata.push(pointdata);
-          //重绘
+          }// 如果不是左键点击，则不执行后续逻辑
+          if (!this.isDrawRec) return; //未开启画框按钮，则不执行
+          startPoint = [event.offsetX, event.offsetY];
+          isDrawing = true;
+          // 初始化矩形框
           this.chart2.setOption({
-            series: {
-              markPoint: {
-                symbol: "pin",
-                symbolSize: 24,
-                animation: false,
-                data: this.pointdata,
+            graphic: [{
+              type: "rect",
+              shape: {
+                x: startPoint[0],
+                y: startPoint[1],
+                width: 0,
+                height: 0,
               },
-            },
+              style: {
+                fill: "transparent", // 半透明绿色
+                stroke: "black", // 边框颜色
+                lineWidth: 1, // 边框宽度
+              },
+            }],
           });
-        }
-      });
-      this.show = true;
+        });
+        // 鼠标移动事件
+        zr.on("mousemove", (event) => {
+          if (!isDrawing) return; // 如果没有在绘制，直接返回
+          endPoint = [event.offsetX, event.offsetY];
+
+          // 动态更新矩形框的尺寸
+          this.chart2.setOption({
+            graphic: [{
+              shape: {
+                x: Math.min(startPoint[0], endPoint[0]), // 确定矩形框的左上角坐标
+                y: Math.min(startPoint[1], endPoint[1]),
+                width: Math.abs(endPoint[0] - startPoint[0]), // 计算矩形的宽度
+                height: Math.abs(endPoint[1] - startPoint[1]), // 计算矩形的高度
+              },
+            }],
+          });
+        });
+        // 鼠标抬起事件
+        zr.on("mouseup", () => {
+          if (!isDrawing) return;
+          startPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [startPoint[0], startPoint[1]]);
+          endPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [endPoint[0], endPoint[1]]);
+          // 根据数据自动调整矩形框的上下边界
+          var silce = startPoint[0] < endPoint[0] ?
+            this.data.slice(Math.floor(startPoint[0]), Math.floor(endPoint[0])) :
+            this.data.slice(Math.floor(endPoint[0]), Math.floor(startPoint[0]));
+          startPoint[1] = Math.max(...silce);
+          endPoint[1] = Math.min(...silce);
+          // 创建矩形框的配置
+          this.datalabel.rectangles.push([startPoint, endPoint])
+          this.chart2_redraw()
+          // const rect = [
+          //   {xAxis: startPoint[0], yAxis: startPoint[1]},
+          //   {xAxis: endPoint[0], yAxis: endPoint[1]}
+          // ]
+
+          //清空临时框
+          var chartOption = this.chart2.getOption();
+          // chartOption.series[0].markArea.data.push(rect);
+          chartOption.graphic = [{shape: {x: 0, y: 0, width: 0, height: 0,},}];
+          this.chart2.setOption(chartOption);
+          console.log("矩形框绘制完成");
+          // 可以在这里处理绘制完成后的其他操作
+          // this.rectangles.push([startPoint, endPoint])
+          isDrawing = false;
+          startPoint = [];
+          endPoint = []
+        });
+
+        //监听鼠标位置,配合快捷删除操作
+        const tolerance = 0.02; // 矩形框可供选择的范围
+        this.chart2.getZr().on("mousemove", (event) => {
+          if (!this.isDrawRec) return; //未开启画框按钮，则不执行
+          const [x, y] = this.chart2.convertFromPixel({seriesIndex: 0}, [event.offsetX, event.offsetY]);
+          this.isselected = false;
+          this.datalabel.rectangles.forEach((item, index) => {
+            if ( // 判断是否选中框
+              x === item[0][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
+              x === item[1][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
+              Math.abs(y - item[0][1]) <= tolerance && Math.min(item[0][0], item[1][0]) <= x && x <= Math.max(item[0][0], item[1][0]) ||
+              Math.abs(y - item[1][1]) <= tolerance && Math.min(item[0][0], item[1][0]) <= x && x <= Math.max(item[0][0], item[1][0])) {
+              this.isselected = true
+              this.selectrectangleIndex = index
+            }
+          })
+          if (this.isselected) {
+            //设置变色效果
+            let option = this.chart2.getOption();
+            option.series[0].markArea.data[this.selectrectangleIndex][0].itemStyle = {
+              borderColor: 'red',
+              borderWidth: 1,
+            }
+            this.chart2.setOption(option);
+          } else {
+            //清除效果
+            let option = this.chart2.getOption();
+            option.series[0].markArea.data[this.selectrectangleIndex][0].itemStyle = {
+              borderColor: 'black',
+              borderWidth: 1,
+            }
+            this.chart2.setOption(option);
+          }
+        });
+
+        this.chart2.off("contextmenu");
+        //右击显示删除
+        this.chart2.on("contextmenu", (params) => {
+          $("#rightMenu2").css({
+            display: "block",
+            left: (params.event.offsetX / window.screen.width) * 100 + "vw",
+            top: (params.event.offsetY / window.screen.height) * 100 + 11 + "vh",
+          });
+          if (params.componentType === "markPoint") {
+            this.delX.value = params.data.xAxis;
+            this.delX.key = params.data.name;
+          }
+        });
+
+        this.chart2.getZr().off("click");
+        //左击标点
+        this.chart2.getZr().on("click", (params) => {
+          $("#rightMenu2").css({
+            display: "none",
+          });
+          const pointInPixel = [params.offsetX, params.offsetY];
+          // console.log(pointInPixel)
+          if (this.chart2.containPixel("grid", pointInPixel)) {
+            var xIndex = this.chart2.convertFromPixel({seriesIndex: 0}, [params.offsetX,params.offsetY,])[0];
+            if (this.radio2 == "") return; //没选中按钮，不添加点
+            this.datalabel.waveLabel[String(this.level - 1)][this.radio2].push(xIndex)
+            this.chart2_redraw()
+
+            // //存在不添加
+            // let temp = false;
+            // this.pointdata.forEach((i) => {
+            //   if (this.xIndex == i.xAxis) {
+            //     console.log("已存在");
+            //     temp = true;
+            //     return;
+            //   }
+            // });
+            // if (this.radio2 == "" || temp) {
+            //   return;
+            // }
+            // //添加点数据
+            // this.subData[this.radio2].push(this.xIndex);
+            // let pointdata = {
+            //   name: this.radio2,
+            //   xAxis: this.xIndex,
+            //   yAxis: data[this.xIndex],
+            //   itemStyle: {
+            //     color: colorList[this.radio2],
+            //   },
+            //   label: {
+            //     color: "#ffffff",
+            //     show: true,
+            //     formatter: this.radio2,
+            //     fontSize: 9,
+            //   },
+            // };
+            // this.pointdata.push(pointdata);
+            // //重绘
+            // this.chart2.setOption({
+            //   series: {
+            //     markPoint: {
+            //       symbol: "pin",
+            //       symbolSize: 24,
+            //       animation: false,
+            //       data: this.pointdata,
+            //     },
+            //   },
+            // });
+          }
+        });
+        this.show = true;
+      }
     },
     //关闭
     // Off() {
@@ -1773,34 +1840,103 @@ export default {
     //   this.activeName = "first";
     //   this.show = false;
     // },
-    //波段 删除点
-    del2() {
-      console.log(this.delX.key, this.delX.value);
-      this.pointdata.some((item, index) => {
-        if (item.xAxis == this.delX.value) {
-          this.pointdata.splice(index, 1);
-          return true;
-        }
-      });
-      console.log(this.subData);
-      this.subData[this.delX.key].some((item, index) => {
-        if (item == this.delX.value) {
-          this.subData[this.delX.key].splice(index, 1);
-          console.log("删除成功");
-          return true;
-        }
-      });
-      this.delX = {key: null, value: null};
+    chart2_redraw(){
+      var colorList = {
+        P1: "#fe0101",
+        P2: "#fe0101",
+        P3: "#fe0101",
+        R1: "#ff00cf",
+        R2: "#ff00cf",
+        R3: "#ff00cf",
+        T1: "#0021da",
+        T2: "#0021da",
+        T3: "#0021da",
+      };
+      // 重绘点
+      var pointdata = [];
+      for (const key in this.datalabel.waveLabel[String(this.level - 1)]) {
+        this.datalabel.waveLabel[String(this.level - 1)][key].forEach((i) => {
+
+          var text = {
+            name: key,
+            xAxis: i,
+            yAxis: this.data[i],
+            itemStyle: {
+              color: colorList[key],
+            },
+            label: {
+              color: "#ffffff",
+              show: true,
+              formatter: key,
+              fontSize: 9,
+            },
+          }
+          pointdata.push(text)
+        })
+      }
+      // 重绘矩形框
+      var rectangles = []
+      this.datalabel.rectangles.forEach(item => {
+        var rec =[
+          {xAxis: item[0][0], yAxis: item[0][1]},
+          {xAxis: item[1][0], yAxis: item[1][1]}
+        ]
+        rectangles.push(rec)
+      })
       this.chart2.setOption({
         series: {
           markPoint: {
             symbol: "pin",
             symbolSize: 24,
             animation: false,
-            data: this.pointdata,
+            data: pointdata,
+          },
+          markArea: {
+            silent: true,
+            itemStyle: {
+              color: 'transparent',  // 无填充
+              borderColor: 'black',  // 黑色边框
+              borderWidth: 1,        // 边框宽度
+            },
+            data: rectangles,
           },
         },
       });
+    },
+    //波段 删除点
+    del2() {
+      for (const key in this.datalabel.waveLabel[String(this.level - 1)]) {
+        this.datalabel.waveLabel[String(this.level - 1)][key].forEach((item, index) => {
+          if (item == this.delX.value) {
+            this.datalabel.waveLabel[String(this.level - 1)][key].splice(index, 1);
+          }
+        })
+      }
+      this.chart2_redraw()
+      // this.waveLabel[String(this.level - 1)] pointdata.some((item, index) => {
+      //   if (item.xAxis == this.delX.value) {
+      //     this.pointdata.splice(index, 1);
+      //     return true;
+      //   }
+      // });
+      // this.subData[this.delX.key].some((item, index) => {
+      //   if (item == this.delX.value) {
+      //     this.subData[this.delX.key].splice(index, 1);
+      //     console.log("删除成功");
+      //     return true;
+      //   }
+      // });
+      // this.delX = {key: null, value: null};
+      // this.chart2.setOption({
+      //   series: {
+      //     markPoint: {
+      //       symbol: "pin",
+      //       symbolSize: 24,
+      //       animation: false,
+      //       data: this.pointdata,
+      //     },
+      //   },
+      // });
       $("#rightMenu2").css({
         display: "none",
       });
@@ -1832,12 +1968,12 @@ export default {
       this.chart2.setOption(option);
     },
     quickDelete() {  //delete键快捷删除
-      if(!this.isselected)return // 查看是否选中矩形框
+      if (!this.isselected) return // 查看是否选中矩形框
       //删除矩形框
-      this.rectangles.splice(this.selectrectangleIndex, 1)
-      var option = this.chart2.getOption()
-      option.series[0].markArea.data.splice(this.selectrectangleIndex, 1)
-      this.chart2.setOption(option)
+      this.datalabel.rectangles.splice(this.selectrectangleIndex, 1)
+      // var option = this.chart2.getOption()
+      // option.series[0].markArea.data.splice(this.selectrectangleIndex, 1)
+      this.chart2_redraw()
     },
     //处理全局键盘点击
     handleGlobalkeydown(event) {
@@ -1917,7 +2053,7 @@ export default {
             this.quickDelete();
             break;
           default:
-            console.log(event.key)
+            break;
         }
       } else {
         console.log("activeNameError")

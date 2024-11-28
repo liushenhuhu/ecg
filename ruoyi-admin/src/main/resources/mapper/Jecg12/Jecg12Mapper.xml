@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.Jecg12.mapper.Jecg12Mapper">
+    
+    <resultMap type="Jecg12" id="Jecg12Result">
+        <result property="pId"    column="p_id"    />
+        <result property="ecgData"    column="ecg_data"    />
+        <result property="waveLabel"    column="wave_label"    />
+        <result property="beatLabel"    column="beat_label"    />
+        <result property="rectangles"    column="rectangles"    />
+    </resultMap>
+
+    <sql id="selectJecg12Vo">
+        select p_id, ecg_data, wave_label, beat_label, rectangles from jecg_12
+    </sql>
+
+    <select id="selectJecg12List" parameterType="Jecg12" resultMap="Jecg12Result">
+        <include refid="selectJecg12Vo"/>
+        <where>  
+            <if test="pId != null  and pId != ''"> and p_id = #{pId}</if>
+            <if test="ecgData != null  and ecgData != ''"> and ecg_data = #{ecgData}</if>
+            <if test="waveLabel != null  and waveLabel != ''"> and wave_label = #{waveLabel}</if>
+            <if test="beatLabel != null  and beatLabel != ''"> and beat_label = #{beatLabel}</if>
+            <if test="rectangles != null  and rectangles != ''"> and rectangles = #{rectangles}</if>
+        </where>
+    </select>
+    
+    <select id="selectJecg12ByPId" parameterType="String" resultMap="Jecg12Result">
+        <include refid="selectJecg12Vo"/>
+        where p_id = #{pId}
+    </select>
+
+    <insert id="insertJecg12" parameterType="Jecg12">
+        insert into jecg_12
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pId != null">p_id,</if>
+            <if test="ecgData != null">ecg_data,</if>
+            <if test="waveLabel != null">wave_label,</if>
+            <if test="beatLabel != null">beat_label,</if>
+            <if test="rectangles != null">rectangles,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pId != null">#{pId},</if>
+            <if test="ecgData != null">#{ecgData},</if>
+            <if test="waveLabel != null">#{waveLabel},</if>
+            <if test="beatLabel != null">#{beatLabel},</if>
+            <if test="rectangles != null">#{rectangles},</if>
+         </trim>
+    </insert>
+
+    <update id="updateJecg12" parameterType="Jecg12">
+        update jecg_12
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ecgData != null">ecg_data = #{ecgData},</if>
+            <if test="waveLabel != null">wave_label = #{waveLabel},</if>
+            <if test="beatLabel != null">beat_label = #{beatLabel},</if>
+            <if test="rectangles != null">rectangles = #{rectangles},</if>
+        </trim>
+        where p_id = #{pId}
+    </update>
+
+    <delete id="deleteJecg12ByPId" parameterType="String">
+        delete from jecg_12 where p_id = #{pId}
+    </delete>
+
+    <delete id="deleteJecg12ByPIds" parameterType="String">
+        delete from jecg_12 where p_id in 
+        <foreach item="pId" collection="array" open="(" separator="," close=")">
+            #{pId}
+        </foreach>
+    </delete>
+</mapper>
