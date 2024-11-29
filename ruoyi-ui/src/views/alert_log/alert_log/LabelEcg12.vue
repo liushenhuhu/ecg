@@ -652,7 +652,7 @@ import $ from "jquery";
 import * as echarts from "@/api/tool/echarts.min";
 import de from "element-ui/src/locale/lang/de";
 import child from "@/views/alert_log/alert_log/child.vue";
-import {getJecg12} from "@/api/Jecg12/Jecg12";
+import {getJecg12,addJecg12,updateJecg12} from "@/api/Jecg12/Jecg12";
 export default {
   name: "LabelEcg12",
   components: {child},
@@ -663,7 +663,6 @@ export default {
   },
   data() {
     return {
-      new_value : "杨柳",
       log_id: null,
       user_id: null,
       //其他原因
@@ -763,6 +762,9 @@ export default {
         V5level: "",
         V6level: "",
       },
+      levelList : ["I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6"],
+      beatList :["Normal","FangZao","ShiZao","FangYi","GanRao"],
+      waveList :["P1","P2","P3","R1","R2","R3","T1","T2","T3"],
       message: {
         devicesn: "",
         user_id: "",
@@ -2440,16 +2442,72 @@ export default {
     },
     // 获取标注数据
     getLabel() {
-
-      getJecg12("00cab968-3b9b-5cc4-8f58-57be9dd88b09") //固定第一条数据pId以测试
+      getJecg12(this.log_id) //固定第一条数据pId以测试 00cab968-3b9b-5cc4-8f58-57be9dd88b09
         .then((res) => {
-          //赋值
+          // 对返回的标签进行处理，
+          // 1 未找到对应id的标签，插入一条初始化空数据
+          if(!res.data){
+            var waveLabel = {};
+            for (var i=0;i < this.levelList.length;i++){
+              if (!waveLabel[String(i)]) waveLabel[String(i)] = {}
+              this.waveList.forEach(item=>{
+                waveLabel[String(i)][item] = []
+              })
+            }
+
+            var beatLabel = {};
+            for (var i=0;i< this.levelList.length;i++){
+              if (!beatLabel[String(i)]) beatLabel[String(i)] = {}
+              this.beatList.forEach(item=>{
+                beatLabel[String(i)][item] = []
+              })
+            }
+            var rectangles = {};
+            for (var i=0;i< this.levelList.length;i++){
+                rectangles[String(i)] = []
+            }
+            console.log("insert:", waveLabel, beatLabel, rectangles)
+            addJecg12({
+              pId: this.log_id,
+              waveLabel: JSON.stringify(waveLabel) ,
+              beatLabel: JSON.stringify(beatLabel),
+              rectangles: JSON.stringify(rectangles),
+            })
+            return
+          }
           this.subData = JSON.parse(res.data.waveLabel);
           this.pointdata = JSON.parse(res.data.beatLabel);
           this.rectangles = JSON.parse(res.data.rectangles);
         })
-        .catch((err) => {
-        });
+      // 2 标签为空，初始化
+      if(this.subData==null){
+        var waveLabel = {};
+        for (var i=0;i < this.levelList.length;i++){
+          if (!waveLabel[String(i)]) waveLabel[String(i)] = {}
+          this.waveList.forEach(item=>{
+            waveLabel[String(i)][item] = []
+          })
+        }
+        this.subData = waveLabel
+      }
+      if(this.pointdata==null){
+        var beatLabel = {};
+        for (var i=0;i< this.levelList.length;i++){
+          if (!beatLabel[String(i)]) beatLabel[String(i)] = {}
+          this.beatList.forEach(item=>{
+            beatLabel[String(i)][item] = []
+          })
+        }
+        this.pointdata = beatLabel
+      }
+      if(this.rectangles==null){
+        var rectangles = {};
+        for (var i=0;i< length(this.levelList);i++){
+          rectangles[String(i)] = []
+        }
+        this.rectangles = rectangles
+      }
+      // 3 标签不全（暂时不考虑，如果需要与之前未标全的标签融合再考虑）
     },
     //判断红绿颜色
     light(data) {
@@ -2720,8 +2778,42 @@ export default {
       // }).catch(err=>{})
     },
     showchart(title, data){
-
-      this.$refs.drawShow.getchart(data, this.pId, 1, title, 12,
+      var level = 1
+      console.log("测试")
+      this.levelList.forEach((item,index)=>{
+        if (item==title){
+          level=index+1
+        }
+      })
+      console.log("测试")
+      switch (title){
+        case "I": level=1
+          break;
+        case "II":level=2
+          break;
+        case "III": level=3
+          break;
+        case "aVR":level=4
+          break;
+        case "aVL":level=5
+          break;
+        case "aVF":level=6
+          break;
+        case "V1":level=7
+          break;
+        case "V2":level=8
+          break;
+        case "V3":level=9
+          break;
+        case "V4":level=10
+          break;
+        case "V5":level=11
+          break;
+        case "V6":level=12
+          break;
+      }
+      console.log("测试")
+      this.$refs.drawShow.getchart(data, this.pId, level, title, 12,
         {"beatLabel":this.pointdata,"waveLabel":this.subData,"rectangles":this.rectangles});
       // this.$refs.drawShow.getchart2();
     },
