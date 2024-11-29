@@ -2648,7 +2648,7 @@ export default {
       await this.getLogId();
 
       this.getMessage();
-
+      this.getLabel();
       this.loading = false;
       var newUrl =
         this.$route.path +
@@ -2681,6 +2681,7 @@ export default {
       //根据index获取log_id
       await this.getLogId();
       this.getMessage();
+      this.getLabel();
       this.loading = false;
       var newUrl =
         this.$route.path +
@@ -2779,40 +2780,37 @@ export default {
     },
     showchart(title, data){
       var level = 1
-      console.log("测试")
       this.levelList.forEach((item,index)=>{
         if (item==title){
           level=index+1
         }
       })
-      console.log("测试")
-      switch (title){
-        case "I": level=1
-          break;
-        case "II":level=2
-          break;
-        case "III": level=3
-          break;
-        case "aVR":level=4
-          break;
-        case "aVL":level=5
-          break;
-        case "aVF":level=6
-          break;
-        case "V1":level=7
-          break;
-        case "V2":level=8
-          break;
-        case "V3":level=9
-          break;
-        case "V4":level=10
-          break;
-        case "V5":level=11
-          break;
-        case "V6":level=12
-          break;
-      }
-      console.log("测试")
+      // switch (title){
+      //   case "I": level=1
+      //     break;
+      //   case "II":level=2
+      //     break;
+      //   case "III": level=3
+      //     break;
+      //   case "aVR":level=4
+      //     break;
+      //   case "aVL":level=5
+      //     break;
+      //   case "aVF":level=6
+      //     break;
+      //   case "V1":level=7
+      //     break;
+      //   case "V2":level=8
+      //     break;
+      //   case "V3":level=9
+      //     break;
+      //   case "V4":level=10
+      //     break;
+      //   case "V5":level=11
+      //     break;
+      //   case "V6":level=12
+      //     break;
+      // }
       this.$refs.drawShow.getchart(data, this.pId, level, title, 12,
         {"beatLabel":this.pointdata,"waveLabel":this.subData,"rectangles":this.rectangles});
       // this.$refs.drawShow.getchart2();
