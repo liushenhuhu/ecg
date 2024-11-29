@@ -700,9 +700,9 @@ export default {
         //     GanRao: [],
         //   };
         // }
-
-        //添加所有点
-        this.pointdata.length = 0;
+        //
+        // //添加所有点
+        // this.pointdata.length = 0;
         // var colorList = {
         //   // Normal: "#fe0101",
         //   // FangZao: "#ff7000",
@@ -710,7 +710,7 @@ export default {
         //   // FangYi: "#070000",
         //   // GanRao: "#0021da",
         //
-        //   // TODO:
+        //
         //   Normal: "green",
         //   FangZao: "blue",
         //   ShiZao: "red",
@@ -801,7 +801,6 @@ export default {
         //   this.redraw();
         // });
       }
-
       $(window).resize(() => {
         this.chart.resize();
       });
@@ -828,19 +827,25 @@ export default {
       this.chart.getZr().off("click");
       //点击左键标点
       this.chart.getZr().on("click", (params) => {
+
         $("#rightMenu1").css({
           display: "none",
         });
         const pointInPixel = [params.offsetX, params.offsetY];
         //console.log(pointInPixel)
+
         if (this.chart.containPixel("grid", pointInPixel)) {
+          console.log("end")
           this.xIndex = this.chart.convertFromPixel({seriesIndex: 0}, [
             params.offsetX,
             params.offsetY,
           ])[0];
+
           if (this.radio1 == "") return;
           this.datalabel.beatLabel[String(this.level - 1)][this.radio1].push(this.xIndex)
+
           this.chart1_redraw()
+
 
           // let i = this.addValue({x: this.xIndex, type: this.radio1});
           // if (i == 1) {
@@ -1102,17 +1107,17 @@ export default {
 
       //回显
       if (this.lead2) {
-        this.subData = {
-          P1: [],
-          P2: [],
-          P3: [],
-          R1: [],
-          R2: [],
-          R3: [],
-          T1: [],
-          T2: [],
-          T3: [],
-        };
+        // this.subData = {
+        //   P1: [],
+        //   P2: [],
+        //   P3: [],
+        //   R1: [],
+        //   R2: [],
+        //   R3: [],
+        //   T1: [],
+        //   T2: [],
+        //   T3: [],
+        // };
 
         // if (this.flag == 1) {
         //   //单导
@@ -1128,19 +1133,19 @@ export default {
         //   }
         // }
 
-        if (this.subData == null || this.subData.length == 0) {
-          this.subData = {
-            P1: [],
-            P2: [],
-            P3: [],
-            R1: [],
-            R2: [],
-            R3: [],
-            T1: [],
-            T2: [],
-            T3: [],
-          };
-        }
+        // if (this.subData == null || this.subData.length == 0) {
+        //   this.subData = {
+        //     P1: [],
+        //     P2: [],
+        //     P3: [],
+        //     R1: [],
+        //     R2: [],
+        //     R3: [],
+        //     T1: [],
+        //     T2: [],
+        //     T3: [],
+        //   };
+        // }
         this.chart2_redraw()
         //添加点
         // var pointdata = []
@@ -1441,18 +1446,18 @@ export default {
             },
           };
           pointdata.push(text);
-          this.chart.setOption({
-            series: {
-              markPoint: {
-                symbol: "pin",
-                symbolSize: 25,
-                animation: false,
-                data: pointdata,
-              },
-            },
-          });
         });
       }
+      this.chart.setOption({
+        series: {
+          markPoint: {
+            symbol: "pin",
+            symbolSize: 25,
+            animation: false,
+            data: pointdata,
+          },
+        },
+      });
     },
     chart2_redraw() {
       var colorList = {

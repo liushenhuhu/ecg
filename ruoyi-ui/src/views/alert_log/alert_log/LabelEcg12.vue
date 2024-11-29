@@ -2439,7 +2439,7 @@ export default {
       });
     },
     // 获取标注数据
-    getLabel() { //TODO 读取数据库jecg12数据，并做处理，在打开child时读入
+    getLabel() {
 
       getJecg12("00cab968-3b9b-5cc4-8f58-57be9dd88b09") //固定第一条数据pId以测试
         .then((res) => {
