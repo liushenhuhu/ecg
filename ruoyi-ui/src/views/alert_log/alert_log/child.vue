@@ -99,7 +99,7 @@
                 <el-button
                   type="primary"
                   class="download-btn"
-                  @click="clickSubmit"
+                  @click="submit()"
                 >
                   <i class="el-icon-finished"></i>
                 </el-button>
@@ -254,7 +254,7 @@
                 <el-button
                   type="primary"
                   class="download-btn"
-                  @click="submitData()"
+                  @click="submit()"
                 >
                   <i class="el-icon-finished"></i>
                 </el-button>
@@ -464,6 +464,8 @@ export default {
       for (var i = 0; i <= data.length; i++) {
         this.x.push(i);
       }
+
+
       // if (level == 4) {
       //   for (var i = 0; i <= 1000; i++) {
       //     this.x.push(i);
@@ -653,7 +655,6 @@ export default {
 
       if (this.lead1) {
         this.chart1_redraw()
-
         // this[`${"arrList" + level}`] = {
         //   Normal: [],
         //   FangZao: [],
@@ -835,7 +836,6 @@ export default {
         //console.log(pointInPixel)
 
         if (this.chart.containPixel("grid", pointInPixel)) {
-          console.log("end")
           this.xIndex = this.chart.convertFromPixel({seriesIndex: 0}, [
             params.offsetX,
             params.offsetY,
@@ -843,9 +843,7 @@ export default {
 
           if (this.radio1 == "") return;
           this.datalabel.beatLabel[String(this.level - 1)][this.radio1].push(this.xIndex)
-
           this.chart1_redraw()
-
 
           // let i = this.addValue({x: this.xIndex, type: this.radio1});
           // if (i == 1) {
@@ -1272,9 +1270,7 @@ export default {
             this.data.slice(Math.floor(endPoint[0]), Math.floor(startPoint[0]));
           startPoint[1] = Math.max(...silce);
           endPoint[1] = Math.min(...silce);
-          // 创建矩形框的配置
-          this.datalabel.rectangles.push([startPoint, endPoint])
-          this.chart2_redraw()
+
           // const rect = [
           //   {xAxis: startPoint[0], yAxis: startPoint[1]},
           //   {xAxis: endPoint[0], yAxis: endPoint[1]}
@@ -1285,9 +1281,15 @@ export default {
           // chartOption.series[0].markArea.data.push(rect);
           chartOption.graphic = [{shape: {x: 0, y: 0, width: 0, height: 0,},}];
           this.chart2.setOption(chartOption);
-          console.log("矩形框绘制完成");
-          // 可以在这里处理绘制完成后的其他操作
-          // this.rectangles.push([startPoint, endPoint])
+
+          //判断矩形框是否过小
+          if (Math.abs(startPoint[0]-endPoint[0])<5){
+            console.log("矩形框过小")
+            return;
+          }
+          //绘制矩形框
+          this.datalabel.rectangles[String(this.level - 1)].push([startPoint, endPoint])
+          this.chart2_redraw()
           isDrawing = false;
           startPoint = [];
           endPoint = []
@@ -1299,7 +1301,7 @@ export default {
           if (!this.isDrawRec) return; //未开启画框按钮，则不执行
           const [x, y] = this.chart2.convertFromPixel({seriesIndex: 0}, [event.offsetX, event.offsetY]);
           this.isselected = false;
-          this.datalabel.rectangles.forEach((item, index) => {
+          this.datalabel.rectangles[String(this.level - 1)].forEach((item, index) => {  //卡顿地方
             if ( // 判断是否选中框
               x === item[0][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
               x === item[1][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
@@ -1495,7 +1497,7 @@ export default {
       }
       // 重绘矩形框
       var rectangles = []
-      this.datalabel.rectangles.forEach(item => {
+      this.datalabel.rectangles[String(this.level - 1)].forEach(item => {
         var rec = [
           {xAxis: item[0][0], yAxis: item[0][1]},
           {xAxis: item[1][0], yAxis: item[1][1]}
@@ -1523,7 +1525,7 @@ export default {
       });
     },
     initBeatLabel(){
-      this.datalabel.beatLabel = {
+      this.datalabel.beatLabel[String(this.level - 1)] = {
         Normal: [],
         FangZao: [],
         ShiZao: [],
@@ -1532,7 +1534,7 @@ export default {
       };
     },
     initWaveLabel(){
-      this.datalabel.waveLabel ={
+      this.datalabel.waveLabel[String(this.level - 1)] ={
         P1: [],
         P2: [],
         P3: [],
@@ -1545,7 +1547,7 @@ export default {
       };
     },
     initRectangles(){
-      this.datalabel.rectangles =[]
+      this.datalabel.rectangles[String(this.level - 1)] =[]
     },
     //心搏 删除点
     del() {
@@ -1682,134 +1684,142 @@ export default {
       //   },
       // });
     },
-    // 提交心搏标注数据
-    clickSubmit() {
-      console.log(this.arrList1);
-      if (this.flag == 1) {
-        //单导 分段提交
-        var obj = {
-          0: {...this.arrList1},
-          1: {...this.arrList2},
-          2: {...this.arrList3},
-          3: {...this.arrList4},
-        };
-        for (let key in obj) {
-          console.log(obj[key]);
-          if (Object.keys(obj[key]).length === 0) {
-            delete obj[key];
-          }
-        }
-        this.arrList = {
-          pId: this.pId,
-          beatLabel: JSON.stringify(obj),
-        };
-      } else {
-        //12导全部提交
-        var obj = {...this.arrList1};
-        var newObj1 = {};
-        var newObj2 = {};
-        for (var key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            // 对每个属性的数组进行分类
-            newObj1[key] = obj[key].filter((num) => num < 1000); // 1000是分类的阈值
-            newObj2[key] = obj[key]
-              .filter((num) => num >= 1000)
-              .map((num) => num - 1000);
-          }
-        }
-        this.arrList = {
-          pId: this.pId,
-          beatLabel: JSON.stringify({0: newObj1, 1: newObj2}),
-        };
-      }
-      var beatLabel = JSON.parse(this.datalabel.beatLabel);
-      var beatLabel2 = JSON.parse(this.arrList.beatLabel);
-      if (beatLabel == null) {
-        beatLabel = {};
-      }
-      for (let key in beatLabel2) {
-        beatLabel[key] = beatLabel2[key];
-      }
-      this.datalabel.beatLabel = JSON.stringify(beatLabel);
-      this.isLoading = true;
-      if (this.arrList.beatLabel != null) {
-        if (this.flag == 1) {
-          ecgBeatLabelAdd(this.arrList).then((response) => {
-            this.$modal.msgSuccess("坐标提交成功!");
-            this.isLoading = false;
-            this.$emit("closeMain", this.arrList.beatLabel);
-          });
-        } else {
-          put12BeatLabel(this.arrList).then((response) => {
-            this.$modal.msgSuccess("坐标提交成功!");
-            this.isLoading = false;
-
-            this.$emit("closeMain", this.arrList.beatLabel);
-            console.log(111);
-          });
-        }
-        console.log(JSON.parse(this.arrList.beatLabel));
-        this.isLoading = false;
-      } else {
-        this.$modal.msgWarning("请标记后提交！");
-        this.isLoading = false;
-      }
+    // 提交数据
+    submit(){
+      console.log("提交数据")
+      console.log("心搏数据:",this.datalabel.beatLabel[String(this.level - 1)])
+      console.log("波段数据:",this.datalabel.waveLabel[String(this.level - 1)])
+      console.log("矩形框:",this.datalabel.rectangles[String(this.level - 1)])
+      //提交数据
     },
     // 提交心搏标注数据
-    submitData() {
-      this.query.pId = this.pId;
-      if (this.datalabel.waveLabel != null && this.datalabel.waveLabel != "") {
-        var waveLabel = JSON.parse(this.datalabel.waveLabel);
-        console.log(waveLabel);
-        if (this.flag == 1) {
-          //单导  每一段 全部提交
-          waveLabel[this.level - 1] = this.suecbData;
-          this.query.waveLabel = JSON.stringify(waveLabel);
-        } else {
-          //12导 分段 全部提交
-          var obj = {...this.subData};
-          var newObj1 = {};
-          var newObj2 = {};
-          for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
-              // 对每个属性的数组进行分类
-              newObj1[key] = obj[key].filter((num) => num < 1000); // 1000是分类的阈值
-              newObj2[key] = obj[key]
-                .filter((num) => num >= 1000)
-                .map((num) => num - 1000);
-            }
-          }
-
-          this.query = {
-            pId: this.pId,
-            waveLabel: JSON.stringify({0: newObj1, 1: newObj2}),
-          };
-          waveLabel = {0: newObj1, 1: newObj2};
-          console.log(obj, newObj1, newObj2, waveLabel);
-        }
-        this.datalabel.waveLabel = JSON.stringify(waveLabel);
-      } else {
-        this.datalabel.waveLabel = JSON.stringify(this.subData);
-      }
-      console.log(this.subData);
-      console.log(JSON.parse(this.query.waveLabel));
-
-      if (this.flag == 1) {
-        ecgWaveLabelPut(this.query)
-          .then((res) => {
-            this.$modal.msgSuccess("标注提交成功");
-          })
-          .catch((err) => {
-          });
-      } else {
-        put12WaveLabel(this.query)
-          .then((res) => {
-            this.$modal.msgSuccess("标注提交成功");
-          })
-          .catch((err) => {
-          });
-      }
-    },
+    // clickSubmit() {
+    //   console.log(this.arrList1);
+    //   if (this.flag == 1) {
+    //     //单导 分段提交
+    //     var obj = {
+    //       0: {...this.arrList1},
+    //       1: {...this.arrList2},
+    //       2: {...this.arrList3},
+    //       3: {...this.arrList4},
+    //     };
+    //     for (let key in obj) {
+    //       console.log(obj[key]);
+    //       if (Object.keys(obj[key]).length === 0) {
+    //         delete obj[key];
+    //       }
+    //     }
+    //     this.arrList = {
+    //       pId: this.pId,
+    //       beatLabel: JSON.stringify(obj),
+    //     };
+    //   } else {
+    //     //12导全部提交
+    //     var obj = {...this.arrList1};
+    //     var newObj1 = {};
+    //     var newObj2 = {};
+    //     for (var key in obj) {
+    //       if (obj.hasOwnProperty(key)) {
+    //         // 对每个属性的数组进行分类
+    //         newObj1[key] = obj[key].filter((num) => num < 1000); // 1000是分类的阈值
+    //         newObj2[key] = obj[key]
+    //           .filter((num) => num >= 1000)
+    //           .map((num) => num - 1000);
+    //       }
+    //     }
+    //     this.arrList = {
+    //       pId: this.pId,
+    //       beatLabel: JSON.stringify({0: newObj1, 1: newObj2}),
+    //     };
+    //   }
+    //   var beatLabel = JSON.parse(this.datalabel.beatLabel);
+    //   var beatLabel2 = JSON.parse(this.arrList.beatLabel);
+    //   if (beatLabel == null) {
+    //     beatLabel = {};
+    //   }
+    //   for (let key in beatLabel2) {
+    //     beatLabel[key] = beatLabel2[key];
+    //   }
+    //   this.datalabel.beatLabel = JSON.stringify(beatLabel);
+    //   this.isLoading = true;
+    //   if (this.arrList.beatLabel != null) {
+    //     if (this.flag == 1) {
+    //       ecgBeatLabelAdd(this.arrList).then((response) => {
+    //         this.$modal.msgSuccess("坐标提交成功!");
+    //         this.isLoading = false;
+    //         this.$emit("closeMain", this.arrList.beatLabel);
+    //       });
+    //     } else {
+    //       put12BeatLabel(this.arrList).then((response) => {
+    //         this.$modal.msgSuccess("坐标提交成功!");
+    //         this.isLoading = false;
+    //
+    //         this.$emit("closeMain", this.arrList.beatLabel);
+    //         console.log(111);
+    //       });
+    //     }
+    //     console.log(JSON.parse(this.arrList.beatLabel));
+    //     this.isLoading = false;
+    //   } else {
+    //     this.$modal.msgWarning("请标记后提交！");
+    //     this.isLoading = false;
+    //   }
+    // },
+    // 提交心搏标注数据
+    // submitData() {
+    //   this.query.pId = this.pId;
+    //   if (this.datalabel.waveLabel != null && this.datalabel.waveLabel != "") {
+    //     var waveLabel = JSON.parse(this.datalabel.waveLabel);
+    //     console.log(waveLabel);
+    //     if (this.flag == 1) {
+    //       //单导  每一段 全部提交
+    //       waveLabel[this.level - 1] = this.suecbData;
+    //       this.query.waveLabel = JSON.stringify(waveLabel);
+    //     } else {
+    //       //12导 分段 全部提交
+    //       var obj = {...this.subData};
+    //       var newObj1 = {};
+    //       var newObj2 = {};
+    //       for (var key in obj) {
+    //         if (obj.hasOwnProperty(key)) {
+    //           // 对每个属性的数组进行分类
+    //           newObj1[key] = obj[key].filter((num) => num < 1000); // 1000是分类的阈值
+    //           newObj2[key] = obj[key]
+    //             .filter((num) => num >= 1000)
+    //             .map((num) => num - 1000);
+    //         }
+    //       }
+    //
+    //       this.query = {
+    //         pId: this.pId,
+    //         waveLabel: JSON.stringify({0: newObj1, 1: newObj2}),
+    //       };
+    //       waveLabel = {0: newObj1, 1: newObj2};
+    //       console.log(obj, newObj1, newObj2, waveLabel);
+    //     }
+    //     this.datalabel.waveLabel = JSON.stringify(waveLabel);
+    //   } else {
+    //     this.datalabel.waveLabel = JSON.stringify(this.subData);
+    //   }
+    //   console.log(this.subData);
+    //   console.log(JSON.parse(this.query.waveLabel));
+    //
+    //   if (this.flag == 1) {
+    //     ecgWaveLabelPut(this.query)
+    //       .then((res) => {
+    //         this.$modal.msgSuccess("标注提交成功");
+    //       })
+    //       .catch((err) => {
+    //       });
+    //   } else {
+    //     put12WaveLabel(this.query)
+    //       .then((res) => {
+    //         this.$modal.msgSuccess("标注提交成功");
+    //       })
+    //       .catch((err) => {
+    //       });
+    //   }
+    // },
 
 
     //添加标点
@@ -2075,16 +2085,15 @@ export default {
     quickDelete() {
       if (!this.isselected) return // 查看是否选中矩形框
       //删除矩形框
-      this.datalabel.rectangles.splice(this.selectrectangleIndex, 1)
+      this.datalabel.rectangles[String(this.level - 1)].splice(this.selectrectangleIndex, 1)
       // var option = this.chart2.getOption()
       // option.series[0].markArea.data.splice(this.selectrectangleIndex, 1)
       this.chart2_redraw()
     },
     //处理全局键盘点击
     handleGlobalkeydown(event) {
-      const tab = this.$refs.tab.$el;
-      const tabButtons = tab.querySelectorAll(".el-tabs__item");
-      console.log(tab.id)
+      // const tab = this.$refs.tab.$el;
+      // const tabButtons = tab.querySelectorAll(".el-tabs__item");
       if (this.activeName == "first") {
         switch (event.key) {
           case '1':
