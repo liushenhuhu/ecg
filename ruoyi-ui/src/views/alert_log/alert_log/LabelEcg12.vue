@@ -2785,33 +2785,8 @@ export default {
           level=index+1
         }
       })
-      // switch (title){
-      //   case "I": level=1
-      //     break;
-      //   case "II":level=2
-      //     break;
-      //   case "III": level=3
-      //     break;
-      //   case "aVR":level=4
-      //     break;
-      //   case "aVL":level=5
-      //     break;
-      //   case "aVF":level=6
-      //     break;
-      //   case "V1":level=7
-      //     break;
-      //   case "V2":level=8
-      //     break;
-      //   case "V3":level=9
-      //     break;
-      //   case "V4":level=10
-      //     break;
-      //   case "V5":level=11
-      //     break;
-      //   case "V6":level=12
-      //     break;
-      // }
-      this.$refs.drawShow.getchart(data, this.pId, level, title, 12,
+
+      this.$refs.drawShow.getchart(data, this.log_id, level, title, 12,
         {"beatLabel":this.pointdata,"waveLabel":this.subData,"rectangles":this.rectangles});
       // this.$refs.drawShow.getchart2();
     },

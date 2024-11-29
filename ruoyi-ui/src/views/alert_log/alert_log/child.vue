@@ -305,7 +305,7 @@
 // } from "@/api/staticECG/staticECG";
 import * as echarts from "@/api/tool/echarts.min.js";
 import $ from "jquery";
-
+import {updateJecg12} from "@/api/Jecg12/Jecg12";
 let ctx = ""; //画布上下文
 export default {
   props: {},
@@ -1686,10 +1686,14 @@ export default {
     },
     // 提交数据
     submit(){
-      console.log("提交数据")
-      console.log("心搏数据:",this.datalabel.beatLabel[String(this.level - 1)])
-      console.log("波段数据:",this.datalabel.waveLabel[String(this.level - 1)])
-      console.log("矩形框:",this.datalabel.rectangles[String(this.level - 1)])
+      console.log("提交数据 pId=",this.pId)
+      updateJecg12({
+        pId: this.pId,
+        waveLabel: JSON.stringify(this.datalabel.waveLabel),
+        beatLabel: JSON.stringify(this.datalabel.beatLabel),
+        rectangles: JSON.stringify(this.datalabel.rectangles),
+      });
+      this.$modal.msgSuccess("提交成功!");
       //提交数据
     },
     // 提交心搏标注数据
