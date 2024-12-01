@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.alert_type.mapper.AlertTypeMapper">
+    
+    <resultMap type="AlertType" id="AlertTypeResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="value"    column="value"    />
+        <result property="label"    column="label"    />
+    </resultMap>
+
+    <sql id="selectAlertTypeVo">
+        select id, type, value, label from alert_type
+    </sql>
+
+    <select id="selectAlertTypeList" parameterType="AlertType" resultMap="AlertTypeResult">
+        <include refid="selectAlertTypeVo"/>
+        <where>  
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="value != null  and value != ''"> and value = #{value}</if>
+            <if test="label != null  and label != ''"> and label = #{label}</if>
+        </where>
+    </select>
+    
+    <select id="selectAlertTypeById" parameterType="Long" resultMap="AlertTypeResult">
+        <include refid="selectAlertTypeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAlertType" parameterType="AlertType">
+        insert into alert_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="value != null and value != ''">value,</if>
+            <if test="label != null">label,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="value != null and value != ''">#{value},</if>
+            <if test="label != null">#{label},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAlertType" parameterType="AlertType">
+        update alert_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="value != null and value != ''">value = #{value},</if>
+            <if test="label != null">label = #{label},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAlertTypeById" parameterType="Long">
+        delete from alert_type where id = #{id}
+    </delete>
+
+    <delete id="deleteAlertTypeByIds" parameterType="String">
+        delete from alert_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -10,10 +10,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="waveLabel"    column="wave_label"    />
         <result property="beatLabel"    column="beat_label"    />
         <result property="rectangles"    column="rectangles"    />
+        <result property="noiseLevel"    column="noise_level"    />
+        <result property="options1"    column="options1"    />
+        <result property="options2"    column="options2"    />
+        <result property="isSuspected"    column="isSuspected"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
     </resultMap>
 
     <sql id="selectJecg12Vo">
-        select p_id, ecg_data, wave_label, beat_label, rectangles from jecg_12
+        select p_id, ecg_data, wave_label, beat_label, rectangles, noise_level, options1, options2, isSuspected, update_time, update_by from jecg_12
     </sql>
 
     <select id="selectJecg12List" parameterType="Jecg12" resultMap="Jecg12Result">
@@ -24,6 +30,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="waveLabel != null  and waveLabel != ''"> and wave_label = #{waveLabel}</if>
             <if test="beatLabel != null  and beatLabel != ''"> and beat_label = #{beatLabel}</if>
             <if test="rectangles != null  and rectangles != ''"> and rectangles = #{rectangles}</if>
+            <if test="noiseLevel != null  and noiseLevel != ''"> and noise_level = #{noiseLevel}</if>
+            <if test="options1 != null  and options1 != ''"> and options1 = #{options1}</if>
+            <if test="options2 != null  and options2 != ''"> and options2 = #{options2}</if>
+            <if test="isSuspected != null "> and isSuspected = #{isSuspected}</if>
         </where>
     </select>
     
@@ -40,6 +50,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="waveLabel != null">wave_label,</if>
             <if test="beatLabel != null">beat_label,</if>
             <if test="rectangles != null">rectangles,</if>
+            <if test="noiseLevel != null">noise_level,</if>
+            <if test="options1 != null">options1,</if>
+            <if test="options2 != null">options2,</if>
+            <if test="isSuspected != null">isSuspected,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="pId != null">#{pId},</if>
@@ -47,6 +63,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="waveLabel != null">#{waveLabel},</if>
             <if test="beatLabel != null">#{beatLabel},</if>
             <if test="rectangles != null">#{rectangles},</if>
+            <if test="noiseLevel != null">#{noiseLevel},</if>
+            <if test="options1 != null">#{options1},</if>
+            <if test="options2 != null">#{options2},</if>
+            <if test="isSuspected != null">#{isSuspected},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
          </trim>
     </insert>
 
@@ -57,6 +79,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="waveLabel != null">wave_label = #{waveLabel},</if>
             <if test="beatLabel != null">beat_label = #{beatLabel},</if>
             <if test="rectangles != null">rectangles = #{rectangles},</if>
+            <if test="noiseLevel != null">noise_level = #{noiseLevel},</if>
+            <if test="options1 != null">options1 = #{options1},</if>
+            <if test="options2 != null">options2 = #{options2},</if>
+            <if test="isSuspected != null">isSuspected = #{isSuspected},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
         </trim>
         where p_id = #{pId}
     </update>

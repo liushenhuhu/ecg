@@ -7,7 +7,7 @@ import com.ruoyi.Jecg12.domain.Jecg12;
  * 静态12导心电数据Service接口
  * 
  * @author yangliu
- * @date 2024-11-27
+ * @date 2024-12-01
  */
 public interface IJecg12Service 
 {

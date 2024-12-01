@@ -1,6 +1,7 @@
 package com.ruoyi.Jecg12.service.impl;
 
 import java.util.List;
+import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.Jecg12.mapper.Jecg12Mapper;
@@ -11,7 +12,7 @@ import com.ruoyi.Jecg12.service.IJecg12Service;
  * 静态12导心电数据Service业务层处理
  * 
  * @author yangliu
- * @date 2024-11-27
+ * @date 2024-12-01
  */
 @Service
 public class Jecg12ServiceImpl implements IJecg12Service 
@@ -64,6 +65,7 @@ public class Jecg12ServiceImpl implements IJecg12Service
     @Override
     public int updateJecg12(Jecg12 jecg12)
     {
+        jecg12.setUpdateTime(DateUtils.getNowDate());
         return jecg12Mapper.updateJecg12(jecg12);
     }
 

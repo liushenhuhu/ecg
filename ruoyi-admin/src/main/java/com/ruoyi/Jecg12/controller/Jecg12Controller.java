@@ -25,7 +25,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * 静态12导心电数据Controller
  * 
  * @author yangliu
- * @date 2024-11-27
+ * @date 2024-12-01
  */
 @RestController
 @RequestMapping("/Jecg12/Jecg12")
@@ -49,7 +49,8 @@ public class Jecg12Controller extends BaseController
     /**
      * 导出静态12导心电数据列表
      */
-      @Log(title = "静态12导心电数据", businessType = BusinessType.EXPORT)
+    @PreAuthorize("@ss.hasPermi('Jecg12:Jecg12:export')")
+    @Log(title = "静态12导心电数据", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Jecg12 jecg12)
     {

@@ -11,8 +11,7 @@
       </div>
 
       <div class="tijiao">
-        <el-button type="success" id="btn1" class="btn1" @click="submit()"
-                   v-hasPermi="['log_type_data:log_type_data:addLogType']">
+        <el-button type="success" id="btn1" class="btn1" @click="submit()">
           提交
         </el-button>
         <el-button class="btn2" id="btn2" @click="suspected()"
@@ -36,69 +35,69 @@
 
     </div>
 
-    <div class="showbox" id="jump" v-show="show" @contextmenu.prevent>
-      <div class="noName" v-show="lead">
-        <el-radio-group v-model="radio">
-          <el-radio-button @click.native.prevent="clickitem('P1')" label="P1"
-          >P1
-          </el-radio-button
-          >
-          <el-radio-button @click.native.prevent="clickitem('P2')" label="P2"
-          >P2
-          </el-radio-button
-          >
-          <el-radio-button @click.native.prevent="clickitem('P3')" label="P3"
-          >P3
-          </el-radio-button
-          >
-          <el-radio-button @click.native.prevent="clickitem('R1')" label="R1"
-          >R1
-          </el-radio-button
-          >
-          <el-radio-button @click.native.prevent="clickitem('R2')" label="R2"
-          >R2
-          </el-radio-button
-          >
-          <el-radio-button @click.native.prevent="clickitem('R3')" label="R3"
-          >R3
-          </el-radio-button
-          >
-          <el-radio-button @click.native.prevent="clickitem('T1')" label="T1"
-          >T1
-          </el-radio-button
-          >
-          <el-radio-button @click.native.prevent="clickitem('T2')" label="T2"
-          >T2
-          </el-radio-button
-          >
-          <el-radio-button @click.native.prevent="clickitem('T3')" label="T3"
-          >T3
-          </el-radio-button
-          >
-        </el-radio-group>
+    <!--    <div class="showbox" id="jump" v-show="show" @contextmenu.prevent>-->
+    <!--      <div class="noName" v-show="lead">-->
+    <!--        <el-radio-group v-model="radio">-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('P1')" label="P1"-->
+    <!--          >P1-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('P2')" label="P2"-->
+    <!--          >P2-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('P3')" label="P3"-->
+    <!--          >P3-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('R1')" label="R1"-->
+    <!--          >R1-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('R2')" label="R2"-->
+    <!--          >R2-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('R3')" label="R3"-->
+    <!--          >R3-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('T1')" label="T1"-->
+    <!--          >T1-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('T2')" label="T2"-->
+    <!--          >T2-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--          <el-radio-button @click.native.prevent="clickitem('T3')" label="T3"-->
+    <!--          >T3-->
+    <!--          </el-radio-button-->
+    <!--          >-->
+    <!--        </el-radio-group>-->
 
-        <el-button class="btn3" @click="clearData()">清空</el-button>
-        <el-button class="btn3" @click="submitData()">提交</el-button>
-        <el-popover
-          placement="bottom-start"
-          title="提示"
-          width="220"
-          class="popo"
-          trigger="hover"
-        >
-          <p class="tipck">1. 选择标点类型，在框内单击左键标点</p>
-          <p class="tipck">2. 右键单击点可以进行删除</p>
-          <p class="tipck">3. 标点完成后点击提交</p>
-          <p class="tipck">也可选择清空所有数据</p>
-          <div slot="reference"><i class="el-icon-info icon"></i></div>
-        </el-popover>
-      </div>
-      <div id="chartjump"></div>
-      <div id="rightMenu" class="menu" style="display: none">
-        <el-button class="button" @click="del">删除</el-button>
-      </div>
-      <button class="btn" style="right: 0; top: 0" @click="Off">关闭</button>
-    </div>
+    <!--        <el-button class="btn3" @click="clearData()">清空</el-button>-->
+    <!--        <el-button class="btn3" @click="submitData()">提交</el-button>-->
+    <!--        <el-popover-->
+    <!--          placement="bottom-start"-->
+    <!--          title="提示"-->
+    <!--          width="220"-->
+    <!--          class="popo"-->
+    <!--          trigger="hover"-->
+    <!--        >-->
+    <!--          <p class="tipck">1. 选择标点类型，在框内单击左键标点</p>-->
+    <!--          <p class="tipck">2. 右键单击点可以进行删除</p>-->
+    <!--          <p class="tipck">3. 标点完成后点击提交</p>-->
+    <!--          <p class="tipck">也可选择清空所有数据</p>-->
+    <!--          <div slot="reference"><i class="el-icon-info icon"></i></div>-->
+    <!--        </el-popover>-->
+    <!--      </div>-->
+    <!--      <div id="chartjump"></div>-->
+    <!--      <div id="rightMenu" class="menu" style="display: none">-->
+    <!--        <el-button class="button" @click="del">删除</el-button>-->
+    <!--      </div>-->
+    <!--      <button class="btn" style="right: 0; top: 0" @click="Off">关闭</button>-->
+    <!--    </div>-->
 
 
     <div class="bottom">
@@ -255,7 +254,6 @@
           </div>
         </div>
       </div>
-
 
 
       <div class="bottomRight">
@@ -652,7 +650,9 @@ import $ from "jquery";
 import * as echarts from "@/api/tool/echarts.min";
 import de from "element-ui/src/locale/lang/de";
 import child from "@/views/alert_log/alert_log/child.vue";
-import {getJecg12,addJecg12,updateJecg12} from "@/api/Jecg12/Jecg12";
+import {getJecg12, addJecg12, updateJecg12} from "@/api/Jecg12/Jecg12";
+import {listAlert_type} from "@/api/alert_type/alert_type";
+
 export default {
   name: "LabelEcg12",
   components: {child},
@@ -687,9 +687,7 @@ export default {
       activeName: 'yujingleixing',
       luyou: '',
       testArray: [],
-      trueValues: [],
-      // 心机炎的值
-      myocarditiszhi: [],
+
       lead: false,
       tap: {
         P1: false,
@@ -747,24 +745,10 @@ export default {
         V5light: "",
         V6light: "",
       },
-      //ABCD等级的判断
-      noise_level: {
-        Ilevel: "",
-        IIlevel: "",
-        IIIlevel: "",
-        aVRlevel: "",
-        aVLlevel: "",
-        aVFlevel: "",
-        V1level: "",
-        V2level: "",
-        V3level: "",
-        V4level: "",
-        V5level: "",
-        V6level: "",
-      },
-      levelList : ["I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6"],
-      beatList :["Normal","FangZao","ShiZao","FangYi","GanRao"],
-      waveList :["P1","P2","P3","R1","R2","R3","T1","T2","T3"],
+
+      levelList: ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"],
+      beatList: ["Normal", "FangZao", "ShiZao", "FangYi", "GanRao"],
+      waveList: ["P1", "P2", "P3", "R1", "R2", "R3", "T1", "T2", "T3"],
       message: {
         devicesn: "",
         user_id: "",
@@ -794,20 +778,29 @@ export default {
       // area: [], //想要删除的区间
       markArea: [],
       title: "",
-      subData: {
-        P1: [],
-        P2: [],
-        P3: [],
-        R1: [],
-        R2: [],
-        R3: [],
-        T1: [],
-        T2: [],
-        T3: [],
-      }, //提交标注信息
-      pointdata: [], //画点的option
-      rectangles: [],
 
+      //噪声等级标签
+      noise_level: {
+        Ilevel: "A",
+        IIlevel: "A",
+        IIIlevel: "A",
+        aVRlevel: "A",
+        aVLlevel: "A",
+        aVFlevel: "A",
+        V1level: "A",
+        V2level: "A",
+        V3level: "A",
+        V4level: "A",
+        V5level: "A",
+        V6level: "A",
+      },
+      // 预警类型标签
+      trueValues: ["正常心电图"],
+      // 心机炎标签
+      myocarditiszhi: [],
+      subData: null, //波段标注标签
+      pointdata: null, //心搏标注标签
+      rectangles: null, //矩形框标签
       isSuspected: false,
 
       // 初始化查询参数
@@ -840,12 +833,7 @@ export default {
   },
   watch: {
     isSuspected(val) {
-      if (this.isSuspected) {
-        document.getElementById("btn2").style.backgroundColor = "#4cc9f0";
-      } else {
-        document.getElementById("btn2").style.backgroundColor =
-          "rgba(255,255,255,0)";
-      }
+      document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : "";
     },
   },
   created() {
@@ -894,7 +882,6 @@ export default {
           }
         });
       })
-      console.log("当前索引:", this.index)
     },
     //根据index获取logid
     async getLogId() {
@@ -909,68 +896,67 @@ export default {
       })
     },
     // 2获取数据标注页面数据
-    async getLogUserList() {
-      let queryParams = {}
-      if (this.typeObj) {
-        queryParams = this.typeObj;
-      } else {
-        queryParams = this.$route.query
-      }
-
-      this.obj = {
-        logId: queryParams.logId ? queryParams.logId : "",
-        userId: this.$route.query.userId ? this.$route.query.userId : "",
-        ecgType: this.$route.query.ecgType,
-        pageNum: this.pageNum,
-        pageSize: this.pageSize,
-        anoStatus: this.anoStatus,
-        logTime: queryParams.logTime ? queryParams.logTime : "",
-        eventDescription: queryParams.eventDescription ? queryParams.eventDescription : "",
-        eventName: queryParams.eventName ? queryParams.eventName : "",
-        pId: queryParams.pId ? queryParams.pId : "",
-        isSuspected: queryParams.isSuspected ? queryParams.isSuspected : "",
-      };
-      // console.log("查看标注页获取用户信息所需要的值");
-      // console.log(this.obj);
-      await listAlert_log(this.obj).then((response) => {
-        // console.log("12导预警");
-        // console.log(response)
-        this.logUserList = response.rows;
-
-        this.logUserListTotal = response.total;
-        this.logUserList.forEach((item, index) => {
-          console.log(item.logId, index)
-          if (this.message.logid == item.logId) {
-            this.index = index;
-          }
-        });
-        // console.log(this.logUserList);
-      })
-      if (this.index === this.logUserList.length) {
-        this.index = 0
-      }
-      // console.log("这是this.index的值："+this.index);
-
-      // console.log(this.logUserList[this.index].eventDescription);
-      // 假设 this.index 是你要访问的 logUserList 数组中的索引
-      if (this.logUserList[this.index].eventDescription) {
-        // 拆分 logType 字符串为一个数组
-        let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-
-        // 将拆分后的数组中的每个值添加到 trueValues 数组中
-        this.trueValues = logTypesArray
-      }
-      if (this.logUserList[this.index].myocardiumType) {
-        let xinjiyan = JSON.parse(this.logUserList[this.index].myocardiumType)
-        this.myocarditiszhi = xinjiyan.myocarditiszhi.split(',')
-        this.others = xinjiyan.others
-      }
-
-    },
+    // async getLogUserList() {
+    //   let queryParams = {}
+    //   if (this.typeObj) {
+    //     queryParams = this.typeObj;
+    //   } else {
+    //     queryParams = this.$route.query
+    //   }
+    //
+    //   this.obj = {
+    //     logId: queryParams.logId ? queryParams.logId : "",
+    //     userId: this.$route.query.userId ? this.$route.query.userId : "",
+    //     ecgType: this.$route.query.ecgType,
+    //     pageNum: this.pageNum,
+    //     pageSize: this.pageSize,
+    //     anoStatus: this.anoStatus,
+    //     logTime: queryParams.logTime ? queryParams.logTime : "",
+    //     eventDescription: queryParams.eventDescription ? queryParams.eventDescription : "",
+    //     eventName: queryParams.eventName ? queryParams.eventName : "",
+    //     pId: queryParams.pId ? queryParams.pId : "",
+    //     isSuspected: queryParams.isSuspected ? queryParams.isSuspected : "",
+    //   };
+    //   // console.log("查看标注页获取用户信息所需要的值");
+    //   // console.log(this.obj);
+    //   await listAlert_log(this.obj).then((response) => {
+    //     // console.log("12导预警");
+    //     // console.log(response)
+    //     this.logUserList = response.rows;
+    //
+    //     this.logUserListTotal = response.total;
+    //     this.logUserList.forEach((item, index) => {
+    //       console.log(item.logId, index)
+    //       if (this.message.logid == item.logId) {
+    //         this.index = index;
+    //       }
+    //     });
+    //     // console.log(this.logUserList);
+    //   })
+    //   if (this.index === this.logUserList.length) {
+    //     this.index = 0
+    //   }
+    //   // console.log("这是this.index的值："+this.index);
+    //
+    //   // console.log(this.logUserList[this.index].eventDescription);
+    //   // 假设 this.index 是你要访问的 logUserList 数组中的索引
+    //   if (this.logUserList[this.index].eventDescription) {
+    //     // 拆分 logType 字符串为一个数组
+    //     let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
+    //
+    //     // 将拆分后的数组中的每个值添加到 trueValues 数组中
+    //     this.trueValues = logTypesArray
+    //   }
+    //   if (this.logUserList[this.index].myocardiumType) {
+    //     let xinjiyan = JSON.parse(this.logUserList[this.index].myocardiumType)
+    //     this.myocarditiszhi = xinjiyan.myocarditiszhi.split(',')
+    //     this.others = xinjiyan.others
+    //   }
+    //
+    // },
 
     //获取心电数据
     getMessage() {
-      console.log("开始获取数据")
       var Iy = [];
       var IIy = [];
       var IIIy = [];
@@ -1007,23 +993,16 @@ export default {
           user_id: 0,  // userid得是0才有权限
         }),
         success: jsonResult => {
-          console.log("获取到数据")
-          console.log(jsonResult)
           _th.data = jsonResult.result;
           // console.log(jsonResult);
           _th.message.pid = jsonResult.result.patientid;
           _th.message.age = Number(jsonResult.result.age).toFixed(0);
           _th.message.sex = jsonResult.result.sex;
           _th.message.time = jsonResult.result.clockTime;
-          if (jsonResult.result.isSuspected == 1) {
-            _th.isSuspected = true;
-          } else {
-            _th.isSuspected = false;
-          }
           _th.value = jsonResult.result.logType;
           _th.loading = false;
           _th.light(jsonResult);
-          _th.level(jsonResult);
+          // _th.level(jsonResult);
           if (_th.message.devicesn != null) {
             (function () {
               var i;
@@ -2439,74 +2418,111 @@ export default {
           _th.$modal.msgError("数据获取失败");
         },
       });
+      this.options = [] //初始化
+      //获取预警类型
+      listAlert_type({
+        pageNum: 1,
+        pageSize: 10000,
+      }).then(res => {
+        res.rows.forEach(item => {
+          var labelExist = false
+
+          this.options.forEach((child, index) => {
+            //判断数组中有没有这个label
+            console.log("yes")
+            if (child.label == item.type) {
+              labelExist = true
+            }
+          })
+          if (labelExist == false) {
+            this.options.push({label: item.type, options: []})
+          }
+          this.options.forEach((child, index) => {
+            //插入options
+            if (child.label == item.type) {
+              this.options[index]["options"].push({value: item.value, label: item.label,});
+            }
+          })
+        })
+      })
+
     },
     // 获取标注数据
     getLabel() {
+      // 标签数据初始化
+      this.noise_level = {
+        Ilevel: "A",
+        IIlevel: "A",
+        IIIlevel: "A",
+        aVRlevel: "A",
+        aVLlevel: "A",
+        aVFlevel: "A",
+        V1level: "A",
+        V2level: "A",
+        V3level: "A",
+        V4level: "A",
+        V5level: "A",
+        V6level: "A",
+      }
+      this.myocarditiszhi = []
+      this.trueValues = []
+      this.subData = null //波段标注标签
+      this.pointdata = null //心搏标注标签
+      this.rectangles = null //矩形框标签
+      this.isSuspected = false
       getJecg12(this.log_id) //固定第一条数据pId以测试 00cab968-3b9b-5cc4-8f58-57be9dd88b09
         .then((res) => {
           // 对返回的标签进行处理，
           // 1 未找到对应id的标签，插入一条初始化空数据
-          if(!res.data){
-            var waveLabel = {};
-            for (var i=0;i < this.levelList.length;i++){
-              if (!waveLabel[String(i)]) waveLabel[String(i)] = {}
-              this.waveList.forEach(item=>{
-                waveLabel[String(i)][item] = []
-              })
-            }
-
-            var beatLabel = {};
-            for (var i=0;i< this.levelList.length;i++){
-              if (!beatLabel[String(i)]) beatLabel[String(i)] = {}
-              this.beatList.forEach(item=>{
-                beatLabel[String(i)][item] = []
-              })
-            }
-            var rectangles = {};
-            for (var i=0;i< this.levelList.length;i++){
-                rectangles[String(i)] = []
-            }
-            console.log("insert:", waveLabel, beatLabel, rectangles)
+          if (!res.data) {
             addJecg12({
               pId: this.log_id,
-              waveLabel: JSON.stringify(waveLabel) ,
-              beatLabel: JSON.stringify(beatLabel),
-              rectangles: JSON.stringify(rectangles),
+              updateTime: new Date(),
+              // updateBy: this.user.userName,
             })
             return
           }
+          //查询到标签，做赋值处理
           this.subData = JSON.parse(res.data.waveLabel);
           this.pointdata = JSON.parse(res.data.beatLabel);
           this.rectangles = JSON.parse(res.data.rectangles);
+          this.noise_level = res.data.noiseLevel == null ? this.noise_level : JSON.parse(res.data.noiseLevel)
+          this.isSuspected = res.data.isSuspected == null ? this.isSuspected : Boolean(res.data.isSuspected)
+          this.trueValues = res.data.options1 == null ? this.trueValues : JSON.parse(res.data.options1)
+          this.myocarditiszhi = res.data.options2 == null ? this.myocarditiszhi : JSON.parse(res.data.options2)
+
+          // 监听事件还没有触发，手动重新渲染button
+          document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : "";
         })
-      // 2 标签为空，初始化
-      if(this.subData==null){
+      // 2 无论查没查到，对几个复杂格式数据格式化
+      if (this.subData == null) {
         var waveLabel = {};
-        for (var i=0;i < this.levelList.length;i++){
+        for (var i = 0; i < this.levelList.length; i++) {
           if (!waveLabel[String(i)]) waveLabel[String(i)] = {}
-          this.waveList.forEach(item=>{
+          this.waveList.forEach(item => {
             waveLabel[String(i)][item] = []
           })
         }
         this.subData = waveLabel
       }
-      if(this.pointdata==null){
+      if (this.pointdata == null) {
         var beatLabel = {};
-        for (var i=0;i< this.levelList.length;i++){
+        for (var i = 0; i < this.levelList.length; i++) {
           if (!beatLabel[String(i)]) beatLabel[String(i)] = {}
-          this.beatList.forEach(item=>{
+          this.beatList.forEach(item => {
             beatLabel[String(i)][item] = []
           })
         }
         this.pointdata = beatLabel
       }
-      if(this.rectangles==null){
+      if (this.rectangles == null) {
         var rectangles = {};
-        for (var i=0;i< length(this.levelList);i++){
+        for (var i = 0; i < length(this.levelList); i++) {
           rectangles[String(i)] = []
         }
         this.rectangles = rectangles
       }
+
       // 3 标签不全（暂时不考虑，如果需要与之前未标全的标签融合再考虑）
     },
     //判断红绿颜色
@@ -2524,26 +2540,22 @@ export default {
       }
     },
     //ABCD等级的判断
-    level(data) {
-      this.noise_level = data.result.noise_level;
-      // console.log("传的ABCD的等级", this.noise_level)
-    },
+    // level(data) {
+    //   this.noise_level = data.result.noise_level;
+    //   // console.log("传的ABCD的等级", this.noise_level)
+    // },
     //修改红绿颜色框的颜色
     changeColor(tid) {
-      console.log("红绿颜色修改点击事件：", tid);
       var b = tid.target.id;
-      console.log("点击获取到的导联id：", b);
       let temp = document.getElementById(b);
       if (this.noise_list[b] === 0) {
         this.noise_list[b] = 1;
         temp.style.backgroundColor = "red";
         this.noise_level[this.lightlevel[b]] = "B";
-        console.log("点击修改之后的噪声数据：", this.noise_list);
       } else {
         this.noise_list[b] = 0;
         temp.style.backgroundColor = "greenyellow";
         this.noise_level[this.lightlevel[b]] = "A";
-        console.log("点击修改之后的噪声数据：", this.noise_list);
       }
     },
     //全为A
@@ -2626,6 +2638,7 @@ export default {
     },
     suspected() {
       this.isSuspected = !this.isSuspected;
+      console.log(this.isSuspected)
     },
     async prev() {
       this.loading = true; //转圈动画效果
@@ -2673,7 +2686,7 @@ export default {
       }
 
       if (this.index >= this.queryParams.pageSize - 1) {
-        this.queryParams.pageNum =  1 + parseInt(this.queryParams.pageNum, 10)
+        this.queryParams.pageNum = 1 + parseInt(this.queryParams.pageNum, 10)
         this.index = 0;
       } else {
         this.index = this.index + 1;
@@ -2691,148 +2704,157 @@ export default {
         `&anoStatus=${this.queryParams.anoStatus}` +
         `&logTime=${this.queryParams.logTime}`;
       window.history.replaceState("", "", newUrl);
-      console.log("pageNum:", this.queryParams.pageNum, "index:", this.index)
     },
 
     // 点击提交
     async submit() {
+      //提交质量评估，预警类型，心肌炎，疑似病例 标签
+      updateJecg12({
+        pId: this.log_id,
+        noiseLevel: JSON.stringify(this.noise_level),
+        options1: JSON.stringify(this.trueValues),
+        options2: JSON.stringify(this.myocarditiszhi),
+        isSuspected: this.isSuspected == true ? 1 : 0,
+        updateTime: new Date().getDate()
+        // updateBy:
+      }).then(
+        this.$modal.msgSuccess("数据提交成功")
+      )
 
-      this.value = this.trueValues.join();
-
-      var that = this;
-      // return;
-      $.ajax({
-        cache: true,
-        type: "POST",
-        dataType: "json",
-        contentType: "application/json",
-        url: "https://screen.mindyard.cn:84/write_logType",
-        data: JSON.stringify({
-          id: this.message.logid,
-          Type: this.value,//中文
-          list: this.noise_list,
-          lists: this.noise_level,
-          user_id: this.message.user_id,
-        }),
-        async: false,
-        success: function (data) {
-          console.log("success:", data);
-          that.$modal.msgSuccess("数据提交成功");
-        },
-        error: function (data) {
-          console.log("error:", data);
-          //            cocoMessage.error("提交失败", 3000);
-        },
-      });
-
-
-      //标注成功
-      let myocarditiszhiString = this.myocarditiszhi.length > 0 ? this.myocarditiszhi.toString() : '';
-      let myocardiumTypezhi = {
-        myocarditiszhi: myocarditiszhiString,
-        others: this.others
-      }
-      // console.log(JSON.stringify(myocardiumTypezhi));
-      islabel({
-        logType: this.value, //预警类型
-        logId: this.message.logid,//日志id
-        userId: this.message.user_id,
-        isSuspected: this.isSuspected ? 1 : 0, //是否是疑似病例 1
-        myocardiumType: JSON.stringify(myocardiumTypezhi)
-      });
-
-      let selectedValues = [];
-
-      // 遍历trueValues数组
-      this.trueValues.forEach((trueValue) => {
-        // 遍历options数组
-        this.options.forEach((option) => {
-          // 遍历当前option对象中的zhong数组
-          option.options.forEach((options) => {
-            // 如果当前zhongItem对象的label等于trueValue，则将其value添加到selectedValues数组中
-            if (options.value === trueValue) {
-              selectedValues.push(options.label + "Ecg");
-            }
-          });
-        });
-      });
-      let dataObject = {
-        pId: this.message.pid,
-        logId: this.message.logid,
-        leadCount: this.$route.query.state
-      };
-      for (let i = 0; i < selectedValues.length; i++) {
-        // 将数组中的每个字符串作为对象的键，值为1，并放入dataObject对象中
-        dataObject[selectedValues[i]] = 1;
-      }
-      // 接口
-      // console.log(dataObject);
-      addCount(dataObject)
+      // this.value = this.trueValues.join();
+      // var that = this;
+      // // return;
+      // $.ajax({
+      //   cache: true,
+      //   type: "POST",
+      //   dataType: "json",
+      //   contentType: "application/json",
+      //   url: "https://screen.mindyard.cn:84/write_logType",
+      //   data: JSON.stringify({
+      //     id: this.message.logid,
+      //     Type: this.value,//中文
+      //     list: this.noise_list,
+      //     lists: this.noise_level,
+      //     user_id: this.message.user_id,
+      //   }),
+      //   async: false,
+      //   success: function (data) {
+      //     console.log("success:", data);
+      //     that.$modal.msgSuccess("数据提交成功");
+      //   },
+      //   error: function (data) {
+      //     console.log("error:", data);
+      //     //            cocoMessage.error("提交失败", 3000);
+      //   },
+      // });
+      //
+      //
+      // //标注成功
+      // let myocarditiszhiString = this.myocarditiszhi.length > 0 ? this.myocarditiszhi.toString() : '';
+      // let myocardiumTypezhi = {
+      //   myocarditiszhi: myocarditiszhiString,
+      //   others: this.others
+      // }
+      // // console.log(JSON.stringify(myocardiumTypezhi));
+      // islabel({
+      //   logType: this.value, //预警类型
+      //   logId: this.message.logid,//日志id
+      //   userId: this.message.user_id,
+      //   isSuspected: this.isSuspected ? 1 : 0, //是否是疑似病例 1
+      //   myocardiumType: JSON.stringify(myocardiumTypezhi)
+      // });
+      //
+      // let selectedValues = [];
+      //
+      // // 遍历trueValues数组
+      // this.trueValues.forEach((trueValue) => {
+      //   // 遍历options数组
+      //   this.options.forEach((option) => {
+      //     // 遍历当前option对象中的zhong数组
+      //     option.options.forEach((options) => {
+      //       // 如果当前zhongItem对象的label等于trueValue，则将其value添加到selectedValues数组中
+      //       if (options.value === trueValue) {
+      //         selectedValues.push(options.label + "Ecg");
+      //       }
+      //     });
+      //   });
+      // });
+      // let dataObject = {
+      //   pId: this.message.pid,
+      //   logId: this.message.logid,
+      //   leadCount: this.$route.query.state
+      // };
+      // for (let i = 0; i < selectedValues.length; i++) {
+      //   // 将数组中的每个字符串作为对象的键，值为1，并放入dataObject对象中
+      //   dataObject[selectedValues[i]] = 1;
+      // }
+      // // 接口
+      // // console.log(dataObject);
+      // addCount(dataObject)
 
     },
 
-    submitData() {
-      this.query.waveLabel = JSON.stringify(this.subData);
-      console.log(this.subData);
-      // addLabel(this.query).then(res=>{
-      //   this.$modal.msgSuccess("标注提交成功");
-      // }).catch(err=>{})
-    },
-    showchart(title, data){
+    // submitData() {
+    //   this.query.waveLabel = JSON.stringify(this.subData);
+    //   console.log(this.subData);
+    //   // addLabel(this.query).then(res=>{
+    //   //   this.$modal.msgSuccess("标注提交成功");
+    //   // }).catch(err=>{})
+    // },
+    showchart(title, data) {  //显示child页面
       var level = 1
-      this.levelList.forEach((item,index)=>{
-        if (item==title){
-          level=index+1
+      this.levelList.forEach((item, index) => {
+        if (item == title) {
+          level = index + 1
         }
       })
-
       this.$refs.drawShow.getchart(data, this.log_id, level, title, 12,
-        {"beatLabel":this.pointdata,"waveLabel":this.subData,"rectangles":this.rectangles});
+        {"beatLabel": this.pointdata, "waveLabel": this.subData, "rectangles": this.rectangles});
       // this.$refs.drawShow.getchart2();
     },
 
 
     //区间合并
-    getMerge(arr) {
-      arr.sort((a, b) => {
-        if (a[0] !== b[0]) {
-          return a[0] - b[0];
-        }
-        return a[1] - b[1];
-      });
-      let len = arr.length,
-        ans = [],
-        start,
-        end; // 遍历当前区间的最小值与最大值
-      for (let i = 0; i < len; i++) {
-        let s = arr[i][0];
-        let e = arr[i][1];
-        if (start === undefined) {
-          start = s;
-          end = e;
-        } else if (s <= end) {
-          end = Math.max(e, end);
-        } else {
-          let part = [start, end];
-          ans.push(part);
-          start = s;
-          end = e;
-        }
-      }
-
-      if (start !== undefined) {
-        let part = [start, end];
-        ans.push(part);
-      }
-      return ans;
-    },
-    Off() {
-      for (let tapKey in this.tap) {
-        this.tap[tapKey] = false;
-      }
-      this.lead = false;
-      this.show = false;
-    },
+    // getMerge(arr) {
+    //   arr.sort((a, b) => {
+    //     if (a[0] !== b[0]) {
+    //       return a[0] - b[0];
+    //     }
+    //     return a[1] - b[1];
+    //   });
+    //   let len = arr.length,
+    //     ans = [],
+    //     start,
+    //     end; // 遍历当前区间的最小值与最大值
+    //   for (let i = 0; i < len; i++) {
+    //     let s = arr[i][0];
+    //     let e = arr[i][1];
+    //     if (start === undefined) {
+    //       start = s;
+    //       end = e;
+    //     } else if (s <= end) {
+    //       end = Math.max(e, end);
+    //     } else {
+    //       let part = [start, end];
+    //       ans.push(part);
+    //       start = s;
+    //       end = e;
+    //     }
+    //   }
+    //
+    //   if (start !== undefined) {
+    //     let part = [start, end];
+    //     ans.push(part);
+    //   }
+    //   return ans;
+    // },
+    // Off() {
+    //   for (let tapKey in this.tap) {
+    //     this.tap[tapKey] = false;
+    //   }
+    //   this.lead = false;
+    //   this.show = false;
+    // },
     del() {
       console.log(this.delX.key, this.delX.value);
       this.pointdata.some((item, index) => {
@@ -2864,41 +2886,42 @@ export default {
       });
     },
     //判断是一维数组还是二维
-    isArray(a) {
-      for (let i of a) {
-        if (Array.isArray(i)) return 2;
-      }
-      return 1;
-    },
-    clickitem(e) {
-      e === this.radio ? (this.radio = "") : (this.radio = e);
-    },
+    // isArray(a) {
+    //   for (let i of a) {
+    //     if (Array.isArray(i)) return 2;
+    //   }
+    //   return 1;
+    // },
+    // clickitem(e) {
+    //   e === this.radio ? (this.radio = "") : (this.radio = e);
+    // },
     AILabel() {
-      console.log("开始智能标注");
-      $.ajax({
-        type: "POST",
-        url: "http://127.0.0.1:5000/",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify({
-          log_id: this.log_id,
-          data: this.data
-        }),
-        success: jsonResult => {
-          console.log(jsonResult)
-
-          //测试
-          this.noise_level.aVFlevel = jsonResult.label==1? "B":"A";
-          this.noise_level.V1level = jsonResult.label==1? "B":"A";
-          this.noise_level.V2level = jsonResult.label==1? "B":"A";
-        },
-        error: function (data) {
-          console.log("获取数据失败")
-          console.log(data);
-          _th.$modal.msgError("数据获取失败");
-        },
-
-      })
+      console.log(this.trueValues)
+      // console.log("开始智能标注");
+      // $.ajax({
+      //   type: "POST",
+      //   url: "http://127.0.0.1:5000/",
+      //   dataType: "json",
+      //   contentType: "application/json",
+      //   data: JSON.stringify({
+      //     log_id: this.log_id,
+      //     data: this.data
+      //   }),
+      //   success: jsonResult => {
+      //     console.log(jsonResult)
+      //
+      //     //测试
+      //     this.noise_level.aVFlevel = jsonResult.label == 1 ? "B" : "A";
+      //     this.noise_level.V1level = jsonResult.label == 1 ? "B" : "A";
+      //     this.noise_level.V2level = jsonResult.label == 1 ? "B" : "A";
+      //   },
+      //   error: function (data) {
+      //     console.log("获取数据失败")
+      //     console.log(data);
+      //     _th.$modal.msgError("数据获取失败");
+      //   },
+      //
+      // })
     },
   },
 };

@@ -9,31 +9,47 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 静态12导心电数据对象 jecg_12
  * 
  * @author yangliu
- * @date 2024-11-27
+ * @date 2024-12-01
  */
 public class Jecg12 extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** p_id */
-    @Excel(name = "p_id")
+    /** 心电日志id */
+    @Excel(name = "心电日志id")
     private String pId;
 
     /** 心电数据 */
     @Excel(name = "心电数据")
     private String ecgData;
 
-    /** 波段标签 */
-    @Excel(name = "波段标签")
+    /** 波段标注标签 */
+    @Excel(name = "波段标注标签")
     private String waveLabel;
 
-    /** 心搏标签 */
-    @Excel(name = "心搏标签")
+    /** 心搏标注标签 */
+    @Excel(name = "心搏标注标签")
     private String beatLabel;
 
-    /** 矩形框 */
-    @Excel(name = "矩形框")
+    /** 波段标注中的矩形框标签 */
+    @Excel(name = "波段标注中的矩形框标签")
     private String rectangles;
+
+    /** 噪声等级标签 */
+    @Excel(name = "噪声等级标签")
+    private String noiseLevel;
+
+    /** 预警类型的选择 */
+    @Excel(name = "预警类型的选择")
+    private String options1;
+
+    /** 心肌炎的选择 */
+    @Excel(name = "心肌炎的选择")
+    private String options2;
+
+    /** 是否疑似病例 */
+    @Excel(name = "是否疑似病例")
+    private Long isSuspected;
 
     public void setpId(String pId) 
     {
@@ -80,6 +96,42 @@ public class Jecg12 extends BaseEntity
     {
         return rectangles;
     }
+    public void setNoiseLevel(String noiseLevel) 
+    {
+        this.noiseLevel = noiseLevel;
+    }
+
+    public String getNoiseLevel() 
+    {
+        return noiseLevel;
+    }
+    public void setOptions1(String options1) 
+    {
+        this.options1 = options1;
+    }
+
+    public String getOptions1() 
+    {
+        return options1;
+    }
+    public void setOptions2(String options2) 
+    {
+        this.options2 = options2;
+    }
+
+    public String getOptions2() 
+    {
+        return options2;
+    }
+    public void setIsSuspected(Long isSuspected) 
+    {
+        this.isSuspected = isSuspected;
+    }
+
+    public Long getIsSuspected() 
+    {
+        return isSuspected;
+    }
 
     @Override
     public String toString() {
@@ -89,6 +141,12 @@ public class Jecg12 extends BaseEntity
             .append("waveLabel", getWaveLabel())
             .append("beatLabel", getBeatLabel())
             .append("rectangles", getRectangles())
+            .append("noiseLevel", getNoiseLevel())
+            .append("options1", getOptions1())
+            .append("options2", getOptions2())
+            .append("isSuspected", getIsSuspected())
+            .append("updateTime", getUpdateTime())
+            .append("updateBy", getUpdateBy())
             .toString();
     }
 }
