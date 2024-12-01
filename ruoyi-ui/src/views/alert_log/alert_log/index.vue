@@ -116,13 +116,7 @@
             @click="handleLabel(scope.row)"
             v-hasPermi="['alert_log:alert_log:edit']"
           >标注</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="test(scope.row)"
-            v-hasPermi="['alert_log:alert_log:edit']"
-          >测试</el-button>
+
           <el-button
             size="mini"
             type="text"
@@ -335,10 +329,8 @@ export default {
       // });
       this.$router.push({
         path: "/LabelEcg12",// name: "lookLog"
-
         query: {
           logId: row.logId,
-
           //当前查询参数
           pageNum: this.queryParams.pageNum,
           pageSize: this.queryParams.pageSize,
@@ -347,26 +339,6 @@ export default {
           pId: this.queryParams.pId,
         },
       });
-    },
-    test(row){
-      $.ajax({
-        type: "POST",
-        url: "http://127.0.0.1:5000/",
-        dataType: "json",
-        contentType: "application/json",
-        data: JSON.stringify({
-          log_id: row.logId,
-        }),
-        success: jsonResult =>{
-          console.log(jsonResult)
-        },
-        error: function (data) {
-          console.log("获取数据失败")
-          console.log(data);
-          _th.$modal.msgError("数据获取失败");
-        },
-
-      })
     },
 
   }

@@ -4,33 +4,38 @@
       <div class="patientInformation-biaoti">用户信息</div>
       <div class="patientInformation-xiangxi">
         <!--        <span id="">用户ID：{{ message.pid }}</span>-->
-        <span id="">日志ID：{{ log_id }}</span>
-        <span id="">性别：{{ message.sex }}</span>
-        <span id="">年龄：{{ message.age }}</span>
-        <span id="">时间：{{ message.time }}</span>
+        <span>性别：{{ message.sex }}</span>
+        <span>年龄：{{ message.age }}</span>
+        <span>时间：{{ message.time }}</span>
+
+        <span style="margin-left: 500px">标注时间：{{ updateTime }}</span>
+        <span>标注人id：{{ updateBy }}</span>
       </div>
 
-      <div class="tijiao">
-        <el-button type="success" id="btn1" class="btn1" @click="submit()">
-          提交
-        </el-button>
-        <el-button class="btn2" id="btn2" @click="suspected()"
-        >是否疑似病理
-        </el-button
-        >
-        <el-button
-          class="next"
-          v-if="state"
-          @click="prev()"
-          type="primary"
-          :loading="loading"
-        >上一个
-        </el-button
-        >
-        <el-button class="next" v-if="state" @click="next()" :loading="loading"
-        >下一个
-        </el-button
-        >
+      <div class="tijiao" >
+        <div>
+          <el-button type="success" id="btn1" class="btn1" @click="submit()">
+            提交
+          </el-button>
+          <el-button class="btn2" id="btn2" @click="suspected()"
+          >是否疑似病理
+          </el-button
+          >
+          <el-button
+            class="next"
+            v-if="state"
+            @click="prev()"
+            type="primary"
+            :loading="loading"
+          >上一个
+          </el-button
+          >
+          <el-button class="next" v-if="state" @click="next()" :loading="loading"
+          >下一个
+          </el-button
+          >
+        </div>
+
       </div>
 
     </div>
@@ -749,18 +754,18 @@ export default {
       },
       value: "正常心电图",
       options: [],
-      timex: [],
+      // timex: [],
       state: true,
       show: false,
       seriesdata: [{yAxis: -3}, {yAxis: -2.5}, {yAxis: -2}, {yAxis: -1.5}, {yAxis: -1}, {yAxis: -0.5}, {yAxis: 0}, {yAxis: 0.5}, {yAxis: 1}, {yAxis: 1.5}, {yAxis: 2}, {yAxis: 2.5}, {yAxis: 3},],
       seriesdata1: [{yAxis: -1}, {yAxis: -0.5}, {yAxis: 0}, {yAxis: 0.5}, {yAxis: 1},],
       data: {},
       chartjump: null,
-      xIndex: null,
-      delX: {key: null, value: null}, //想要删除的点
+      // xIndex: null,
+      // delX: {key: null, value: null}, //想要删除的点
       // area: [], //想要删除的区间
-      markArea: [],
-      title: "",
+      // markArea: [],
+      // title: "",
 
       //噪声等级标签
       noise_level: {
@@ -778,6 +783,7 @@ export default {
         V6level: "A",
       },
 
+      //标签相关数据
       trueValues: [],// 预警类型标签
       myocarditiszhi: [],// 心机炎标签
       subData: null, //波段标注标签
@@ -785,6 +791,9 @@ export default {
       rectangles: null, //矩形框标签
       isSuspected: false,
       others: "",//其他原因
+      updateTime :"",
+      updateBy:"",
+
       // 初始化查询参数
       queryParams: {
         pageNum: 1,
@@ -817,6 +826,11 @@ export default {
     isSuspected(val) {
       document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : "";
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    // 离开页面直接关闭窗口
+    this.$store.dispatch("tagsView/delView", this.$route);
+    next()
   },
   created() {
     //获取页面路由参数
@@ -941,6 +955,7 @@ export default {
 
     //获取心电数据
     getMessage() {
+      console.log("id:",this.log_id)
       var Iy = [];
       var IIy = [];
       var IIIy = [];
@@ -992,7 +1007,6 @@ export default {
               for (var k = 0; k < 1001; k++) {
                 timex.push(k / 100 + "秒");
               }
-              _th.timex = timex;
               //console.log(timex)
               //console.log(jsonResult.result.I.length)
               for (i = 0; i < 1000; i++) {
@@ -2412,7 +2426,6 @@ export default {
 
           this.options.forEach((child, index) => {
             //判断数组中有没有这个label
-            console.log("yes")
             if (child.label == item.type) {
               labelExist = true
             }
@@ -2454,6 +2467,8 @@ export default {
       this.rectangles = null //矩形框标签
       this.isSuspected = false
       this.others = ""
+      this.updateTime = ""
+      this.updateBy = ""
       getJecg12(this.log_id) //固定第一条数据pId以测试 00cab968-3b9b-5cc4-8f58-57be9dd88b09
         .then((res) => {
           // 对返回的标签进行处理，
@@ -2475,7 +2490,8 @@ export default {
           this.trueValues = res.data.options1 == null ? this.trueValues : JSON.parse(res.data.options1)
           this.myocarditiszhi = res.data.options2 == null ? this.myocarditiszhi : JSON.parse(res.data.options2)
           this.others = res.data.others == null ? this.others : JSON.parse(res.data.others)
-
+          this.updateTime = res.data.updateTime == null ? this.updateTime : res.data.updateTime
+          this.updateBy = res.data.updateBy == null ? this.updateBy : res.data.updateBy
           //手动渲染红绿按钮显示
           this.light(this.noise_level);
           // 监听事件还没有触发，手动重新渲染button
@@ -2643,8 +2659,6 @@ export default {
         `&anoStatus=${this.queryParams.anoStatus}` +
         `&logTime=${this.queryParams.logTime}`;
       window.history.replaceState("", "", newUrl);
-      console.log("pageNum:", this.queryParams.pageNum, "index:", this.index)
-
     },
     // 点击下一页触发事件
     async next() {
@@ -2829,36 +2843,36 @@ export default {
     //   this.lead = false;
     //   this.show = false;
     // },
-    del() {
-      console.log(this.delX.key, this.delX.value);
-      this.pointdata.some((item, index) => {
-        if (item.xAxis == this.delX.value) {
-          this.pointdata.splice(index, 1);
-          return true;
-        }
-      });
-      this.subData[this.delX.key].some((item, index) => {
-        if (item == this.delX.value) {
-          this.subData[this.delX.key].splice(index, 1);
-          console.log("删除成功");
-          return true;
-        }
-      });
-      this.delX = {key: null, value: null};
-      this.chartjump.setOption({
-        series: {
-          markPoint: {
-            symbol: "pin",
-            symbolSize: 24,
-            animation: false,
-            data: this.pointdata,
-          },
-        },
-      });
-      $("#rightMenu").css({
-        display: "none",
-      });
-    },
+    // del() {
+    //   console.log(this.delX.key, this.delX.value);
+    //   this.pointdata.some((item, index) => {
+    //     if (item.xAxis == this.delX.value) {
+    //       this.pointdata.splice(index, 1);
+    //       return true;
+    //     }
+    //   });
+    //   this.subData[this.delX.key].some((item, index) => {
+    //     if (item == this.delX.value) {
+    //       this.subData[this.delX.key].splice(index, 1);
+    //       console.log("删除成功");
+    //       return true;
+    //     }
+    //   });
+    //   this.delX = {key: null, value: null};
+    //   this.chartjump.setOption({
+    //     series: {
+    //       markPoint: {
+    //         symbol: "pin",
+    //         symbolSize: 24,
+    //         animation: false,
+    //         data: this.pointdata,
+    //       },
+    //     },
+    //   });
+    //   $("#rightMenu").css({
+    //     display: "none",
+    //   });
+    // },
     //判断是一维数组还是二维
     // isArray(a) {
     //   for (let i of a) {

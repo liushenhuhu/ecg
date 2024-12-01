@@ -2092,14 +2092,12 @@ export default {
       if (!this.isselected) return // 查看是否选中矩形框
       //删除矩形框
       this.datalabel.rectangles[String(this.level - 1)].splice(this.selectrectangleIndex, 1)
-      // var option = this.chart2.getOption()
-      // option.series[0].markArea.data.splice(this.selectrectangleIndex, 1)
       this.chart2_redraw()
     },
     //处理全局键盘点击
     handleGlobalkeydown(event) {
-      // const tab = this.$refs.tab.$el;
-      // const tabButtons = tab.querySelectorAll(".el-tabs__item");
+      if(!this.drawShow) return
+
       if (this.activeName == "first") {
         switch (event.key) {
           case '1':
@@ -2126,8 +2124,7 @@ export default {
           case 't':
             this.clickitem1('GanRao');
             break;
-          default:
-            console.log(event.key)
+          default: break;
         }
       } else if (this.activeName == "second") {
         switch (event.key) {
