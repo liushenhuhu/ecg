@@ -105,9 +105,15 @@
         <div class="xinDian">心电图</div>
         <div class="echarts">
           <div class="container">
-            <div class="chart" id="I" @dblclick="showchart('I', data.I)"></div>
-            <!--            <button class="btn" id="I导联" @click="showchart('I',data.I)">展开</button>-->
-            <span class="light" id="Ilight" @click="changeColor($event)"></span>
+            <div
+              class="chart"
+              id="I"
+              @dblclick="showchart('I', data.I)"
+            ></div>
+            <span
+              class="light"
+              id="Ilight"
+            ></span>
           </div>
           <div class="container">
             <div
@@ -115,11 +121,9 @@
               id="II"
               @dblclick="showchart('II', data.II)"
             ></div>
-            <!--            <button class="btn" id="II导联" @click="showchart('II',data.II)">展开</button>-->
             <span
               class="light"
               id="IIlight"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -128,11 +132,9 @@
               id="III"
               @dblclick="showchart('III', data.III)"
             ></div>
-            <!--            <button class="btn" id="III导联" @click="showchart('III',data.III)">展开</button>-->
             <span
               class="light"
               id="IIIlight"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -141,11 +143,9 @@
               id="aVR"
               @dblclick="showchart('aVR', data.aVR)"
             ></div>
-            <!--            <button class="btn" id="aVR导联" @click="showchart('aVR',data.aVR)">展开</button>-->
             <span
               class="light"
               id="aVRlight"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -154,11 +154,9 @@
               id="aVL"
               @dblclick="showchart('aVL', data.aVL)"
             ></div>
-            <!--            <button class="btn" id="aVL导联" @click="showchart('aVL',data.aVL)">展开</button>-->
             <span
               class="light"
               id="aVLlight"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -167,11 +165,9 @@
               id="aVF"
               @dblclick="showchart('aVF', data.aVF)"
             ></div>
-            <!--            <button class="btn" id="aVF导联" @click="showchart('aVF',data.aVF)">展开</button>-->
             <span
               class="light"
               id="aVFlight"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -180,11 +176,9 @@
               id="V1"
               @dblclick="showchart('V1', data.V1)"
             ></div>
-            <!--            <button class="btn" id="V1导联" @click="showchart('V1',data.V1)">展开</button>-->
             <span
               class="light"
               id="V1light"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -193,11 +187,9 @@
               id="V2"
               @dblclick="showchart('V2', data.V2)"
             ></div>
-            <!--            <button class="btn" id="V2导联" @click="showchart('V2',data.V2)">展开</button>-->
             <span
               class="light"
               id="V2light"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -206,11 +198,9 @@
               id="V3"
               @dblclick="showchart('V3', data.V3)"
             ></div>
-            <!--            <button class="btn" id="V3导联" @click="showchart('V3',data.V3)">展开</button>-->
             <span
               class="light"
               id="V3light"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -219,11 +209,9 @@
               id="V4"
               @dblclick="showchart('V4', data.V4)"
             ></div>
-            <!--            <button class="btn" id="V4导联" @click="showchart('V4',data.V4)">展开</button>-->
             <span
               class="light"
               id="V4light"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -232,11 +220,9 @@
               id="V5"
               @dblclick="showchart('V5', data.V5)"
             ></div>
-            <!--            <button class="btn" id="V5导联" @click="showchart('V5',data.V5)">展开</button>-->
             <span
               class="light"
               id="V5light"
-              @click="changeColor($event)"
             ></span>
           </div>
           <div class="container">
@@ -245,11 +231,9 @@
               id="V6"
               @dblclick="showchart('V6', data.V6)"
             ></div>
-            <!--            <button class="btn" id="V6导联" @click="showchart('V6',data.V6)">展开</button>-->
             <span
               class="light"
               id="V6light"
-              @click="changeColor($event)"
             ></span>
           </div>
         </div>
@@ -665,8 +649,7 @@ export default {
     return {
       log_id: null,
       user_id: null,
-      //其他原因
-      others: '',
+
       myocarditis: [
         {
           label: 'ST-T',
@@ -794,15 +777,14 @@ export default {
         V5level: "A",
         V6level: "A",
       },
-      // 预警类型标签
-      trueValues: ["正常心电图"],
-      // 心机炎标签
-      myocarditiszhi: [],
+
+      trueValues: [],// 预警类型标签
+      myocarditiszhi: [],// 心机炎标签
       subData: null, //波段标注标签
       pointdata: null, //心搏标注标签
       rectangles: null, //矩形框标签
       isSuspected: false,
-
+      others: "",//其他原因
       // 初始化查询参数
       queryParams: {
         pageNum: 1,
@@ -850,10 +832,12 @@ export default {
     }
   },
   mounted() {
+    this.getLogId();
     this.getMessage();
     this.getIndex();
-    this.chartjump = echarts.init(document.getElementById("chartjump"));
     this.getLabel();
+    this.chartjump = echarts.init(document.getElementById("chartjump"));
+
   },
   methods: {
     qitazhi(data) {
@@ -1001,7 +985,6 @@ export default {
           _th.message.time = jsonResult.result.clockTime;
           _th.value = jsonResult.result.logType;
           _th.loading = false;
-          _th.light(jsonResult);
           // _th.level(jsonResult);
           if (_th.message.devicesn != null) {
             (function () {
@@ -2470,6 +2453,7 @@ export default {
       this.pointdata = null //心搏标注标签
       this.rectangles = null //矩形框标签
       this.isSuspected = false
+      this.others = ""
       getJecg12(this.log_id) //固定第一条数据pId以测试 00cab968-3b9b-5cc4-8f58-57be9dd88b09
         .then((res) => {
           // 对返回的标签进行处理，
@@ -2477,8 +2461,8 @@ export default {
           if (!res.data) {
             addJecg12({
               pId: this.log_id,
-              updateTime: new Date(),
-              // updateBy: this.user.userName,
+              updateTime: new Date().getDate(),
+              updateBy: this.$store.state.user.id,
             })
             return
           }
@@ -2490,7 +2474,10 @@ export default {
           this.isSuspected = res.data.isSuspected == null ? this.isSuspected : Boolean(res.data.isSuspected)
           this.trueValues = res.data.options1 == null ? this.trueValues : JSON.parse(res.data.options1)
           this.myocarditiszhi = res.data.options2 == null ? this.myocarditiszhi : JSON.parse(res.data.options2)
+          this.others = res.data.others == null ? this.others : JSON.parse(res.data.others)
 
+          //手动渲染红绿按钮显示
+          this.light(this.noise_level);
           // 监听事件还没有触发，手动重新渲染button
           document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : "";
         })
@@ -2526,16 +2513,15 @@ export default {
       // 3 标签不全（暂时不考虑，如果需要与之前未标全的标签融合再考虑）
     },
     //判断红绿颜色
-    light(data) {
-      this.noise_list = data.result.noise;
-      // console.log(this.noise_list)
-      for (var key in this.noise_list) {
-        if (this.noise_list[key] === 1) {
-          let temp = document.getElementById(key);
-          temp.style.backgroundColor = "red";
-        } else {
-          let temp = document.getElementById(key);
+    light(noise) {
+
+      for (var key in noise) {
+        if (noise[key] == "A") {
+          let temp = document.getElementById(this.levellight[key]);
           temp.style.backgroundColor = "greenyellow";
+        } else {
+          let temp = document.getElementById(this.levellight[key]);
+          temp.style.backgroundColor = "red";
         }
       }
     },
@@ -2544,20 +2530,7 @@ export default {
     //   this.noise_level = data.result.noise_level;
     //   // console.log("传的ABCD的等级", this.noise_level)
     // },
-    //修改红绿颜色框的颜色
-    changeColor(tid) {
-      var b = tid.target.id;
-      let temp = document.getElementById(b);
-      if (this.noise_list[b] === 0) {
-        this.noise_list[b] = 1;
-        temp.style.backgroundColor = "red";
-        this.noise_level[this.lightlevel[b]] = "B";
-      } else {
-        this.noise_list[b] = 0;
-        temp.style.backgroundColor = "greenyellow";
-        this.noise_level[this.lightlevel[b]] = "A";
-      }
-    },
+
     //全为A
     allA() {
       for (var k in this.noise_level) {
@@ -2659,7 +2632,6 @@ export default {
       }
       //根据index获取log_id
       await this.getLogId();
-
       this.getMessage();
       this.getLabel();
       this.loading = false;
@@ -2708,15 +2680,17 @@ export default {
 
     // 点击提交
     async submit() {
-      //提交质量评估，预警类型，心肌炎，疑似病例 标签
+      console.log(this.others)
+      //提交字段:质量评估，预警类型，心肌炎，疑似病例，其他原因
       updateJecg12({
         pId: this.log_id,
         noiseLevel: JSON.stringify(this.noise_level),
         options1: JSON.stringify(this.trueValues),
         options2: JSON.stringify(this.myocarditiszhi),
         isSuspected: this.isSuspected == true ? 1 : 0,
-        updateTime: new Date().getDate()
-        // updateBy:
+        others: JSON.stringify(this.others),
+        updateTime: new Date().getDate(),
+        updateBy: this.$store.state.user.id
       }).then(
         this.$modal.msgSuccess("数据提交成功")
       )

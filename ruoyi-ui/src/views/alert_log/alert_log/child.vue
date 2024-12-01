@@ -1692,6 +1692,8 @@ export default {
         waveLabel: JSON.stringify(this.datalabel.waveLabel),
         beatLabel: JSON.stringify(this.datalabel.beatLabel),
         rectangles: JSON.stringify(this.datalabel.rectangles),
+        updateTime: new Date().getDate(),
+        updateBy: this.$store.state.user.id,
       });
       this.$modal.msgSuccess("提交成功!");
       //提交数据

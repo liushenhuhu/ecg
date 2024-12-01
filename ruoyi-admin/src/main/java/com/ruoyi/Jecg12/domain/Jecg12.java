@@ -51,6 +51,10 @@ public class Jecg12 extends BaseEntity
     @Excel(name = "是否疑似病例")
     private Long isSuspected;
 
+    /** $column.columnComment */
+    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    private String others;
+
     public void setpId(String pId) 
     {
         this.pId = pId;
@@ -132,6 +136,15 @@ public class Jecg12 extends BaseEntity
     {
         return isSuspected;
     }
+    public void setOthers(String others) 
+    {
+        this.others = others;
+    }
+
+    public String getOthers() 
+    {
+        return others;
+    }
 
     @Override
     public String toString() {
@@ -145,6 +158,7 @@ public class Jecg12 extends BaseEntity
             .append("options1", getOptions1())
             .append("options2", getOptions2())
             .append("isSuspected", getIsSuspected())
+            .append("others", getOthers())
             .append("updateTime", getUpdateTime())
             .append("updateBy", getUpdateBy())
             .toString();
