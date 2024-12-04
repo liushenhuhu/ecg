@@ -1,6 +1,7 @@
 <!--图片标记-->
 <template>
   <div>
+
     <el-tabs
       ref="tab"
       v-model="activeName"
@@ -98,7 +99,7 @@
               >
                 <el-button
                   type="primary"
-                  class="download-btn"
+                  class="clear-btn"
                   @click="submit()"
                 >
                   <i class="el-icon-finished"></i>
@@ -110,11 +111,11 @@
                 effect="dark"
                 content="关闭窗口"
                 placement="bottom"
+                v-show="lead1"
               >
                 <el-button
                   type="primary"
                   class="clear-btn"
-                  :style="closeStyle"
                   @click="clickClose"
                 >
                   <i class="el-icon-close"></i>
@@ -133,159 +134,180 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="波段标注" name="second">
+        <!--        <div class="loading-container" v-if="true">-->
+        <!--          <div class="spinner"></div>-->
+        <!--        </div>-->
         <span slot="label" class="tab_label">波段标注</span>
+
+
         <div
+          id = "waveLabelLoading"
           style="height: 80vh"
           v-loading="isLoading"
-          element-loading-text="数据加载中..."
+          :element-loading-text="isLoadingText"
           element-loading-background="rgba(0, 0, 0, 0.8)"
           @contextmenu.prevent
         >
-          <!--顶部工具栏-->
-          <div class="top-tool">
-            <!--左上角盒子-->
-            <div class="top-left-div" v-show="lead2">
-              <el-radio-group style="margin: auto" v-model="radio2">
-                <el-radio-button
-                  @click.native.prevent="clickitem('P1')"
-                  label="P1"
-                >P1
-                </el-radio-button
+            <!--顶部工具栏-->
+            <div class="top-tool">
+              <!--左上角盒子-->
+              <div class="top-left-div" v-show="lead2">
+                <el-radio-group style="margin: auto" v-model="radio2">
+                  <el-radio-button
+                    @click.native.prevent="clickitem('P1')"
+                    label="P1"
+                  >P1
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem('P2')"
+                    label="P2"
+                  >P2
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem('P3')"
+                    label="P3"
+                  >P3
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem('R1')"
+                    label="R1"
+                  >R1
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem('R2')"
+                    label="R2"
+                  >R2
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem('R3')"
+                    label="R3"
+                  >R3
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem('T1')"
+                    label="T1"
+                  >T1
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem('T2')"
+                    label="T2"
+                  >T2
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem('T3')"
+                    label="T3"
+                  >T3
+                  </el-radio-button
+                  >
+                  <el-radio-button
+                    @click.native.prevent="clickitem2('rec')"
+                    label="rec"
+                  >画框
+                  </el-radio-button
+                  >
+                </el-radio-group>
+                <el-popover
+                  style="margin: auto"
+                  placement="bottom-start"
+                  title="提示"
+                  width="220"
+                  trigger="hover"
                 >
-                <el-radio-button
-                  @click.native.prevent="clickitem('P2')"
-                  label="P2"
-                >P2
-                </el-radio-button
+                  <p class="tipck">1. 左上角按钮可以选择类型</p>
+                  <p class="tipck">2. 左键单击，进行标点</p>
+                  <p class="tipck">3. 右键单击，进行删除</p>
+                  <p class="tipck">4. 也可点击右上角清空所有点</p>
+                  <p class="tipck">5. 标点完成后，点击右上角提交</p>
+                  <el-button slot="reference"
+                  ><i class="el-icon-info icon"></i
+                  ></el-button>
+                </el-popover>
+              </div>
+              <!--右上角盒子-->
+              <div class="top-right-div">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="AI标注"
+                  placement="bottom"
+                  v-show="lead2"
                 >
-                <el-radio-button
-                  @click.native.prevent="clickitem('P3')"
-                  label="P3"
-                >P3
-                </el-radio-button
+                  <el-button
+                    type="primary"
+                    class="clear-btn"
+                    @click="AILabel()"
+                  >
+                    <i class="el-icon-monitor"></i>
+                  </el-button>
+                </el-tooltip>
+                <!--清空画布-->
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="清空标记"
+                  placement="bottom"
+                  v-show="lead2"
                 >
-                <el-radio-button
-                  @click.native.prevent="clickitem('R1')"
-                  label="R1"
-                >R1
-                </el-radio-button
-                >
-                <el-radio-button
-                  @click.native.prevent="clickitem('R2')"
-                  label="R2"
-                >R2
-                </el-radio-button
-                >
-                <el-radio-button
-                  @click.native.prevent="clickitem('R3')"
-                  label="R3"
-                >R3
-                </el-radio-button
-                >
-                <el-radio-button
-                  @click.native.prevent="clickitem('T1')"
-                  label="T1"
-                >T1
-                </el-radio-button
-                >
-                <el-radio-button
-                  @click.native.prevent="clickitem('T2')"
-                  label="T2"
-                >T2
-                </el-radio-button
-                >
-                <el-radio-button
-                  @click.native.prevent="clickitem('T3')"
-                  label="T3"
-                >T3
-                </el-radio-button
-                >
-                <el-radio-button
-                  @click.native.prevent="clickitem2('rec')"
-                  label="rec"
-                >画框
-                </el-radio-button
-                >
-              </el-radio-group>
-              <el-popover
-                style="margin: auto"
-                placement="bottom-start"
-                title="提示"
-                width="220"
-                trigger="hover"
-              >
-                <p class="tipck">1. 左上角按钮可以选择类型</p>
-                <p class="tipck">2. 左键单击，进行标点</p>
-                <p class="tipck">3. 右键单击，进行删除</p>
-                <p class="tipck">4. 也可点击右上角清空所有点</p>
-                <p class="tipck">5. 标点完成后，点击右上角提交</p>
-                <el-button slot="reference"
-                ><i class="el-icon-info icon"></i
-                ></el-button>
-              </el-popover>
-            </div>
-            <!--右上角盒子-->
-            <div class="top-right-div">
-              <!--清空画布-->
-              <el-tooltip
-                class="item"
-                effect="dark"
-                content="清空标记"
-                placement="bottom"
-                v-show="lead2"
-              >
-                <el-button
-                  type="primary"
-                  class="clear-btn"
-                  @click="clearData()"
-                >
-                  <i class="el-icon-delete"></i>
-                </el-button>
-              </el-tooltip>
+                  <el-button
+                    type="primary"
+                    class="clear-btn"
+                    @click="clearData()"
+                  >
+                    <i class="el-icon-delete"></i>
+                  </el-button>
+                </el-tooltip>
 
-              <!-- 提交数据 -->
-              <el-tooltip
-                class="item"
-                effect="dark"
-                content="提交标记信息"
-                placement="bottom"
-                v-show="lead2"
-              >
-                <el-button
-                  type="primary"
-                  class="download-btn"
-                  @click="submit()"
+                <!-- 提交数据 -->
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="提交标记信息"
+                  placement="bottom"
+                  v-show="lead2"
                 >
-                  <i class="el-icon-finished"></i>
-                </el-button>
-              </el-tooltip>
-              <!--关闭标注窗口-->
-              <el-tooltip
-                class="item"
-                effect="dark"
-                content="关闭窗口"
-                placement="bottom"
-              >
-                <el-button
-                  type="primary"
-                  class="clear-btn"
-                  :style="closeStyle"
-                  @click="clickClose"
+                  <el-button
+                    type="primary"
+                    class="clear-btn"
+                    @click="submit()"
+                  >
+                    <i class="el-icon-finished"></i>
+                  </el-button>
+                </el-tooltip>
+                <!--关闭标注窗口-->
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="关闭窗口"
+                  placement="bottom"
+                  v-show="lead2"
                 >
-                  <i class="el-icon-close"></i>
-                </el-button>
-              </el-tooltip>
+                  <el-button
+                    type="primary"
+                    class="clear-btn"
+                    @click="clickClose"
+                  >
+                    <i class="el-icon-close"></i>
+                  </el-button>
+                </el-tooltip>
+              </div>
             </div>
-          </div>
-          <!--画布盒子-->
-          <div class="middle-div">
-            <div class="canvas-div" id="chart2"></div>
-            <div id="rightMenu2" class="menu" style="display: none">
-              <el-button class="button" @click="del2">删除</el-button>
+            <!--画布盒子-->
+            <div class="middle-div">
+              <div class="canvas-div" id="chart2"></div>
+              <div id="rightMenu2" class="menu" style="display: none">
+                <el-button class="button" @click="del2">删除</el-button>
+              </div>
             </div>
-          </div>
 
-        </div>
+          </div>
       </el-tab-pane>
     </el-tabs>
     <!--    <div class="container" v-show="!drawShow">-->
@@ -306,6 +328,7 @@
 import * as echarts from "@/api/tool/echarts.min.js";
 import $ from "jquery";
 import {updateJecg12} from "@/api/Jecg12/Jecg12";
+
 let ctx = ""; //画布上下文
 export default {
   props: {},
@@ -314,6 +337,7 @@ export default {
       activeName: "first", //tab切换
       drawShow: false, //弹框开关
       isLoading: false, //加载状态
+      isLoadingText: "",
       radio1: "", //选中类型 Normal FangZao
       radio2: "", //选中类型 P1 P2
       isDrawRec: false, //是否画框
@@ -386,6 +410,13 @@ export default {
         rectangles: "",
       },
       title: "", //几导联
+      userFavor: {
+        Normal: "q",
+        FangZao: "w",
+        ShiZao: "e",
+        FangYi: "r",
+        GanRao: "t",
+      }//用户偏好
     };
   },
   watch: {
@@ -1145,6 +1176,7 @@ export default {
         //   };
         // }
         this.chart2_redraw()
+
         //添加点
         // var pointdata = []
         // for (const key in this.datalabel.waveLabel[String(this.level - 1)]) {
@@ -1283,7 +1315,7 @@ export default {
           this.chart2.setOption(chartOption);
 
           //判断矩形框是否过小
-          if (Math.abs(startPoint[0]-endPoint[0])<5){
+          if (Math.abs(startPoint[0] - endPoint[0]) < 5) {
             console.log("矩形框过小")
             return;
           }
@@ -1402,6 +1434,7 @@ export default {
         });
         this.show = true;
       }
+
     },
     chart1_redraw() {
       var colorList = {
@@ -1477,7 +1510,7 @@ export default {
       var pointdata = [];
       for (const key in this.datalabel.waveLabel[String(this.level - 1)]) {
         this.datalabel.waveLabel[String(this.level - 1)][key].forEach((i) => {
-
+          console.log(key)
           var text = {
             name: key,
             xAxis: i,
@@ -1524,7 +1557,7 @@ export default {
         },
       });
     },
-    initBeatLabel(){
+    initBeatLabel() {
       this.datalabel.beatLabel[String(this.level - 1)] = {
         Normal: [],
         FangZao: [],
@@ -1533,8 +1566,8 @@ export default {
         GanRao: [],
       };
     },
-    initWaveLabel(){
-      this.datalabel.waveLabel[String(this.level - 1)] ={
+    initWaveLabel() {
+      this.datalabel.waveLabel[String(this.level - 1)] = {
         P1: [],
         P2: [],
         P3: [],
@@ -1546,8 +1579,8 @@ export default {
         T3: [],
       };
     },
-    initRectangles(){
-      this.datalabel.rectangles[String(this.level - 1)] =[]
+    initRectangles() {
+      this.datalabel.rectangles[String(this.level - 1)] = []
     },
     //心搏 删除点
     del() {
@@ -1685,8 +1718,8 @@ export default {
       // });
     },
     // 提交数据
-    submit(){
-      console.log("提交数据 pId=",this.pId)
+    submit() {
+      console.log("提交数据 pId=", this.pId)
       updateJecg12({
         pId: this.pId,
         waveLabel: JSON.stringify(this.datalabel.waveLabel),
@@ -2050,7 +2083,6 @@ export default {
     },
 
 
-
     //关闭
     // Off() {
     //   this.lead1 = false;
@@ -2094,9 +2126,45 @@ export default {
       this.datalabel.rectangles[String(this.level - 1)].splice(this.selectrectangleIndex, 1)
       this.chart2_redraw()
     },
+    async AILabel() {
+      //判断数据是否为空
+
+
+      this.isLoading = true;
+      this.isLoadingText = 'AI标注中...';
+      const url = 'https://screen.mindyard.cn/test/api/getP_QRS_T'; // 请确保这是正确的POST请求URL
+      const headers = new Headers({
+        'Content-Type': 'application/json',
+        'user': 'zzu',
+        'password': 'zzu_api'
+      });
+
+      const data = {
+        "signal": this.data,
+        "sample_rate": "100",
+        "isFilter": "0"
+      };
+
+      await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(data)
+      }).then(res => {
+        return res.json()
+      }).then(resData => {
+        resData.data.forEach(item => {
+          for (const key in item) {
+            this.datalabel.waveLabel[String(this.level - 1)][key].push(item[key])
+          }
+        })
+
+      })
+      this.chart2_redraw()
+      this.isLoading = false
+    },
     //处理全局键盘点击
     handleGlobalkeydown(event) {
-      if(!this.drawShow) return
+      if (!this.drawShow) return
 
       if (this.activeName == "first") {
         switch (event.key) {
@@ -2124,7 +2192,8 @@ export default {
           case 't':
             this.clickitem1('GanRao');
             break;
-          default: break;
+          default:
+            break;
         }
       } else if (this.activeName == "second") {
         switch (event.key) {
@@ -2372,3 +2441,4 @@ export default {
   box-shadow: 0 0px 0px #ccc;
 }
 </style>
+

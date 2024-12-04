@@ -8,12 +8,15 @@
         <span>年龄：{{ message.age }}</span>
         <span>时间：{{ message.time }}</span>
 
-        <span style="margin-left: 500px">标注时间：{{ updateTime }}</span>
-        <span>标注人id：{{ updateBy }}</span>
+        <span style="margin-left: 500px">上次标注时间：{{ updateTime }}</span>
+        <span>上次标注人id：{{ updateBy }}</span>
       </div>
 
-      <div class="tijiao" >
+      <div class="tijiao">
         <div>
+          <el-button type="success" @click="AILabel()">
+            AI标注
+          </el-button>
           <el-button type="success" id="btn1" class="btn1" @click="submit()">
             提交
           </el-button>
@@ -791,8 +794,8 @@ export default {
       rectangles: null, //矩形框标签
       isSuspected: false,
       others: "",//其他原因
-      updateTime :"",
-      updateBy:"",
+      updateTime: "",
+      updateBy: "",
 
       // 初始化查询参数
       queryParams: {
@@ -955,7 +958,7 @@ export default {
 
     //获取心电数据
     getMessage() {
-      console.log("id:",this.log_id)
+      console.log("id:", this.log_id)
       var Iy = [];
       var IIy = [];
       var IIIy = [];
@@ -1000,15 +1003,12 @@ export default {
           _th.message.time = jsonResult.result.clockTime;
           _th.value = jsonResult.result.logType;
           _th.loading = false;
-          // _th.level(jsonResult);
           if (_th.message.devicesn != null) {
             (function () {
               var i;
               for (var k = 0; k < 1001; k++) {
                 timex.push(k / 100 + "秒");
               }
-              //console.log(timex)
-              //console.log(jsonResult.result.I.length)
               for (i = 0; i < 1000; i++) {
                 Iy.push(jsonResult.result.I[i]);
                 IIy.push(jsonResult.result.II[i]);
@@ -2883,33 +2883,33 @@ export default {
     // clickitem(e) {
     //   e === this.radio ? (this.radio = "") : (this.radio = e);
     // },
-    AILabel() {
-      console.log(this.trueValues)
-      // console.log("开始智能标注");
-      // $.ajax({
-      //   type: "POST",
-      //   url: "http://127.0.0.1:5000/",
-      //   dataType: "json",
-      //   contentType: "application/json",
-      //   data: JSON.stringify({
-      //     log_id: this.log_id,
-      //     data: this.data
-      //   }),
-      //   success: jsonResult => {
-      //     console.log(jsonResult)
-      //
-      //     //测试
-      //     this.noise_level.aVFlevel = jsonResult.label == 1 ? "B" : "A";
-      //     this.noise_level.V1level = jsonResult.label == 1 ? "B" : "A";
-      //     this.noise_level.V2level = jsonResult.label == 1 ? "B" : "A";
-      //   },
-      //   error: function (data) {
-      //     console.log("获取数据失败")
-      //     console.log(data);
-      //     _th.$modal.msgError("数据获取失败");
-      //   },
-      //
-      // })
+    async AILabel() {
+      const url = 'https://screen.mindyard.cn/test/api/getP_QRS_T'; // 请确保这是正确的POST请求URL
+
+      const headers = new Headers({
+        'Content-Type': 'application/json',
+        'user': 'zzu',
+        'password': 'zzu_api'
+      });
+
+      // 注意：在客户端代码中直接包含用户名和密码是不安全的。
+      // 在实际应用中，应该避免在客户端代码中暴露敏感信息。
+      var ecgData = [];
+      var i;
+      for (i = 0; i < 1000; i++) {
+        ecgData.push(this.data.I[i])
+      }
+      const data = {
+        "signal":ecgData, //15360
+        "sample_rate": "100",
+        "isFilter": "0"
+      };
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(data)
+      });
+      console.log("标注数据",response.json())
     },
   },
 };
