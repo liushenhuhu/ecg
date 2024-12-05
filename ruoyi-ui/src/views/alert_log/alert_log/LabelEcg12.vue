@@ -736,7 +736,20 @@ export default {
         V5light: "",
         V6light: "",
       },
-
+      chartList: {
+        I: null,
+        II: null,
+        III: null,
+        V1: null,
+        V2: null,
+        V3: null,
+        V4: null,
+        V5: null,
+        V6: null,
+        aVR: null,
+        aVL: null,
+        aVF: null
+      },
       levelList: ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"],
       beatList: ["Normal", "FangZao", "ShiZao", "FangYi", "GanRao"],
       waveList: ["P1", "P2", "P3", "R1", "R2", "R3", "T1", "T2", "T3"],
@@ -850,9 +863,9 @@ export default {
   },
   mounted() {
     this.getLogId();
+    this.getLabel();
     this.getMessage();
     this.getIndex();
-    this.getLabel();
     this.chartjump = echarts.init(document.getElementById("chartjump"));
 
   },
@@ -959,31 +972,22 @@ export default {
     //获取心电数据
     getMessage() {
       console.log("id:", this.log_id)
-      var Iy = [];
-      var IIy = [];
-      var IIIy = [];
-      var aVLy = [];
-      var aVFy = [];
-      var aVRy = [];
-      var V1y = [];
-      var V2y = [];
-      var V3y = [];
-      var V4y = [];
-      var V5y = [];
-      var V6y = [];
+      var dataList = {
+        I: [],
+        II: [],
+        III: [],
+        V1: [],
+        V2: [],
+        V3: [],
+        V4: [],
+        V5: [],
+        V6: [],
+        aVL: [],
+        aVF: [],
+        aVR: [],
+      }
       var timex = [];
-      var chartI = echarts.init(document.getElementById("I"));
-      var chartII = echarts.init(document.getElementById("II"));
-      var chartIII = echarts.init(document.getElementById("III"));
-      var chartV1 = echarts.init(document.getElementById("V1"));
-      var chartV2 = echarts.init(document.getElementById("V2"));
-      var chartV3 = echarts.init(document.getElementById("V3"));
-      var chartV4 = echarts.init(document.getElementById("V4"));
-      var chartV5 = echarts.init(document.getElementById("V5"));
-      var chartV6 = echarts.init(document.getElementById("V6"));
-      var chartaVR = echarts.init(document.getElementById("aVR"));
-      var chartaVL = echarts.init(document.getElementById("aVL"));
-      var chartaVF = echarts.init(document.getElementById("aVF"));
+
       var _th = this;
       $.ajax({
         type: "POST",
@@ -1010,18 +1014,10 @@ export default {
                 timex.push(k / 100 + "秒");
               }
               for (i = 0; i < 1000; i++) {
-                Iy.push(jsonResult.result.I[i]);
-                IIy.push(jsonResult.result.II[i]);
-                IIIy.push(jsonResult.result.III[i]);
-                aVLy.push(jsonResult.result.aVL[i]);
-                aVRy.push(jsonResult.result.aVR[i]);
-                aVFy.push(jsonResult.result.aVF[i]);
-                V1y.push(jsonResult.result.V1[i]);
-                V2y.push(jsonResult.result.V2[i]);
-                V3y.push(jsonResult.result.V3[i]);
-                V4y.push(jsonResult.result.V4[i]);
-                V5y.push(jsonResult.result.V5[i]);
-                V6y.push(jsonResult.result.V6[i]);
+                for (const key in _th.chartList) {
+                  _th.chartList[key] = echarts.init(document.getElementById(key));
+                  dataList[key].push(jsonResult.result[key][i]);
+                }
               }
               for (var i = 0; i < 2500; i += 20) {
                 _th.seriesdata.push({xAxis: i});
@@ -1033,1376 +1029,142 @@ export default {
                 }
                 seriesdata = _th.seriesdata1;
               }
-              chartI.clear();
-              chartI.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "I导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
+              for (const key in _th.chartList) {
+                _th.chartList[key].clear();
+                _th.chartList[key].setOption({
+                  animation: false,
+                  animationDuration: 9900,
+                  animationEasing: "linear",
+                  animationEasingUpdate: "linear",
+                  animationDurationUpdate: 10000,
+                  animationDelayUpdate: 0,
+                  animationThreshold: 10000,
+                  backgroundColor: "#ffffff",
+                  title: {
+                    text: key + "导联",
                     textStyle: {
+                      fontSize: 12,
                       color: "#000000",
                     },
+                    left: 30,
                   },
-                  splitLine: {
-                    show: true,
+                  tooltip: {
+                    trigger: "axis",
+                    axisPointer: {
+                      type: "cross",
+                    },
+                  },
+                  grid: {
+                    left: 20,
+                    right: 0,
+                    top: 2,
+                    bottom: 2,
+                  },
+                  xAxis: {
+                    type: "category",
+                    boundaryGap: false,
+                    data: timex,
+                    axisTick: {
+                      show: false,
+                    },
+                    axisLabel: {
+                      //修改坐标系字体颜色
+                      show: false,
+                      interval: 3,
+                      textStyle: {
+                        color: "#000000",
+                      },
+                    },
+                    splitLine: {
+                      show: true,
 
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  // splitNumber: 20,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                      // opacity: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
                       lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
+                        color: "pink",
+                        width: 0.5, //网格的宽度
+                        type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
                       },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
+                    } /*网格线*/,
                   },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "I导联",
-                  type: "line",
-                  data: Iy,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartI.resize();
-              });
-              chartII.clear();
-              chartII.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "II导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
+                  yAxis: {
+                    min: -1.5,
+                    max: 1.5,
+                    boundaryGap: true,
+                    interval: 0.1,
+                    // splitNumber: 20,
+                    axisLabel: {
+                      //修改坐标系字体颜色
+                      show: false,
+                      textStyle: {
+                        color: "#000000",
+                      },
                     },
-                  },
-                  splitLine: {
-                    show: true,
-
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
+                    splitLine: {
                       lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
+                        color: "pink",
+                        width: 1, //网格的宽度
+                        type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
                       },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
+                      show: true,
+                    } /*网格线*/,
                   },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "II导联",
-                  type: "line",
-                  data: IIy,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartII.resize();
-              });
-              chartV1.clear();
-              chartV1.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "V1导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  // splitNumber: 20,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                      // opacity: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
-                      },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "V1导联",
-                  type: "line",
-                  data: V1y,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartV1.resize();
-              });
-              chartV2.clear();
-              chartV2.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "V2导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
-                      },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "V2导联",
-                  type: "line",
-                  data: V2y,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartV2.resize();
-              });
-              chartV3.clear();
-              chartV3.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "V3导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
-                      },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "V3导联",
-                  type: "line",
-                  data: V3y,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartV3.resize();
-              });
-              chartV4.clear();
-              chartV4.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "V4导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  // splitNumber: 20,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
-                      },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "V4导联",
-                  type: "line",
-                  data: V4y,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartV4.resize();
-              });
-              chartV5.clear();
-              chartV5.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "V5导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
-                      },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "V5导联",
-                  type: "line",
-                  data: V5y,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartV5.resize();
-              });
-              chartV6.clear();
-              chartV6.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "V6导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: true,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: [
-                  {
-                    markLine: {
-                      animation: false,
-                      symbol: "none",
-                      silent: true,
-                      lineStyle: {
-                        type: "solid",
-                        color: "#b33939",
-                        width: 0.5,
-                      },
-                      label: {
-                        position: "start", // 表现内容展示的位置
-                        color: "#b33939", // 展示内容颜色
-                      },
-                      data: seriesdata,
-                    },
-                    /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                    itemStyle: {
-                      normal: {
+                  series: [
+                    {
+                      markLine: {
+                        animation: false,
+                        symbol: "none",
+                        silent: true,
                         lineStyle: {
-                          width: 1.5,
-                          color: "#000000" /*折线的颜色*/,
+                          type: "solid",
+                          color: "#b33939",
+                          width: 0.5,
                         },
-                        color:
-                          "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
+                        label: {
+                          show: true,
+                          position: "start", // 表现内容展示的位置
+                          color: "#b33939", // 展示内容颜色
+                        },
+                        data: seriesdata,
                       },
-                    },
-                    symbol: "none",
-                    /*去掉小圆点*/
-                    name: "当前电位",
-                    type: "line",
-                    data: V6y,
-                    smooth: 0, //显示为平滑的曲线*/
-                  },
-                ],
-              });
-              $(window).resize(function () {
-                chartV6.resize();
-              });
-              chartIII.clear();
-              chartIII.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "III导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
+                      /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
+                      itemStyle: {
+                        normal: {
+                          lineStyle: {
+                            width: 1.5,
+                            color: "#000000" /*折线的颜色*/,
+                          },
+                          color:
+                            "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
+                        },
+                      },
 
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  // splitNumber: 20,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
+                      symbol: "none",
+                      /*去掉小圆点*/
+                      name: key + "导联",
+                      type: "line",
+                      data: dataList[key],
+                      smooth: true, //显示为平滑的曲线*/
+                      markPoint: {
+                        symbol: "pin",
+                        symbolSize: 18,
+                        animation: false,
+                        data: [],
                       },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "III导联",
-                  type: "line",
-                  data: IIIy,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartIII.resize();
-              });
-              chartaVL.clear();
-              chartaVL.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "aVL导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
+                      markArea: {
+                        silent: true,
+                        itemStyle: {
+                          color: 'transparent',  // 无填充
+                          borderColor: 'black',  // 黑色边框
+                          borderWidth: 1,        // 边框宽度
+                        },
+                        data: [],
                       },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
                     },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "aVL导联",
-                  type: "line",
-                  data: aVLy,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartaVL.resize();
-              });
-              chartaVF.clear();
-              chartaVF.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "aVF导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
-                      },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "aVF导联",
-                  type: "line",
-                  data: aVFy,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartaVF.resize();
-              });
-              chartaVR.clear();
-              chartaVR.setOption({
-                animation: false,
-                animationDuration: 9900,
-                animationEasing: "linear",
-                animationEasingUpdate: "linear",
-                animationDurationUpdate: 10000,
-                animationDelayUpdate: 0,
-                animationThreshold: 10000,
-                backgroundColor: "#ffffff",
-                title: {
-                  text: "aVR导联",
-                  textStyle: {
-                    fontSize: 12,
-                    color: "#000000",
-                  },
-                  left: 30,
-                },
-                tooltip: {
-                  trigger: "axis",
-                  axisPointer: {
-                    type: "cross",
-                  },
-                },
-                grid: {
-                  left: 20,
-                  right: 0,
-                  top: 2,
-                  bottom: 2,
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: timex,
-                  axisTick: {
-                    show: false,
-                  },
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    interval: 3,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    show: true,
-                    lineStyle: {
-                      color: "pink",
-                      width: 0.5, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                  } /*网格线*/,
-                },
-                yAxis: {
-                  min: -1,
-                  max: 1,
-                  boundaryGap: true,
-                  interval: 0.1,
-                  // splitNumber: 20,
-                  axisLabel: {
-                    //修改坐标系字体颜色
-                    show: false,
-                    textStyle: {
-                      color: "#000000",
-                    },
-                  },
-                  splitLine: {
-                    lineStyle: {
-                      color: "pink",
-                      width: 1, //网格的宽度
-                      type: "solid", //网格是实实线，可以修改成虚线以及其他的类型
-                    },
-                    show: true,
-                  } /*网格线*/,
-                },
-                series: {
-                  markLine: {
-                    animation: false,
-                    symbol: "none",
-                    silent: true,
-                    lineStyle: {
-                      type: "solid",
-                      color: "#b33939",
-                      width: 0.5,
-                    },
-                    label: {
-                      position: "start", // 表现内容展示的位置
-                      color: "#b33939", // 展示内容颜色
-                    },
-                    data: seriesdata,
-                  },
-                  /*itemStyle: {normal: {areaStyle: {type: 'default'}}},*/
-                  itemStyle: {
-                    normal: {
-                      lineStyle: {
-                        width: 1.5,
-                        color: "#000000" /*折线的颜色*/,
-                      },
-                      color:
-                        "#000000" /*图例(legend)的颜色,不是图例说明文字的颜色*/,
-                    },
-                  },
-                  symbol: "none",
-                  /*去掉小圆点*/
-                  name: "aVR导联",
-                  type: "line",
-                  data: aVRy,
-                  smooth: 0, //显示为平滑的曲线*/
-                },
-              });
-              $(window).resize(function () {
-                chartaVR.resize();
-              });
+                  ],
+                });
+                $(window).resize(function () {
+                  _th.chartList[key].resize();
+                });
+              }
             })();
           } else {
             _th.$modal.msgError("设备未连接");
@@ -2443,8 +1205,107 @@ export default {
       })
 
     },
+    redraw() {
+      var beat_colorList = {
+        Normal: "green",
+        FangZao: "blue",
+        ShiZao: "red",
+        FangYi: "brown",
+        GanRao: "#000",
+      };
+      var wave_colorList = {
+        P1: "#fe0101",
+        P2: "#fe0101",
+        P3: "#fe0101",
+        R1: "#ff00cf",
+        R2: "#ff00cf",
+        R3: "#ff00cf",
+        T1: "#0021da",
+        T2: "#0021da",
+        T3: "#0021da",
+      };
+      let index = 0;
+
+      for (const key in this.chartList) {
+        const option = this.chartList[key].getOption()
+        var pointdata = []
+        // 重绘心搏点
+        for (const name in this.pointdata[String(index)]) {
+          this.pointdata[String(index)][name].forEach((i) => {
+            var formatter = name;
+            switch (formatter) {
+              case "Normal":
+                formatter = "N";
+                break;
+              case "FangZao":
+                formatter = "S";
+                break;
+              case "ShiZao":
+                formatter = "V";
+                break;
+              case "FangYi":
+                formatter = "A";
+                break;
+              case "GanRao":
+                formatter = "X";
+                break;
+            }
+            var text = {
+              name: name,
+              xAxis: i,
+              // yAxis: this.data[key][i] + 0.1,
+              yAxis: 1,
+              itemStyle: {
+                color: beat_colorList[name],
+              },
+              label: {
+                color: "#ffffff",
+                show: true,
+                formatter: formatter,
+                fontSize: 8,
+              },
+            };
+            pointdata.push(text);
+          });
+        }
+
+
+        // 重绘波段点
+        for (const name in this.subData[String(index)]) {
+
+          this.subData[String(index)][name].forEach((i,index) => {
+            var text = {
+              name: '特殊点',
+              coord: [i, this.data[key][i]], // 标记 "周四"（索引3），Y值43
+              symbol: 'circle',
+              symbolSize: 3,
+              itemStyle: {
+                color: wave_colorList[name],
+              },
+            }
+            pointdata.push(text)
+          })
+        }
+
+        // 重绘波段矩形框
+        var rectangles = []
+        this.rectangles[String(index)].forEach(item => {
+          var rec = [
+            {xAxis: item[0][0], yAxis: item[0][1]},
+            {xAxis: item[1][0], yAxis: item[1][1]}
+          ]
+          rectangles.push(rec)
+        })
+        option.series[0].markPoint.data = pointdata
+        option.series[0].markArea.data = rectangles
+        this.chartList[key].setOption(option);
+        index++;
+
+      }
+    },
     // 获取标注数据
-    getLabel() {
+    getLabel
+      () {
       // 标签数据初始化
       this.noise_level = {
         Ilevel: "A",
@@ -2460,6 +1321,7 @@ export default {
         V5level: "A",
         V6level: "A",
       }
+
       this.myocarditiszhi = []
       this.trueValues = []
       this.subData = null //波段标注标签
@@ -2496,37 +1358,42 @@ export default {
           this.light(this.noise_level);
           // 监听事件还没有触发，手动重新渲染button
           document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : "";
-        })
-      // 2 无论查没查到，对几个复杂格式数据格式化
-      if (this.subData == null) {
-        var waveLabel = {};
-        for (var i = 0; i < this.levelList.length; i++) {
-          if (!waveLabel[String(i)]) waveLabel[String(i)] = {}
-          this.waveList.forEach(item => {
-            waveLabel[String(i)][item] = []
-          })
-        }
-        this.subData = waveLabel
-      }
-      if (this.pointdata == null) {
-        var beatLabel = {};
-        for (var i = 0; i < this.levelList.length; i++) {
-          if (!beatLabel[String(i)]) beatLabel[String(i)] = {}
-          this.beatList.forEach(item => {
-            beatLabel[String(i)][item] = []
-          })
-        }
-        this.pointdata = beatLabel
-      }
-      if (this.rectangles == null) {
-        var rectangles = {};
-        for (var i = 0; i < length(this.levelList); i++) {
-          rectangles[String(i)] = []
-        }
-        this.rectangles = rectangles
-      }
 
-      // 3 标签不全（暂时不考虑，如果需要与之前未标全的标签融合再考虑）
+          this.redraw() // 画标签
+
+          // 2 无论查没查到，对几个复杂格式数据格式化
+          if (this.subData == null) {
+            var waveLabel = {};
+            for (var i = 0; i < this.levelList.length; i++) {
+              if (!waveLabel[String(i)]) waveLabel[String(i)] = {}
+              this.waveList.forEach(item => {
+                waveLabel[String(i)][item] = []
+              })
+            }
+            this.subData = waveLabel
+          }
+
+          if (this.pointdata == null) {
+            var beatLabel = {};
+            for (var i = 0; i < this.levelList.length; i++) {
+              if (!beatLabel[String(i)]) beatLabel[String(i)] = {}
+              this.beatList.forEach(item => {
+                beatLabel[String(i)][item] = []
+              })
+            }
+            this.pointdata = beatLabel
+          }
+
+          if (this.rectangles == null) {
+            var rectangles = {};
+            for (var i = 0; i < this.levelList.length; i++) {
+              rectangles[String(i)] = []
+            }
+            this.rectangles = rectangles
+          }
+          // 3 标签不全（暂时不考虑，如果需要与之前未标全的标签融合再考虑）
+
+        })
     },
     //判断红绿颜色
     light(noise) {
@@ -2659,7 +1526,8 @@ export default {
         `&anoStatus=${this.queryParams.anoStatus}` +
         `&logTime=${this.queryParams.logTime}`;
       window.history.replaceState("", "", newUrl);
-    },
+    }
+    ,
     // 点击下一页触发事件
     async next() {
       this.loading = true; //转圈动画效果
@@ -2690,7 +1558,8 @@ export default {
         `&anoStatus=${this.queryParams.anoStatus}` +
         `&logTime=${this.queryParams.logTime}`;
       window.history.replaceState("", "", newUrl);
-    },
+    }
+    ,
 
     // 点击提交
     async submit() {
@@ -2780,7 +1649,8 @@ export default {
       // // console.log(dataObject);
       // addCount(dataObject)
 
-    },
+    }
+    ,
 
     // submitData() {
     //   this.query.waveLabel = JSON.stringify(this.subData);
@@ -2791,6 +1661,7 @@ export default {
     // },
     showchart(title, data) {  //显示child页面
       var level = 1
+
       this.levelList.forEach((item, index) => {
         if (item == title) {
           level = index + 1
@@ -2799,7 +1670,8 @@ export default {
       this.$refs.drawShow.getchart(data, this.log_id, level, title, 12,
         {"beatLabel": this.pointdata, "waveLabel": this.subData, "rectangles": this.rectangles});
       // this.$refs.drawShow.getchart2();
-    },
+    }
+    ,
 
 
     //区间合并
@@ -2900,7 +1772,7 @@ export default {
         ecgData.push(this.data.I[i])
       }
       const data = {
-        "signal":ecgData, //15360
+        "signal": ecgData, //15360
         "sample_rate": "100",
         "isFilter": "0"
       };
@@ -2909,8 +1781,9 @@ export default {
         headers: headers,
         body: JSON.stringify(data)
       });
-      console.log("标注数据",response.json())
-    },
+      console.log("标注数据", response.json())
+    }
+    ,
   },
 };
 </script>

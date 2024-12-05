@@ -1107,17 +1107,17 @@ export default {
         this.chart2.resize();
       });
       this.pointdata.length = 0;
-      var colorList = {
-        P1: "#fe0101",
-        P2: "#fe0101",
-        P3: "#fe0101",
-        R1: "#ff00cf",
-        R2: "#ff00cf",
-        R3: "#ff00cf",
-        T1: "#0021da",
-        T2: "#0021da",
-        T3: "#0021da",
-      };
+      // var colorList = {
+      //   P1: "#fe0101",
+      //   P2: "#fe0101",
+      //   P3: "#fe0101",
+      //   R1: "#ff00cf",
+      //   R2: "#ff00cf",
+      //   R3: "#ff00cf",
+      //   T1: "#0021da",
+      //   T2: "#0021da",
+      //   T3: "#0021da",
+      // };
       if (this.datalabel.waveLabel == null || this.datalabel.waveLabel == "") {
         this.datalabel.waveLabel = JSON.stringify({
           0: {
