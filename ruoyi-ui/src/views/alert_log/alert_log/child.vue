@@ -328,6 +328,8 @@
 import * as echarts from "@/api/tool/echarts.min.js";
 import $ from "jquery";
 import {updateJecg12} from "@/api/Jecg12/Jecg12";
+import {debounce} from "@/utils";
+import {throttle} from "echarts";
 
 let ctx = ""; //画布上下文
 export default {
@@ -341,10 +343,10 @@ export default {
       radio1: "", //选中类型 Normal FangZao
       radio2: "", //选中类型 P1 P2
       isDrawRec: false, //是否画框
-      arrList1: {}, //心博标注 每一段
-      arrList2: {},
-      arrList3: {},
-      arrList4: {},
+      // arrList1: {}, //心博标注 每一段
+      // arrList2: {},
+      // arrList3: {},
+      // arrList4: {},
       // arrList5: {},
       // arrList6: {},
       // arrList7: {},
@@ -397,12 +399,12 @@ export default {
       lead2: true, //是否可以标注
       flag: null, //1：静态单导  12.静态12导
       closeStyle: {position: "absolute", right: "1px", top: "20px"},
-      query: {
-        //波段标注 提交数据
-        pId: "",
-        beatLabel: "",
-        waveLabel: "",
-      },
+      // query: {
+      //   //波段标注 提交数据
+      //   pId: "",
+      //   beatLabel: "",
+      //   waveLabel: "",
+      // },
       datalabel: {
         //进来页面时读取的标注数据
         waveLabel: "",
@@ -410,13 +412,30 @@ export default {
         rectangles: "",
       },
       title: "", //几导联
-      userFavor: {
+      userFavor: {//用户偏好
+
         Normal: "q",
         FangZao: "w",
         ShiZao: "e",
         FangYi: "r",
         GanRao: "t",
-      }//用户偏好
+        P1:"q",
+        P2:"w",
+        P3:"e",
+        R1:"a",
+        R2:"s",
+        R3:"d",
+        T1:"z",
+        T2:"x",
+        T3:"c",
+        rectangles: "r",
+        tab_beatlabel:"1",
+        tab_wavelabel:"2",
+        beat_autolabel: true,
+        wave_autolabel: true,
+        rectangles_autolabel:true,
+        noise_autolabel:true,
+      }
     };
   },
   watch: {
@@ -452,6 +471,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('keydown', this.handleGlobalkeydown);
+
   },
   // 数据格式
   // this.datalabel=
@@ -478,6 +498,7 @@ export default {
   methods: {
     //心博标注 初始化
     async getchart(data, pIds, level, title, flag, datalabel, is) {
+
       this.title = title;
       this.lead1 = true;
       if (flag != null) {
@@ -1250,9 +1271,8 @@ export default {
         let isDrawing = false; // 是否正在绘制
         // 鼠标按下事件
         zr.on("mousedown", (event) => {
-          if (event.event.button !== 0) {
-            return;
-          }// 如果不是左键点击，则不执行后续逻辑
+          if (event.event.button !== 0) return;
+          // 如果不是左键点击，则不执行后续逻辑
           if (!this.isDrawRec) return; //未开启画框按钮，则不执行
           startPoint = [event.offsetX, event.offsetY];
           isDrawing = true;
@@ -1277,6 +1297,7 @@ export default {
         // 鼠标移动事件
         zr.on("mousemove", (event) => {
           if (!isDrawing) return; // 如果没有在绘制，直接返回
+          if (!this.isDrawRec) return;
           endPoint = [event.offsetX, event.offsetY];
 
           // 动态更新矩形框的尺寸
@@ -1294,10 +1315,22 @@ export default {
         // 鼠标抬起事件
         zr.on("mouseup", () => {
           if (!isDrawing) return;
+          if (!this.isDrawRec) return;
           startPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [startPoint[0], startPoint[1]]);
           endPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [endPoint[0], endPoint[1]]);
+          //判断矩形框是否超出界限
+          if(Math.abs(startPoint[1])>3||Math.abs(endPoint[1]>3)){
+            console.log("矩形框超出界限")
+            return;
+          }
+          //判断矩形框是否过小
+          if (Math.abs(startPoint[0] - endPoint[0]) < 5||Math.abs(startPoint[0] - endPoint[0]) > 150) {
+            console.log("矩形框过大或过小")
+            return;
+          }
+
           // 根据数据自动调整矩形框的上下边界
-          var silce = startPoint[0] < endPoint[0] ?
+          const silce = startPoint[0] < endPoint[0] ?
             this.data.slice(Math.floor(startPoint[0]), Math.floor(endPoint[0])) :
             this.data.slice(Math.floor(endPoint[0]), Math.floor(startPoint[0]));
           startPoint[1] = Math.max(...silce);
@@ -1309,16 +1342,14 @@ export default {
           // ]
 
           //清空临时框
-          var chartOption = this.chart2.getOption();
+          const chartOption = this.chart2.getOption();
           // chartOption.series[0].markArea.data.push(rect);
           chartOption.graphic = [{shape: {x: 0, y: 0, width: 0, height: 0,},}];
           this.chart2.setOption(chartOption);
 
-          //判断矩形框是否过小
-          if (Math.abs(startPoint[0] - endPoint[0]) < 5) {
-            console.log("矩形框过小")
-            return;
-          }
+
+
+
           //绘制矩形框
           this.datalabel.rectangles[String(this.level - 1)].push([startPoint, endPoint])
           this.chart2_redraw()
@@ -1329,7 +1360,8 @@ export default {
 
         //监听鼠标位置,配合快捷删除操作
         const tolerance = 0.02; // 矩形框可供选择的范围
-        this.chart2.getZr().on("mousemove", (event) => {
+        this.chart2.getZr().on("mousemove", throttle((event) => {
+          // TODO 算法优化
           if (!this.isDrawRec) return; //未开启画框按钮，则不执行
           const [x, y] = this.chart2.convertFromPixel({seriesIndex: 0}, [event.offsetX, event.offsetY]);
           this.isselected = false;
@@ -1360,7 +1392,7 @@ export default {
             }
             this.chart2.setOption(option);
           }
-        });
+        },100));
 
         this.chart2.off("contextmenu");
         //右击显示删除
@@ -1437,18 +1469,18 @@ export default {
 
     },
     chart1_redraw() {
-      var colorList = {
+      let colorList = {
         Normal: "green",
         FangZao: "blue",
         ShiZao: "red",
         FangYi: "brown",
         GanRao: "#000",
       };
-      var pointdata = []
+      let pointdata = []
 
       for (const key in this.datalabel.beatLabel[String(this.level - 1)]) {
         this.datalabel.beatLabel[String(this.level - 1)][key].forEach((i) => {
-          var formatter = key;
+          let formatter = key;
           switch (formatter) {
             case "Normal":
               formatter = "N";
@@ -1466,7 +1498,7 @@ export default {
               formatter = "X";
               break;
           }
-          var text = {
+          let text = {
             name: key,
             xAxis: i,
             yAxis: this.data[i] + 0.3,
@@ -1495,7 +1527,7 @@ export default {
       });
     },
     chart2_redraw() {
-      var colorList = {
+      let colorList = {
         P1: "#fe0101",
         P2: "#fe0101",
         P3: "#fe0101",
@@ -1507,10 +1539,10 @@ export default {
         T3: "#0021da",
       };
       // 重绘点
-      var pointdata = [];
+      let pointdata = [];
       for (const key in this.datalabel.waveLabel[String(this.level - 1)]) {
         this.datalabel.waveLabel[String(this.level - 1)][key].forEach((i) => {
-          var text = {
+          let text = {
             name: key,
             xAxis: i,
             yAxis: this.data[i],
@@ -1528,9 +1560,9 @@ export default {
         })
       }
       // 重绘矩形框
-      var rectangles = []
+      let rectangles = []
       this.datalabel.rectangles[String(this.level - 1)].forEach(item => {
-        var rec = [
+        let rec = [
           {xAxis: item[0][0], yAxis: item[0][1]},
           {xAxis: item[1][0], yAxis: item[1][1]}
         ]
@@ -2052,6 +2084,8 @@ export default {
       this.radio2 = "";
       this.activeName = "first";
       this.drawShow = false;
+      this.isDrawRec = false;
+      this.$emit('dataChanged', null); //更新12导标签显示
       // this.arrList1 = [];
       // this.arrList2 = [];
       // this.arrList3 = [];
@@ -2126,9 +2160,6 @@ export default {
       this.chart2_redraw()
     },
     async AILabel() {
-      //判断数据是否为空
-
-
       this.isLoading = true;
       this.isLoadingText = 'AI标注中...';
       const url = 'https://screen.mindyard.cn/test/api/getP_QRS_T'; // 请确保这是正确的POST请求URL
@@ -2143,7 +2174,6 @@ export default {
         "sample_rate": "100",
         "isFilter": "0"
       };
-
       await fetch(url, {
         method: 'POST',
         headers: headers,

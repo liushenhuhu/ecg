@@ -624,7 +624,7 @@
           </div>
         </div>
       </div>
-      <child ref="drawShow"></child>
+      <child ref="drawShow" @dataChanged="handleDataChange"></child>
     </div>
 
   </div>
@@ -652,7 +652,7 @@ export default {
     return {
       log_id: null,
       user_id: null,
-
+      child_data: null,
       myocarditis: [
         {
           label: 'ST-T',
@@ -735,15 +735,15 @@ export default {
         I: null,
         II: null,
         III: null,
+        aVR: null,
+        aVL: null,
+        aVF: null,
         V1: null,
         V2: null,
         V3: null,
         V4: null,
         V5: null,
         V6: null,
-        aVR: null,
-        aVL: null,
-        aVF: null
       },
       levelList: ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"],
       beatList: ["Normal", "FangZao", "ShiZao", "FangYi", "GanRao"],
@@ -865,6 +865,9 @@ export default {
 
   },
   methods: {
+    handleDataChange(newdata){
+      this.redraw()
+    },
     qitazhi(data) {
     },
     zhong(data) {
@@ -971,15 +974,16 @@ export default {
         I: [],
         II: [],
         III: [],
+        aVL: [],
+        aVF: [],
+        aVR: [],
         V1: [],
         V2: [],
         V3: [],
         V4: [],
         V5: [],
         V6: [],
-        aVL: [],
-        aVF: [],
-        aVR: [],
+
       }
       var timex = [];
 
@@ -1268,7 +1272,7 @@ export default {
           this.subData[String(index)][name].forEach((i, index) => {
             var text = {
               name: '特殊点',
-              coord: [i, this.data[key][i]], // 标记 "周四"（索引3），Y值43
+              coord: [i, this.data[key][i]],
               symbol: 'circle',
               symbolSize: 3,
               itemStyle: {
@@ -1555,7 +1559,6 @@ export default {
 
     // 点击提交
     async submit() {
-      console.log(this.others)
       //提交字段:质量评估，预警类型，心肌炎，疑似病例，其他原因
       updateJecg12({
         pId: this.log_id,
