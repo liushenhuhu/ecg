@@ -1510,7 +1510,6 @@ export default {
       var pointdata = [];
       for (const key in this.datalabel.waveLabel[String(this.level - 1)]) {
         this.datalabel.waveLabel[String(this.level - 1)][key].forEach((i) => {
-          console.log(key)
           var text = {
             name: key,
             xAxis: i,

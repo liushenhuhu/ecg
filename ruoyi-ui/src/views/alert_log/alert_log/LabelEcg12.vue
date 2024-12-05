@@ -538,13 +538,9 @@
         </div>
       </div>
 
-      <!-- 要修改的部分 -->
       <div class="topLeft">
         <div class="topMiddle">
           <div class="warning">
-            <!-- 预警类型 -->
-            <!-- <div>预警类型</div>
-            <div>心肌炎</div> -->
             <template>
               <el-tabs v-model="activeName" @tab-click="handleClick" style="z-index: 1">
                 <el-tab-pane label="预警类型" name="yujingleixing">
@@ -581,7 +577,6 @@
                     </form>
                   </div>
                 </el-tab-pane>
-
 
                 <el-tab-pane label="心肌炎" name="xinjiyan">
                   <div class="warningDetail">
@@ -773,8 +768,7 @@ export default {
       // timex: [],
       state: true,
       show: false,
-      seriesdata: [{yAxis: -3}, {yAxis: -2.5}, {yAxis: -2}, {yAxis: -1.5}, {yAxis: -1}, {yAxis: -0.5}, {yAxis: 0}, {yAxis: 0.5}, {yAxis: 1}, {yAxis: 1.5}, {yAxis: 2}, {yAxis: 2.5}, {yAxis: 3},],
-      seriesdata1: [{yAxis: -1}, {yAxis: -0.5}, {yAxis: 0}, {yAxis: 0.5}, {yAxis: 1},],
+      seriesdata1: [{yAxis: -1}, {yAxis: 0}, {yAxis: 1},],
       data: {},
       chartjump: null,
       // xIndex: null,
@@ -840,7 +834,8 @@ export default {
   },
   watch: {
     isSuspected(val) {
-      document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : "";
+      document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : ""
+
     },
   },
   beforeRouteLeave(to, from, next) {
@@ -1019,16 +1014,11 @@ export default {
                   dataList[key].push(jsonResult.result[key][i]);
                 }
               }
-              for (var i = 0; i < 2500; i += 20) {
-                _th.seriesdata.push({xAxis: i});
+              for (var i = 0; i < 1000; i += 20) {
+                _th.seriesdata1.push({xAxis: i});
               }
-              var seriesdata = _th.seriesdata;
-              if (jsonResult.result.II.length === 1000) {
-                for (var i = 0; i < 1000; i += 20) {
-                  _th.seriesdata1.push({xAxis: i});
-                }
-                seriesdata = _th.seriesdata1;
-              }
+              var seriesdata = _th.seriesdata1;
+
               for (const key in _th.chartList) {
                 _th.chartList[key].clear();
                 _th.chartList[key].setOption({
@@ -1043,7 +1033,7 @@ export default {
                   title: {
                     text: key + "导联",
                     textStyle: {
-                      fontSize: 12,
+                      fontSize: 10,
                       color: "#000000",
                     },
                     left: 30,
@@ -1074,6 +1064,7 @@ export default {
                       textStyle: {
                         color: "#000000",
                       },
+
                     },
                     splitLine: {
                       show: true,
@@ -1122,6 +1113,7 @@ export default {
                           show: true,
                           position: "start", // 表现内容展示的位置
                           color: "#b33939", // 展示内容颜色
+                          fontSize: 10
                         },
                         data: seriesdata,
                       },
@@ -1129,7 +1121,7 @@ export default {
                       itemStyle: {
                         normal: {
                           lineStyle: {
-                            width: 1.5,
+                            width: 1,
                             color: "#000000" /*折线的颜色*/,
                           },
                           color:
@@ -1273,7 +1265,7 @@ export default {
         // 重绘波段点
         for (const name in this.subData[String(index)]) {
 
-          this.subData[String(index)][name].forEach((i,index) => {
+          this.subData[String(index)][name].forEach((i, index) => {
             var text = {
               name: '特殊点',
               coord: [i, this.data[key][i]], // 标记 "周四"（索引3），Y值43
