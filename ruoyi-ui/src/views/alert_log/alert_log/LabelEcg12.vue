@@ -9,7 +9,7 @@
         <span>时间：{{ message.time }}</span>
 
         <span style="margin-left: 500px">上次标注时间：{{ updateTime }}</span>
-        <span>上次标注人id：{{ updateBy }}</span>
+        <span>上次标注人：{{ update_user_name }}</span>
       </div>
 
       <div class="tijiao">
@@ -542,7 +542,7 @@
         <div class="topMiddle">
           <div class="warning">
             <template>
-              <el-tabs v-model="activeName" @tab-click="handleClick" style="z-index: 1">
+              <el-tabs v-model="activeName" style="z-index: 1">
                 <el-tab-pane label="预警类型" name="yujingleixing">
                   <div class="warningDetail">
                     <form id="loginForm" name="loginForm" class="biaodan">
@@ -582,7 +582,7 @@
                   <div class="warningDetail">
                     <form id="loginForm" name="loginForm" class="biaodan">
                       <div class="duoxuan">
-                        <el-checkbox-group v-model="myocarditiszhi" @change="zhong">
+                        <el-checkbox-group v-model="myocarditiszhi">
                           <div v-for="(group,index) in myocarditis" :key="index">
                             <div class="fenzuzhuti">
                               {{ group.label }}
@@ -611,7 +611,7 @@
                         <div class="others">
                           <div class="others-word ">其他：</div>
                           <div class="others-inputbox">
-                            <el-input v-model="others" placeholder="请输入内容" clearable @change="qitazhi"></el-input>
+                            <el-input v-model="others" placeholder="请输入内容" clearable></el-input>
                           </div>
                         </div>
                         <div class="xian"></div>
@@ -624,7 +624,7 @@
           </div>
         </div>
       </div>
-      <child ref="drawShow" @dataChanged="handleDataChange"></child>
+      <child ref="drawShow" @dataChanged="handleChildDataChange"></child>
     </div>
 
   </div>
@@ -639,6 +639,7 @@ import de from "element-ui/src/locale/lang/de";
 import child from "@/views/alert_log/alert_log/child.vue";
 import {getJecg12, addJecg12, updateJecg12} from "@/api/Jecg12/Jecg12";
 import {listAlert_type} from "@/api/alert_type/alert_type";
+import {getUser} from "@/api/system/user";
 
 export default {
   name: "LabelEcg12",
@@ -770,7 +771,6 @@ export default {
       show: false,
       seriesdata1: [{yAxis: -1}, {yAxis: 0}, {yAxis: 1},],
       data: {},
-      chartjump: null,
       // xIndex: null,
       // delX: {key: null, value: null}, //想要删除的点
       // area: [], //想要删除的区间
@@ -803,6 +803,7 @@ export default {
       others: "",//其他原因
       updateTime: "",
       updateBy: "",
+      update_user_name: "",
 
       // 初始化查询参数
       queryParams: {
@@ -849,42 +850,31 @@ export default {
       // 获取原页面请求
       this.log_id = this.$route.query.logId
 
-      this.queryParams.pageNum = this.$route.query.pageNum;
-      this.queryParams.pageSize = this.$route.query.pageSize;
-      this.queryParams.anoStatus = this.$route.query.anoStatus;
-      this.queryParams.logTime = this.$route.query.logTime;
-      this.queryParams.pId = this.$route.query.pId;
+      this.queryParams.pageNum = this.$route.query.pageNum
+      this.queryParams.pageSize = this.$route.query.pageSize
+      this.queryParams.anoStatus = this.$route.query.anoStatus
+      this.queryParams.logTime = this.$route.query.logTime
+      this.queryParams.pId = this.$route.query.pId
     }
   },
   mounted() {
-    this.getLogId();
-    this.getLabel();
-    this.getMessage();
-    this.getIndex();
-    this.chartjump = echarts.init(document.getElementById("chartjump"));
-
+    this.initializeChart()
   },
+
   methods: {
-    handleDataChange(newdata){
+    async initializeChart() {
+      await this.getIndexByLogid();
+      await this.getMessage();
+      await this.getLabel();
+      await this.redraw()
+    },
+
+    handleChildDataChange(newdata) {
       this.redraw()
     },
-    qitazhi(data) {
-    },
-    zhong(data) {
-    },
 
-    handleClick(tab, event) {
-    },
-    // 1获取预警类型表
-    // getSelectList() {
-    //   selectList().then((res) => {
-    //     this.options = res.data;
-    //     // console.log(res.data);
-    //   });
-    // },
-
-    // 获取当前数据在page中的index
-    async getIndex() {
+    // 根据logid获取index
+    async getIndexByLogid() {
       await listAlert_log(this.queryParams).then((response) => {
         this.logList = response.rows;
         this.logListTotal = response.total;
@@ -896,7 +886,7 @@ export default {
       })
     },
     //根据index获取logid
-    async getLogId() {
+    async getLogIdByIndex() {
       await listAlert_log(this.queryParams).then((response) => {
         this.logList = response.rows;
         this.logListTotal = response.total;
@@ -907,70 +897,10 @@ export default {
         });
       })
     },
-    // 2获取数据标注页面数据
-    // async getLogUserList() {
-    //   let queryParams = {}
-    //   if (this.typeObj) {
-    //     queryParams = this.typeObj;
-    //   } else {
-    //     queryParams = this.$route.query
-    //   }
-    //
-    //   this.obj = {
-    //     logId: queryParams.logId ? queryParams.logId : "",
-    //     userId: this.$route.query.userId ? this.$route.query.userId : "",
-    //     ecgType: this.$route.query.ecgType,
-    //     pageNum: this.pageNum,
-    //     pageSize: this.pageSize,
-    //     anoStatus: this.anoStatus,
-    //     logTime: queryParams.logTime ? queryParams.logTime : "",
-    //     eventDescription: queryParams.eventDescription ? queryParams.eventDescription : "",
-    //     eventName: queryParams.eventName ? queryParams.eventName : "",
-    //     pId: queryParams.pId ? queryParams.pId : "",
-    //     isSuspected: queryParams.isSuspected ? queryParams.isSuspected : "",
-    //   };
-    //   // console.log("查看标注页获取用户信息所需要的值");
-    //   // console.log(this.obj);
-    //   await listAlert_log(this.obj).then((response) => {
-    //     // console.log("12导预警");
-    //     // console.log(response)
-    //     this.logUserList = response.rows;
-    //
-    //     this.logUserListTotal = response.total;
-    //     this.logUserList.forEach((item, index) => {
-    //       console.log(item.logId, index)
-    //       if (this.message.logid == item.logId) {
-    //         this.index = index;
-    //       }
-    //     });
-    //     // console.log(this.logUserList);
-    //   })
-    //   if (this.index === this.logUserList.length) {
-    //     this.index = 0
-    //   }
-    //   // console.log("这是this.index的值："+this.index);
-    //
-    //   // console.log(this.logUserList[this.index].eventDescription);
-    //   // 假设 this.index 是你要访问的 logUserList 数组中的索引
-    //   if (this.logUserList[this.index].eventDescription) {
-    //     // 拆分 logType 字符串为一个数组
-    //     let logTypesArray = this.logUserList[this.index].eventDescription.split(',');
-    //
-    //     // 将拆分后的数组中的每个值添加到 trueValues 数组中
-    //     this.trueValues = logTypesArray
-    //   }
-    //   if (this.logUserList[this.index].myocardiumType) {
-    //     let xinjiyan = JSON.parse(this.logUserList[this.index].myocardiumType)
-    //     this.myocarditiszhi = xinjiyan.myocarditiszhi.split(',')
-    //     this.others = xinjiyan.others
-    //   }
-    //
-    // },
-
     //获取心电数据
-    getMessage() {
+    async getMessage() {
       console.log("id:", this.log_id)
-      var dataList = {
+      let dataList = {
         I: [],
         II: [],
         III: [],
@@ -985,10 +915,10 @@ export default {
         V6: [],
 
       }
-      var timex = [];
+      let timex = [];
 
-      var _th = this;
-      $.ajax({
+      let _th = this;
+      await $.ajax({
         type: "POST",
         url: "https://screen.mindyard.cn:84/getId",
         dataType: "json",
@@ -1021,7 +951,7 @@ export default {
               for (var i = 0; i < 1000; i += 20) {
                 _th.seriesdata1.push({xAxis: i});
               }
-              var seriesdata = _th.seriesdata1;
+              const seriesdata = _th.seriesdata1;
 
               for (const key in _th.chartList) {
                 _th.chartList[key].clear();
@@ -1202,6 +1132,7 @@ export default {
 
     },
     redraw() {
+
       var beat_colorList = {
         Normal: "green",
         FangZao: "blue",
@@ -1221,9 +1152,8 @@ export default {
         T3: "#0021da",
       };
       let index = 0;
-
       for (const key in this.chartList) {
-        const option = this.chartList[key].getOption()
+        let option = this.chartList[key].getOption()
         var pointdata = []
         // 重绘心搏点
         for (const name in this.pointdata[String(index)]) {
@@ -1296,12 +1226,10 @@ export default {
         option.series[0].markArea.data = rectangles
         this.chartList[key].setOption(option);
         index++;
-
       }
     },
     // 获取标注数据
-    getLabel
-      () {
+    async getLabel() {
       // 标签数据初始化
       this.noise_level = {
         Ilevel: "A",
@@ -1327,7 +1255,7 @@ export default {
       this.others = ""
       this.updateTime = ""
       this.updateBy = ""
-      getJecg12(this.log_id) //固定第一条数据pId以测试 00cab968-3b9b-5cc4-8f58-57be9dd88b09
+      await getJecg12(this.log_id) //固定第一条数据pId以测试 00cab968-3b9b-5cc4-8f58-57be9dd88b09
         .then((res) => {
           // 对返回的标签进行处理，
           // 1 未找到对应id的标签，插入一条初始化空数据
@@ -1350,13 +1278,14 @@ export default {
           this.others = res.data.others == null ? this.others : JSON.parse(res.data.others)
           this.updateTime = res.data.updateTime == null ? this.updateTime : res.data.updateTime
           this.updateBy = res.data.updateBy == null ? this.updateBy : res.data.updateBy
+          //获取标注人名称
+          getUser(this.updateBy).then((res) => {
+            this.update_user_name = res.data.nickName
+          })
           //手动渲染红绿按钮显示
           this.light(this.noise_level);
           // 监听事件还没有触发，手动重新渲染button
           document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : "";
-
-          this.redraw() // 画标签
-
           // 2 无论查没查到，对几个复杂格式数据格式化
           if (this.subData == null) {
             var waveLabel = {};
@@ -1388,7 +1317,6 @@ export default {
             this.rectangles = rectangles
           }
           // 3 标签不全（暂时不考虑，如果需要与之前未标全的标签融合再考虑）
-
         })
     },
     //判断红绿颜色
@@ -1477,16 +1405,7 @@ export default {
         T2: [],
         T3: [],
       };
-      this.chartjump.setOption({
-        series: {
-          markPoint: {
-            symbol: "pin",
-            symbolSize: 24,
-            animation: false,
-            data: [],
-          },
-        },
-      });
+
     },
     suspected() {
       this.isSuspected = !this.isSuspected;
@@ -1510,18 +1429,24 @@ export default {
         this.index = this.index - 1;
       }
       //根据index获取log_id
-      await this.getLogId();
-      this.getMessage();
-      this.getLabel();
+      await this.getLogIdByIndex();
+      await this.getMessage();
+      await this.getLabel();
+      await this.redraw() // 画标签
+
       this.loading = false;
       var newUrl =
         this.$route.path +
         `?logId=${this.log_id}` +
         `&pageNum=${this.queryParams.pageNum}` +
         `&pageSize=${this.queryParams.pageSize}` +
-        `&anoStatus=${this.queryParams.anoStatus}` +
-        `&logTime=${this.queryParams.logTime}`;
+        // `&anoStatus=${this.queryParams.anoStatus}` +
+        // `&logTime=${this.queryParams.logTime}`;
+        `&anoStatus` +
+        `&logTime` +
+        `&pId`;
       window.history.replaceState("", "", newUrl);
+
     }
     ,
     // 点击下一页触发事件
@@ -1541,19 +1466,24 @@ export default {
       } else {
         this.index = this.index + 1;
       }
-      //根据index获取log_id
-      await this.getLogId();
-      this.getMessage();
-      this.getLabel();
+
+      await this.getLogIdByIndex()
+      await this.getMessage()
+      await this.getLabel()
+      await this.redraw()
+
+
       this.loading = false;
       var newUrl =
         this.$route.path +
         `?logId=${this.log_id}` +
         `&pageNum=${this.queryParams.pageNum}` +
         `&pageSize=${this.queryParams.pageSize}` +
-        `&anoStatus=${this.queryParams.anoStatus}` +
-        `&logTime=${this.queryParams.logTime}`;
+        `&anoStatus` +
+        `&logTime` +
+        `&pId`;
       window.history.replaceState("", "", newUrl);
+
     }
     ,
 
