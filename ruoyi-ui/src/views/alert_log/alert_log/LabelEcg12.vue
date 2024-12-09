@@ -43,71 +43,6 @@
 
     </div>
 
-    <!--    <div class="showbox" id="jump" v-show="show" @contextmenu.prevent>-->
-    <!--      <div class="noName" v-show="lead">-->
-    <!--        <el-radio-group v-model="radio">-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('P1')" label="P1"-->
-    <!--          >P1-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('P2')" label="P2"-->
-    <!--          >P2-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('P3')" label="P3"-->
-    <!--          >P3-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('R1')" label="R1"-->
-    <!--          >R1-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('R2')" label="R2"-->
-    <!--          >R2-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('R3')" label="R3"-->
-    <!--          >R3-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('T1')" label="T1"-->
-    <!--          >T1-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('T2')" label="T2"-->
-    <!--          >T2-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--          <el-radio-button @click.native.prevent="clickitem('T3')" label="T3"-->
-    <!--          >T3-->
-    <!--          </el-radio-button-->
-    <!--          >-->
-    <!--        </el-radio-group>-->
-
-    <!--        <el-button class="btn3" @click="clearData()">清空</el-button>-->
-    <!--        <el-button class="btn3" @click="submitData()">提交</el-button>-->
-    <!--        <el-popover-->
-    <!--          placement="bottom-start"-->
-    <!--          title="提示"-->
-    <!--          width="220"-->
-    <!--          class="popo"-->
-    <!--          trigger="hover"-->
-    <!--        >-->
-    <!--          <p class="tipck">1. 选择标点类型，在框内单击左键标点</p>-->
-    <!--          <p class="tipck">2. 右键单击点可以进行删除</p>-->
-    <!--          <p class="tipck">3. 标点完成后点击提交</p>-->
-    <!--          <p class="tipck">也可选择清空所有数据</p>-->
-    <!--          <div slot="reference"><i class="el-icon-info icon"></i></div>-->
-    <!--        </el-popover>-->
-    <!--      </div>-->
-    <!--      <div id="chartjump"></div>-->
-    <!--      <div id="rightMenu" class="menu" style="display: none">-->
-    <!--        <el-button class="button" @click="del">删除</el-button>-->
-    <!--      </div>-->
-    <!--      <button class="btn" style="right: 0; top: 0" @click="Off">关闭</button>-->
-    <!--    </div>-->
-
-
     <div class="bottom">
       <div class="bottomLeft">
         <div class="xinDian">心电图</div>
@@ -672,22 +607,7 @@ export default {
         }
       ],
       activeName: 'yujingleixing',
-      luyou: '',
-      testArray: [],
 
-      lead: false,
-      tap: {
-        P1: false,
-        P2: false,
-        P3: false,
-        R1: false,
-        R2: false,
-        R3: false,
-        T1: false,
-        T2: false,
-        T3: false,
-      },
-      radio: "",
       //通过字典将radio和light一一对应
       levellight: {
         V1level: "V1light",
@@ -702,20 +622,6 @@ export default {
         Ilevel: "Ilight",
         IIlevel: "IIlight",
         IIIlevel: "IIIlight",
-      },
-      lightlevel: {
-        V1light: "V1level",
-        V2light: "V2level",
-        V3light: "V3level",
-        V4light: "V4level",
-        V5light: "V5level",
-        V6light: "V6level",
-        aVLlight: "aVLlevel",
-        aVFlight: "aVFlevel",
-        aVRlight: "aVRlevel",
-        Ilight: "Ilevel",
-        IIlight: "IIlevel",
-        IIIlight: "IIIlevel",
       },
       //判断红绿颜色
       noise_list: {
@@ -771,11 +677,6 @@ export default {
       show: false,
       seriesdata1: [{yAxis: -1}, {yAxis: 0}, {yAxis: 1},],
       data: {},
-      // xIndex: null,
-      // delX: {key: null, value: null}, //想要删除的点
-      // area: [], //想要删除的区间
-      // markArea: [],
-      // title: "",
 
       //噪声等级标签
       noise_level: {
@@ -796,8 +697,8 @@ export default {
       //标签相关数据
       trueValues: [],// 预警类型标签
       myocarditiszhi: [],// 心机炎标签
-      subData: null, //波段标注标签
-      pointdata: null, //心搏标注标签
+      waveLabel: null, //波段标注标签
+      beatLabel: null, //心搏标注标签
       rectangles: null, //矩形框标签
       isSuspected: false,
       others: "",//其他原因
@@ -827,9 +728,6 @@ export default {
 
       loading: false,
       logListTotal: 0,
-
-      typeObj: {},
-      obj: {},
       pId: '',
     };
   },
@@ -1156,8 +1054,8 @@ export default {
         let option = this.chartList[key].getOption()
         var pointdata = []
         // 重绘心搏点
-        for (const name in this.pointdata[String(index)]) {
-          this.pointdata[String(index)][name].forEach((i) => {
+        for (const name in this.beatLabel[String(index)]) {
+          this.beatLabel[String(index)][name].forEach((i) => {
             var formatter = name;
             switch (formatter) {
               case "Normal":
@@ -1197,9 +1095,9 @@ export default {
 
 
         // 重绘波段点
-        for (const name in this.subData[String(index)]) {
+        for (const name in this.waveLabel[String(index)]) {
 
-          this.subData[String(index)][name].forEach((i, index) => {
+          this.waveLabel[String(index)][name].forEach((i, index) => {
             var text = {
               name: '特殊点',
               coord: [i, this.data[key][i]],
@@ -1248,8 +1146,8 @@ export default {
 
       this.myocarditiszhi = []
       this.trueValues = []
-      this.subData = null //波段标注标签
-      this.pointdata = null //心搏标注标签
+      this.waveLabel = null //波段标注标签
+      this.beatLabel = null //心搏标注标签
       this.rectangles = null //矩形框标签
       this.isSuspected = false
       this.others = ""
@@ -1268,8 +1166,8 @@ export default {
             return
           }
           //查询到标签，做赋值处理
-          this.subData = JSON.parse(res.data.waveLabel);
-          this.pointdata = JSON.parse(res.data.beatLabel);
+          this.waveLabel = JSON.parse(res.data.waveLabel);
+          this.beatLabel = JSON.parse(res.data.beatLabel);
           this.rectangles = JSON.parse(res.data.rectangles);
           this.noise_level = res.data.noiseLevel == null ? this.noise_level : JSON.parse(res.data.noiseLevel)
           this.isSuspected = res.data.isSuspected == null ? this.isSuspected : Boolean(res.data.isSuspected)
@@ -1287,7 +1185,7 @@ export default {
           // 监听事件还没有触发，手动重新渲染button
           document.getElementById("btn2").style.backgroundColor = this.isSuspected ? "#4cc9f0" : "";
           // 2 无论查没查到，对几个复杂格式数据格式化
-          if (this.subData == null) {
+          if (this.waveLabel == null) {
             var waveLabel = {};
             for (var i = 0; i < this.levelList.length; i++) {
               if (!waveLabel[String(i)]) waveLabel[String(i)] = {}
@@ -1295,10 +1193,10 @@ export default {
                 waveLabel[String(i)][item] = []
               })
             }
-            this.subData = waveLabel
+            this.waveLabel = waveLabel
           }
 
-          if (this.pointdata == null) {
+          if (this.beatLabel == null) {
             var beatLabel = {};
             for (var i = 0; i < this.levelList.length; i++) {
               if (!beatLabel[String(i)]) beatLabel[String(i)] = {}
@@ -1306,7 +1204,7 @@ export default {
                 beatLabel[String(i)][item] = []
               })
             }
-            this.pointdata = beatLabel
+            this.beatLabel = beatLabel
           }
 
           if (this.rectangles == null) {
@@ -1332,11 +1230,6 @@ export default {
         }
       }
     },
-    //ABCD等级的判断
-    // level(data) {
-    //   this.noise_level = data.result.noise_level;
-    //   // console.log("传的ABCD的等级", this.noise_level)
-    // },
 
     //全为A
     allA() {
@@ -1377,8 +1270,6 @@ export default {
     },
     //修改等级的程度
     changeRadios(value, lab) {
-      // console.log(value)
-      // console.log(lab)
       let dom = document.getElementById(this.levellight[lab]);
       if (value === "A") {
         dom.style.backgroundColor = "greenyellow";
@@ -1387,29 +1278,10 @@ export default {
         dom.style.backgroundColor = "red";
         this.noise_list[this.levellight[lab]] = 1;
       }
-
-      console.log("修改之后的等级：", this.noise_level);
-      console.log("修改之后的等级：", this.noise_list);
     },
 
-    clearData() {
-      this.pointdata = [];
-      this.subData = {
-        P1: [],
-        P2: [],
-        P3: [],
-        R1: [],
-        R2: [],
-        R3: [],
-        T1: [],
-        T2: [],
-        T3: [],
-      };
-
-    },
     suspected() {
       this.isSuspected = !this.isSuspected;
-      console.log(this.isSuspected)
     },
     async prev() {
       this.loading = true; //转圈动画效果
@@ -1440,8 +1312,6 @@ export default {
         `?logId=${this.log_id}` +
         `&pageNum=${this.queryParams.pageNum}` +
         `&pageSize=${this.queryParams.pageSize}` +
-        // `&anoStatus=${this.queryParams.anoStatus}` +
-        // `&logTime=${this.queryParams.logTime}`;
         `&anoStatus` +
         `&logTime` +
         `&pId`;
@@ -1472,7 +1342,6 @@ export default {
       await this.getLabel()
       await this.redraw()
 
-
       this.loading = false;
       var newUrl =
         this.$route.path +
@@ -1484,9 +1353,7 @@ export default {
         `&pId`;
       window.history.replaceState("", "", newUrl);
 
-    }
-    ,
-
+    },
     // 点击提交
     async submit() {
       //提交字段:质量评估，预警类型，心肌炎，疑似病例，其他原因
@@ -1503,87 +1370,9 @@ export default {
         this.$modal.msgSuccess("数据提交成功")
       )
 
-      // this.value = this.trueValues.join();
-      // var that = this;
-      // // return;
-      // $.ajax({
-      //   cache: true,
-      //   type: "POST",
-      //   dataType: "json",
-      //   contentType: "application/json",
-      //   url: "https://screen.mindyard.cn:84/write_logType",
-      //   data: JSON.stringify({
-      //     id: this.message.logid,
-      //     Type: this.value,//中文
-      //     list: this.noise_list,
-      //     lists: this.noise_level,
-      //     user_id: this.message.user_id,
-      //   }),
-      //   async: false,
-      //   success: function (data) {
-      //     console.log("success:", data);
-      //     that.$modal.msgSuccess("数据提交成功");
-      //   },
-      //   error: function (data) {
-      //     console.log("error:", data);
-      //     //            cocoMessage.error("提交失败", 3000);
-      //   },
-      // });
-      //
-      //
-      // //标注成功
-      // let myocarditiszhiString = this.myocarditiszhi.length > 0 ? this.myocarditiszhi.toString() : '';
-      // let myocardiumTypezhi = {
-      //   myocarditiszhi: myocarditiszhiString,
-      //   others: this.others
-      // }
-      // // console.log(JSON.stringify(myocardiumTypezhi));
-      // islabel({
-      //   logType: this.value, //预警类型
-      //   logId: this.message.logid,//日志id
-      //   userId: this.message.user_id,
-      //   isSuspected: this.isSuspected ? 1 : 0, //是否是疑似病例 1
-      //   myocardiumType: JSON.stringify(myocardiumTypezhi)
-      // });
-      //
-      // let selectedValues = [];
-      //
-      // // 遍历trueValues数组
-      // this.trueValues.forEach((trueValue) => {
-      //   // 遍历options数组
-      //   this.options.forEach((option) => {
-      //     // 遍历当前option对象中的zhong数组
-      //     option.options.forEach((options) => {
-      //       // 如果当前zhongItem对象的label等于trueValue，则将其value添加到selectedValues数组中
-      //       if (options.value === trueValue) {
-      //         selectedValues.push(options.label + "Ecg");
-      //       }
-      //     });
-      //   });
-      // });
-      // let dataObject = {
-      //   pId: this.message.pid,
-      //   logId: this.message.logid,
-      //   leadCount: this.$route.query.state
-      // };
-      // for (let i = 0; i < selectedValues.length; i++) {
-      //   // 将数组中的每个字符串作为对象的键，值为1，并放入dataObject对象中
-      //   dataObject[selectedValues[i]] = 1;
-      // }
-      // // 接口
-      // // console.log(dataObject);
-      // addCount(dataObject)
+    },
 
-    }
-    ,
 
-    // submitData() {
-    //   this.query.waveLabel = JSON.stringify(this.subData);
-    //   console.log(this.subData);
-    //   // addLabel(this.query).then(res=>{
-    //   //   this.$modal.msgSuccess("标注提交成功");
-    //   // }).catch(err=>{})
-    // },
     showchart(title, data) {  //显示child页面
       var level = 1
 
@@ -1593,93 +1382,10 @@ export default {
         }
       })
       this.$refs.drawShow.getchart(data, this.log_id, level, title, 12,
-        {"beatLabel": this.pointdata, "waveLabel": this.subData, "rectangles": this.rectangles});
-      // this.$refs.drawShow.getchart2();
-    }
-    ,
+        {"beatLabel": this.beatLabel, "waveLabel": this.waveLabel, "rectangles": this.rectangles});
+    },
 
 
-    //区间合并
-    // getMerge(arr) {
-    //   arr.sort((a, b) => {
-    //     if (a[0] !== b[0]) {
-    //       return a[0] - b[0];
-    //     }
-    //     return a[1] - b[1];
-    //   });
-    //   let len = arr.length,
-    //     ans = [],
-    //     start,
-    //     end; // 遍历当前区间的最小值与最大值
-    //   for (let i = 0; i < len; i++) {
-    //     let s = arr[i][0];
-    //     let e = arr[i][1];
-    //     if (start === undefined) {
-    //       start = s;
-    //       end = e;
-    //     } else if (s <= end) {
-    //       end = Math.max(e, end);
-    //     } else {
-    //       let part = [start, end];
-    //       ans.push(part);
-    //       start = s;
-    //       end = e;
-    //     }
-    //   }
-    //
-    //   if (start !== undefined) {
-    //     let part = [start, end];
-    //     ans.push(part);
-    //   }
-    //   return ans;
-    // },
-    // Off() {
-    //   for (let tapKey in this.tap) {
-    //     this.tap[tapKey] = false;
-    //   }
-    //   this.lead = false;
-    //   this.show = false;
-    // },
-    // del() {
-    //   console.log(this.delX.key, this.delX.value);
-    //   this.pointdata.some((item, index) => {
-    //     if (item.xAxis == this.delX.value) {
-    //       this.pointdata.splice(index, 1);
-    //       return true;
-    //     }
-    //   });
-    //   this.subData[this.delX.key].some((item, index) => {
-    //     if (item == this.delX.value) {
-    //       this.subData[this.delX.key].splice(index, 1);
-    //       console.log("删除成功");
-    //       return true;
-    //     }
-    //   });
-    //   this.delX = {key: null, value: null};
-    //   this.chartjump.setOption({
-    //     series: {
-    //       markPoint: {
-    //         symbol: "pin",
-    //         symbolSize: 24,
-    //         animation: false,
-    //         data: this.pointdata,
-    //       },
-    //     },
-    //   });
-    //   $("#rightMenu").css({
-    //     display: "none",
-    //   });
-    // },
-    //判断是一维数组还是二维
-    // isArray(a) {
-    //   for (let i of a) {
-    //     if (Array.isArray(i)) return 2;
-    //   }
-    //   return 1;
-    // },
-    // clickitem(e) {
-    //   e === this.radio ? (this.radio = "") : (this.radio = e);
-    // },
     async AILabel() {
       const url = 'https://screen.mindyard.cn/test/api/getP_QRS_T'; // 请确保这是正确的POST请求URL
 
@@ -1689,8 +1395,6 @@ export default {
         'password': 'zzu_api'
       });
 
-      // 注意：在客户端代码中直接包含用户名和密码是不安全的。
-      // 在实际应用中，应该避免在客户端代码中暴露敏感信息。
       var ecgData = [];
       var i;
       for (i = 0; i < 1000; i++) {

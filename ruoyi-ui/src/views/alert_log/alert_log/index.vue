@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="日志id" prop="logId">
         <el-input
@@ -90,6 +91,9 @@
           v-hasPermi="['alert_log:alert_log:export']"
         >导出</el-button>
       </el-col>
+      <div>
+        <Upload></Upload>
+      </div>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -168,14 +172,17 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
 <script>
 import { listAlert_log, getAlert_log, delAlert_log, addAlert_log, updateAlert_log } from "@/api/alert_log/alert_log";
 import $ from "jquery";
+import Upload from "@/views/alert_log/alert_log/Upload.vue";
 
 export default {
+  components:{Upload},
   name: "Alert_log",
   data() {
     return {
