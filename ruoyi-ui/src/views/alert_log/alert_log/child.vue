@@ -318,6 +318,7 @@ import * as echarts from "@/api/tool/echarts.min.js";
 import $ from "jquery";
 import {updateJecg12} from "@/api/Jecg12/Jecg12";
 import {throttle} from "echarts";
+
 let ctx = ""; //画布上下文
 export default {
   props: {},
@@ -330,11 +331,7 @@ export default {
       radio1: "", //选中类型 Normal FangZao
       radio2: "", //选中类型 P1 P2
       isDrawRec: false, //是否画框
-      arrList: {
-        //心博标注 提交数据
-        pId: null,
-        beatLabel: null,
-      },
+
       pId: null, //报告pid
       level: null, //第几段
       chart: null, //心博标注 echarts
@@ -356,9 +353,8 @@ export default {
         {yAxis: 2.5},
       ], //标线
       x: [], //x轴值
-      pointdata: [], //显示的 点
-      graphic: [], //显示的 文本
       data: [], //导联数据
+      dataLength: 0,
       subData: {
         //波段标注 某一段的数据
         P1: [],
@@ -371,13 +367,11 @@ export default {
         T2: [],
         T3: [],
       }, //提交标注信息
-      rectangles: [], // 矩形框
       isselected: false,  //是否选中矩形框
       selectrectangleIndex: -1,  //选中的矩形框的下标
 
       lead1: true, //是否可以标注
       lead2: true, //是否可以标注
-      flag: null, //1：静态单导  12.静态12导
       closeStyle: {position: "absolute", right: "1px", top: "20px"},
       datalabel: {
         //进来页面时读取的标注数据
@@ -437,9 +431,6 @@ export default {
   created() {
   },
   mounted() {
-    this.chart = echarts.init(document.getElementById("chart"));
-    this.chart2 = echarts.init(document.getElementById("chart2"));
-
     //添加快捷键
     window.addEventListener('keydown', this.handleGlobalkeydown);
   },
@@ -449,14 +440,50 @@ export default {
   },
 
   methods: {
-    //心博标注 初始化
-    async getchart(data, pIds, level, title, flag, datalabel, is) {
-
-      this.title = title;
-      this.lead1 = true;
-      if (flag != null) {
-        this.flag = flag;
+    initData() {
+      this.isLoading = false
+      this.isLoadingText = ""
+      this.radio1 = ""
+      this.radio2 = ""
+      this.isDrawRec = false
+      if (this.chart) {
+        this.chart.dispose();
       }
+      if (this.chart2) {
+        this.chart2.dispose();
+      }
+      this.delX = {key: null, value: null}
+      this.seriesdata = [
+        {yAxis: -2},
+        {yAxis: -1.5},
+        {yAxis: -1},
+        {yAxis: -0.5},
+        {yAxis: 0},
+        {yAxis: 0.5},
+        {yAxis: 1},
+        {yAxis: 1.5},
+        {yAxis: 2},
+        {yAxis: -3},
+        {yAxis: -2.5},
+        {yAxis: 3},
+        {yAxis: 2.5},
+      ]
+      this.x =[]
+      this.data = []
+      this.isselected = false
+      this.selectrectangleIndex = -1
+      this.lead1 = true
+      this.lead2 = true
+      this.closeStyle = {position: "absolute", right: "1px", top: "20px"}
+    },
+    //心博标注 初始化
+    async getchart(data, pIds, level, title, datalabel) {
+      this.initData()
+      this.chart = echarts.init(document.getElementById("chart"));
+      this.dataLength = data.length;
+      // data = data.slice(0, this.dataLength);
+      this.title = title;
+
       if (datalabel != null) {
         this.datalabel = datalabel;
       }
@@ -464,44 +491,18 @@ export default {
       this.data = data;
       this.pId = pIds;
       this.level = level;
-      this.x.length = 0;
-      this.arrList.pId = pIds;
       for (var i = 0; i <= data.length; i++) {
         this.x.push(i);
       }
 
-      for (let i = 0; i < 1000; i += 20) {
+      for (let i = 0; i < this.dataLength; i += 20) {
         this.seriesdata.push({xAxis: i});
       }
       //标线
-      var seriesdata = this.seriesdata;
-      if (data.length > 1500) {
-        seriesdata = [
-          {yAxis: -2},
-          {yAxis: -1.5},
-          {yAxis: -1},
-          {yAxis: -0.5},
-          {yAxis: 0},
-          {yAxis: 0.5},
-          {yAxis: 1},
-          {yAxis: 1.5},
-          {yAxis: 2},
-          {yAxis: -3},
-          {yAxis: -2.5},
-          {yAxis: 3},
-          {yAxis: 2.5},
-        ];
-        for (let i = 0; i < data.length; i += 20) {
-          seriesdata.push({xAxis: i});
-        }
-      }
+      const seriesdata = this.seriesdata;
+
       let titleStr = title;
-      if (titleStr == "IA") {
-        titleStr = "II";
-      }
-      if (is == "NO") {
-        titleStr = "";
-      }
+
       //绘图
       let detailoption = {
         title: {
@@ -661,6 +662,7 @@ export default {
       });
       var width = window.screen.width;
       var height = window.screen.height;
+
       this.chart.off("contextmenu");
 
       //右击显示删除
@@ -704,33 +706,19 @@ export default {
     },
     //波段标注 初始化
     showchart(title, data) {
+      this.initData()
+      this.data=data
+      this.chart2 = echarts.init(document.getElementById("chart2"));
       this.lead2 = true;
       for (let i = 0; i < 1000; i += 20) {
         this.seriesdata.push({xAxis: i});
       }
       //标线
-      var seriesdata = this.seriesdata;
-      if (data.length > 1500) {
-        seriesdata = [
-          {yAxis: -2},
-          {yAxis: -1.5},
-          {yAxis: -1},
-          {yAxis: -0.5},
-          {yAxis: 0},
-          {yAxis: 0.5},
-          {yAxis: 1},
-          {yAxis: 1.5},
-          {yAxis: 2},
-          {yAxis: -3},
-          {yAxis: -2.5},
-          {yAxis: 3},
-          {yAxis: 2.5},
-        ];
-        for (let i = 0; i < data.length; i += 20) {
-          seriesdata.push({xAxis: i});
-        }
-      }
+      const seriesdata = this.seriesdata;
 
+      for (var i = 0; i <= data.length; i++) {
+        this.x.push(i);
+      }
       //绘图
       let detailoption = {
         animation: false,
@@ -891,7 +879,6 @@ export default {
       setTimeout(() => {
         this.chart2.resize();
       });
-      this.pointdata.length = 0;
 
       if (this.datalabel.waveLabel == null || this.datalabel.waveLabel == "") {
         this.datalabel.waveLabel = JSON.stringify({
@@ -911,22 +898,22 @@ export default {
 
       //回显
       if (this.lead2) {
-
         this.chart2_redraw()
-
 
         // 绘制矩形框
         const zr = this.chart2.getZr();
         let startPoint = []; // 鼠标按下的起始位置
         let endPoint = [] // 鼠标抬起的位置
         let isDrawing = false; // 是否正在绘制
+        this.chart2.getZr().off
+
         // 鼠标按下事件
         zr.on("mousedown", (event) => {
           if (event.event.button !== 0) return;
           // 如果不是左键点击，则不执行后续逻辑
           if (!this.isDrawRec) return; //未开启画框按钮，则不执行
-          startPoint = [event.offsetX, event.offsetY];
           isDrawing = true;
+          startPoint = [event.offsetX, event.offsetY];
           // 初始化矩形框
           this.chart2.setOption({
             graphic: [{
@@ -946,9 +933,11 @@ export default {
           });
         });
         // 鼠标移动事件
+
+
         zr.on("mousemove", (event) => {
-          if (!isDrawing) return; // 如果没有在绘制，直接返回
           if (!this.isDrawRec) return;
+          if (!isDrawing) return; // 如果没有在绘制，直接返回
           endPoint = [event.offsetX, event.offsetY];
 
           // 动态更新矩形框的尺寸
@@ -964,18 +953,26 @@ export default {
           });
         });
         // 鼠标抬起事件
+
         zr.on("mouseup", () => {
-          if (!isDrawing) return;
           if (!this.isDrawRec) return;
+          if (!isDrawing) return;
           startPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [startPoint[0], startPoint[1]]);
           endPoint = this.chart2.convertFromPixel({xAxisIndex: 0, yAxisIndex: 0}, [endPoint[0], endPoint[1]]);
-          //判断矩形框是否超出界限
+          //判断矩形框y是否超出界限
+          if (!startPoint[0] || !endPoint[0] || !startPoint[1] || !endPoint[1]) return;
           if (Math.abs(startPoint[1]) > 3 || Math.abs(endPoint[1] > 3)) {
+            isDrawing = false;
+            startPoint = [];
+            endPoint = []
             console.log("矩形框超出界限")
             return;
           }
-          //判断矩形框是否过小
+          //判断矩形框是否过大过小
           if (Math.abs(startPoint[0] - endPoint[0]) < 5 || Math.abs(startPoint[0] - endPoint[0]) > 150) {
+            isDrawing = false;
+            startPoint = [];
+            endPoint = []
             console.log("矩形框过大或过小")
             return;
           }
@@ -989,10 +986,8 @@ export default {
 
           //清空临时框
           const chartOption = this.chart2.getOption();
-          // chartOption.series[0].markArea.data.push(rect);
           chartOption.graphic = [{shape: {x: 0, y: 0, width: 0, height: 0,},}];
           this.chart2.setOption(chartOption);
-
 
           //绘制矩形框
           this.datalabel.rectangles[String(this.level - 1)].push([startPoint, endPoint])
@@ -1002,13 +997,17 @@ export default {
           endPoint = []
         });
 
+
         //监听鼠标位置,配合快捷删除操作
         const tolerance = 0.02; // 矩形框可供选择的范围
         this.chart2.getZr().on("mousemove", throttle((event) => {
-          // TODO 算法优化
           if (!this.isDrawRec) return; //未开启画框按钮，则不执行
+
+
           const [x, y] = this.chart2.convertFromPixel({seriesIndex: 0}, [event.offsetX, event.offsetY]);
+
           this.isselected = false;
+
           this.datalabel.rectangles[String(this.level - 1)].forEach((item, index) => {  //卡顿地方
             if ( // 判断是否选中框
               x === item[0][0] && Math.min(item[0][0], item[1][1]) <= y && y <= Math.max(item[0][1], item[1][1]) ||
@@ -1036,9 +1035,9 @@ export default {
             }
             this.chart2.setOption(option);
           }
-        }, 100));
+        }, 30));
 
-        this.chart2.off("contextmenu");
+
         //右击显示删除
         this.chart2.on("contextmenu", (params) => {
           $("#rightMenu2").css({
@@ -1052,8 +1051,9 @@ export default {
           }
         });
 
-        this.chart2.getZr().off("click");
+
         //左击标点
+        this.chart2.getZr().off("click");
         this.chart2.getZr().on("click", (params) => {
           $("#rightMenu2").css({
             display: "none",
@@ -1246,24 +1246,26 @@ export default {
     },
     // 清空心搏标注数据
     clickClear() {
-      this.$modal.confirm('是否清空数据?').then(function (){
+      this.$modal.confirm('是否清空数据?').then(function () {
         //处理
       }).then(() => {
         this.initBeatLabel()
         this.chart1_redraw()
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     // 清空波段标注数据
     clearData() {
-      this.$modal.confirm('是否清空数据?').then(function (){
+      this.$modal.confirm('是否清空数据?').then(function () {
         //处理
       }).then(() => {
         this.initWaveLabel()
         this.initRectangles()
         this.chart2_redraw()
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
 
 
     },
@@ -1292,7 +1294,6 @@ export default {
       this.drawShow = false;
       this.isDrawRec = false;
       this.$emit('dataChanged', null); //更新12导标签显示
-
     },
 
     //切换tab
@@ -1306,7 +1307,6 @@ export default {
         this.showchart(this.title, this.data, this.level);
       }
     },
-
 
 
     //切换标注类型
@@ -1370,7 +1370,7 @@ export default {
           }
         })
         this.$modal.msgSuccess("AI标注成功");
-      }).catch(error=>{
+      }).catch(error => {
         this.$modal.msgError("AI标注失败");
         this.isLoading = false
         return
@@ -1403,7 +1403,6 @@ export default {
       // }, {}); //对换位置
       // console.log(beatFavor,waveFavor)
       if (this.activeName == "first") {
-        console.log(event.key)
         switch (event.key) {
           case '1':
             this.activeName = "first"; // 切换到目标 Tab
@@ -1411,7 +1410,6 @@ export default {
             break;
           case '2':
             this.activeName = "second"; // 切换到目标 Tab
-            // tabButton[1].click();
             this.showchart(this.title, this.data, this.level);
             break;
           case 'q':

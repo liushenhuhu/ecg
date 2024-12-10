@@ -675,7 +675,7 @@ export default {
       // timex: [],
       state: true,
       show: false,
-      seriesdata1: [{yAxis: -1}, {yAxis: 0}, {yAxis: 1},],
+      seriesdata: [{yAxis: -1}, {yAxis: 0}, {yAxis: 1},],
       data: {},
 
       //噪声等级标签
@@ -826,6 +826,9 @@ export default {
           user_id: 0,  // userid得是0才有权限
         }),
         success: jsonResult => {
+          // for (const key in _th.chartList) { // 测试其他秒数数据
+          //   jsonResult.result[key] = jsonResult.result[key].slice(0, 300);
+          // }
           _th.data = jsonResult.result;
           // console.log(jsonResult);
           _th.message.pid = jsonResult.result.patientid;
@@ -834,23 +837,23 @@ export default {
           _th.message.time = jsonResult.result.clockTime;
           _th.value = jsonResult.result.logType;
           _th.loading = false;
+          const dataLength = jsonResult.result.I.length;
           if (_th.message.devicesn != null) {
             (function () {
               var i;
               for (var k = 0; k < 1001; k++) {
                 timex.push(k / 100 + "秒");
               }
-              for (i = 0; i < 1000; i++) {
-                for (const key in _th.chartList) {
-                  _th.chartList[key] = echarts.init(document.getElementById(key));
+              for (const key in _th.chartList) {
+                _th.chartList[key] = echarts.init(document.getElementById(key));
+                for (i = 0; i < dataLength; i++) {
                   dataList[key].push(jsonResult.result[key][i]);
                 }
               }
-              for (var i = 0; i < 1000; i += 20) {
-                _th.seriesdata1.push({xAxis: i});
+              for (var i = 0; i < dataLength+20; i += 20) {
+                _th.seriesdata.push({xAxis: i});
               }
-              const seriesdata = _th.seriesdata1;
-
+              const seriesdata = _th.seriesdata;
               for (const key in _th.chartList) {
                 _th.chartList[key].clear();
                 _th.chartList[key].setOption({
@@ -1374,14 +1377,14 @@ export default {
 
 
     showchart(title, data) {  //显示child页面
-      var level = 1
+      let level = 1
 
       this.levelList.forEach((item, index) => {
         if (item == title) {
           level = index + 1
         }
       })
-      this.$refs.drawShow.getchart(data, this.log_id, level, title, 12,
+      this.$refs.drawShow.getchart(data, this.log_id, level, title,
         {"beatLabel": this.beatLabel, "waveLabel": this.waveLabel, "rectangles": this.rectangles});
     },
 
@@ -1395,9 +1398,8 @@ export default {
         'password': 'zzu_api'
       });
 
-      var ecgData = [];
-      var i;
-      for (i = 0; i < 1000; i++) {
+      let ecgData = [];
+      for (let i = 0; i < 1000; i++) {
         ecgData.push(this.data.I[i])
       }
       const data = {
@@ -1410,7 +1412,6 @@ export default {
         headers: headers,
         body: JSON.stringify(data)
       });
-      console.log("标注数据", response.json())
     }
     ,
   },
